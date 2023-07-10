@@ -1,0 +1,32 @@
+{
+  "template": {
+    "scope": "vue",
+    "prefix": "template",
+    "body": ["<template>", "  $0", "</template>"],
+    "description": "Create <template> block"
+  },
+  "script": {
+    "scope": "vue",
+    "prefix": "script",
+    "body": ["<script setup lang=\"ts\">", "$0", "</script>"],
+    "description": "Create <script setup> block"
+  },
+  "style": {
+    "scope": "vue",
+    "prefix": "style",
+    "body": ["<style scoped>", "$0", "</style>"],
+    "description": "Create <style> block"
+  },
+  "defineProps": {
+    "scope": "typescript",
+    "prefix": "defineProps",
+    "body": ["defineProps<{", "  $0", "}>()"],
+    "description": "Create props function body"
+  },
+  "defineEmits": {
+    "scope": "typescript",
+    "prefix": "defineEmits",
+    "body": ["defineEmits<{", "  $0", "}>()"],
+    "description": "Create emits function body"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "typescript.preferences.autoImportFileExcludePatterns": ["vue-router"],
+  "typescript.preferences.importModuleSpecifier": "non-relative"
+}
