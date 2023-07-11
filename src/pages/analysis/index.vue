@@ -1,6 +1,6 @@
 <template>
   <main class="flex-grow overflow-y-auto overflow-x-hidden p-4 flex">
-    <div class="max-w-3xl m-auto">
+    <div class="mx-auto">
       <TheChessboard :game="analysisBoard.game" />
       <BaseInputGroup
         class="mt-8"

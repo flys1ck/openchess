@@ -2,7 +2,7 @@
   <div class="flex h-screen overflow-hidden bg-gray-50">
     <NavigationSidebar />
     <div class="flex-grow flex flex-col overflow-auto">
-      <nav aria-label="Breadcrumb" class="overflow-y-auto">
+      <nav aria-label="Breadcrumb">
         <ol role="list" class="flex items-center p-2 border-b text-sm">
           <li v-for="(route, i) in matchedRoutes" :key="route.path">
             <div class="flex items-center">
