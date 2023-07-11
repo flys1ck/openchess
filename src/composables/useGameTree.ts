@@ -122,6 +122,9 @@ export function useGameTree() {
       }
       activeNode.value = parsedNode;
     });
+
+    // reset active node to root position after import
+    activeNode.value = root.value;
   }
 
   const pgn = computed(() => {

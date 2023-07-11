@@ -20,15 +20,13 @@
         <!-- Engine evaluation -->
         <!-- <GameEvaluation /> -->
         <!-- Move history -->
-        <div class="flex-grow overflow-auto">
-          <div class="grid grid-cols-16 items-stretch">
-            <GameTreeItem
-              v-if="game.tree.root.value"
-              :node="game.tree.root.value"
-              :active-node-id="game.tree.activeNode.value?.id"
-              @nodeselect="game.setActivePosition"
-            />
-          </div>
+        <div class="flex-grow overflow-auto grid grid-cols-16 items-stretch">
+          <GameTreeItem
+            v-if="game.tree.root.value"
+            :node="game.tree.root.value"
+            :active-node-id="game.tree.activeNode.value?.id"
+            @nodeselect="game.setActivePosition"
+          />
         </div>
         <div class="p-4 flex flex-col gap-2 border-t">
           <div class="flex justify-center gap-4">
@@ -102,18 +100,30 @@ const TABS = ["Game", "Settings"];
 // also might work unexpected, when tabs/buttons have focus
 onKeyStroke("ArrowLeft", () => {
   if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toPreviousMove((node) => props.game.setActivePosition(node));
+  props.game.tree.toPreviousMove((node) => {
+    props.game.setActivePosition(node);
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+  });
 });
 onKeyStroke("ArrowRight", () => {
   if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toNextMove((node) => props.game.setActivePosition(node));
+  props.game.tree.toNextMove((node) => {
+    props.game.setActivePosition(node);
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+  });
 });
 onKeyStroke("ArrowUp", () => {
   if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toFirstMove((node) => props.game.setActivePosition(node));
+  props.game.tree.toFirstMove((node) => {
+    props.game.setActivePosition(node);
+    document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "start" });
+  });
 });
 onKeyStroke("ArrowDown", () => {
   if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toLastMove((node) => props.game.setActivePosition(node));
+  props.game.tree.toLastMove((node) => {
+    props.game.setActivePosition(node);
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "end" });
+  });
 });
 </script>

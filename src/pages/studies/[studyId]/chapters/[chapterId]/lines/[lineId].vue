@@ -12,7 +12,13 @@ import TheChessboard from "@components/TheChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
 import { useSupabase } from "@composables/useSupabase";
-import { useRoute } from "vue-router/auto";
+import { definePage, useRoute } from "vue-router/auto";
+
+definePage({
+  meta: {
+    layout: "breadcrumbs",
+  },
+});
 
 const route = useRoute("/studies/[studyId]/chapters/[chapterId]/lines/[lineId]");
 const supabase = useSupabase();

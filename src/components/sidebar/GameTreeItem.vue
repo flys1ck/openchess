@@ -6,7 +6,8 @@
         {{ moveNumber }}
       </span>
       <button
-        class="text-left pl-4 col-span-7 font-light py-0.5 rounded"
+        :data-node-id="node.id"
+        class="text-left pl-4 col-span-7 font-light py-0.5"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -20,7 +21,8 @@
       </span>
       <span class="col-span-7 text-gray-500 pl-4">...</span>
       <button
-        class="text-left pl-4 col-span-7 font-light py-0.5 rounded"
+        :data-node-id="node.id"
+        class="text-left pl-4 col-span-7 font-light py-0.5"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -30,7 +32,8 @@
     <!-- black's move -->
     <template v-else>
       <button
-        class="text-left pl-4 col-span-7 font-light py-0.5 rounded"
+        :data-node-id="node.id"
+        class="text-left pl-4 col-span-7 font-light py-0.5"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -40,7 +43,15 @@
   </template>
   <template v-if="node.comment">
     <span v-if="node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
-    <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner">
+    <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative">
+      <span
+        class="absolute inset-0"
+        :class="[
+          node.ply % 2 === 1 ? 'border-l-4' : 'border-r-4',
+          node.id === activeNodeId ? 'border-orange-300' : 'border-gray-300',
+        ]"
+        aria-hidden
+      />
       {{ node.comment }}
     </p>
   </template>
