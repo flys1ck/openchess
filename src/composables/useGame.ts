@@ -2,7 +2,7 @@ import { Position, useChessground } from "@composables/useChessground";
 import { useEvaluation } from "@composables/useEvaluation";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
-import { isPromotion } from "@utilities/move";
+import { isPromotion, toPiece, toPossibleMoves } from "@utilities/move";
 import { Chess } from "chess.js";
 import { Color, Dests, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
@@ -36,12 +36,7 @@ export function useGame() {
     const position = {
       fen: chess.fen(),
       turnColor: (chess.turn() === "w" ? "white" : "black") as Color,
-      possibleMoves: chess.moves({ verbose: true }).reduce((acc, move) => {
-        if (!acc.has(move.from)) return acc.set(move.from, [move.to]);
-        const dests = acc.get(move.from);
-        dests?.push(move.to);
-        return acc.set(move.from, dests!);
-      }, new Map<Key, Key[]>()),
+      possibleMoves: toPossibleMoves(chess.moves({ verbose: true })),
       isCheck: chess.isCheck(),
       lastMove: move && [move.from, move.to],
     };
@@ -52,12 +47,7 @@ export function useGame() {
     chess.reset();
     fen.value = chess.fen();
     turnColor.value = chess.turn() === "w" ? "white" : "black";
-    possibleMoves.value = chess.moves({ verbose: true }).reduce((acc, move) => {
-      if (!acc.has(move.from)) return acc.set(move.from, [move.to]);
-      const dests = acc.get(move.from);
-      dests?.push(move.to);
-      return acc.set(move.from, dests!);
-    }, new Map<Key, Key[]>());
+    possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
     isPromoting.value = false;
 
@@ -80,17 +70,10 @@ export function useGame() {
       return;
     }
 
-    const pieceMap = {
-      queen: "q",
-      rook: "r",
-      bishop: "b",
-      knight: "n",
-    };
-
     const move = chess.move({
       from: source,
       to: destination,
-      promotion: options?.promotionPiece && pieceMap[options?.promotionPiece],
+      promotion: options?.promotionPiece && toPiece(options.promotionPiece),
     });
     const isCapture = move.flags.includes("c") || move.flags.includes("e");
     const isEnPassant = move.flags.includes("e");
@@ -111,12 +94,7 @@ export function useGame() {
     // set up board for next move
     fen.value = chess.fen();
     turnColor.value = chess.turn() === "w" ? "white" : "black";
-    possibleMoves.value = chess.moves({ verbose: true }).reduce((acc, move) => {
-      if (!acc.has(move.from)) return acc.set(move.from, [move.to]);
-      const dests = acc.get(move.from);
-      dests?.push(move.to);
-      return acc.set(move.from, dests!);
-    }, new Map<Key, Key[]>());
+    possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
     chessground?.setTurn(turnColor.value, possibleMoves.value);
 

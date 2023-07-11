@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <div ref="chessboardRef" class="aspect-square"></div>
+    <div ref="chessboardRef" class="aspect-square max-h-[800px]"></div>
     <div
       v-if="game.isPromoting.value"
       :style="`width: ${overlayWidth}px`"

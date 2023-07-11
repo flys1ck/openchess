@@ -1,6 +1,6 @@
-import { parsePgn } from "@services/game";
 import { playAudio } from "@utilities/audio";
-import { toSAN } from "@utilities/move";
+import { toColor, toPossibleMoves, toRole, toSAN } from "@utilities/move";
+import { Chess } from "chess.js";
 import { Dests, Key, Piece } from "chessground/types";
 import { computed, ref } from "vue";
 
@@ -106,25 +106,41 @@ export function useGameTree() {
   }
 
   async function fromPGN(pgn: string) {
-    // TODO: import breaks possibleMoves
-    const nodes = await parsePgn(pgn);
     reset();
-    nodes.forEach((node) => {
-      const parsedNode = addNode(node.fen, node.possibleMoves as unknown as Dests, {
-        move: (node.chessMove as unknown as ChessMove) ?? undefined,
-        comment: node.comment ?? "",
+
+    const chess = new Chess();
+    const rootNode = addNode(chess.fen(), toPossibleMoves(chess.moves({ verbose: true })));
+    root.value = rootNode;
+    activeNode.value = rootNode;
+
+    chess.loadPgn(pgn);
+    const history = chess.history({ verbose: true });
+    const comments = chess.getComments();
+    history.forEach((move) => {
+      // TODO: highly inefficient, probably calculate possible moves on the fly
+      chess.load(move.before);
+      const possibleMoves = toPossibleMoves(chess.moves({ verbose: true }));
+      chess.load(move.after);
+      const node = addNode(move.after, possibleMoves, {
+        move: {
+          source: move.from,
+          destination: move.to,
+          isCapture: move.flags.includes("c"),
+          isCheck: chess.isCheck(),
+          piece: {
+            role: toRole(move.piece),
+            color: toColor(move.color),
+            promoted: move.flags.includes("p"),
+          },
+        },
+        comment: comments.find((comment) => comment.fen === move.after)?.comment,
       });
 
-      if (root.value && activeNode.value) {
-        activeNode.value.nextPosition = parsedNode;
-      } else {
-        root.value = parsedNode;
-      }
-      activeNode.value = parsedNode;
+      setActiveNode(node);
     });
 
     // reset active node to root position after import
-    activeNode.value = root.value;
+    setActiveNode(root.value);
   }
 
   const pgn = computed(() => {
