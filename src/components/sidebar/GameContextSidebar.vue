@@ -20,13 +20,15 @@
         <!-- Engine evaluation -->
         <!-- <GameEvaluation /> -->
         <!-- Move history -->
-        <div class="flex-grow overflow-auto grid grid-cols-16 items-stretch">
-          <GameTreeItem
-            v-if="game.tree.root.value"
-            :node="game.tree.root.value"
-            :active-node-id="game.tree.activeNode.value?.id"
-            @nodeselect="game.setActivePosition"
-          />
+        <div class="flex-grow overflow-y-auto">
+          <div class="grid grid-cols-16 items-stretch">
+            <GameTreeItem
+              v-if="game.tree.root.value"
+              :node="game.tree.root.value"
+              :active-node-id="game.tree.activeNode.value?.id"
+              @nodeselect="game.setActivePosition"
+            />
+          </div>
         </div>
         <div class="p-4 flex flex-col gap-2 border-t">
           <div class="flex justify-center gap-4">
