@@ -102,6 +102,7 @@ export function useGame() {
     const nodeMove: ChessMove = {
       source: move.from,
       destination: move.to,
+      san: move.san,
       isCapture,
       isCheck,
       piece,
@@ -165,6 +166,8 @@ export function useGame() {
     };
 
     chessground?.setPosition(position);
+    if (node.move?.isCheck) chessground?.setCheck();
+
     gameTree.setActiveNode(node);
   }
 

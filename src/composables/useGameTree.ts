@@ -7,10 +7,10 @@ import { computed, ref } from "vue";
 export interface ChessMove {
   source: Key;
   destination: Key;
+  san: string;
   piece: Piece;
   isCheck: boolean;
   isCapture: boolean;
-  annotation?: string;
 }
 
 // TODO rename turncolor to movecolor
@@ -125,6 +125,7 @@ export function useGameTree() {
         move: {
           source: move.from,
           destination: move.to,
+          san: move.san,
           isCapture: move.flags.includes("c"),
           isCheck: chess.isCheck(),
           piece: {

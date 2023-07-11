@@ -20,20 +20,7 @@ const pieceCodes = {
 };
 
 export function toSAN(move: ChessMove) {
-  const pieceCode = pieceCodes[move.piece.role];
-
-  const uci = `${move.source}${move.destination}`;
-  if (uci === "e1g1" || uci === "e8g8") return "0-0";
-  if (uci === "e1c1" || uci === "e8c8") return "0-0-0";
-
-  const parts = [
-    move.piece.role === "pawn" ? (move.isCapture ? move.source[0] : pieceCode) : pieceCode,
-    move.isCapture ? "x" : "",
-    move.destination,
-    move.isCheck ? "+" : "",
-  ];
-
-  return parts.join("");
+  return move.san;
 }
 
 export function toPossibleMoves(moves: Move[]): Dests {
