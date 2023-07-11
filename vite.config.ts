@@ -7,7 +7,7 @@ import TSConfigPaths from "vite-tsconfig-paths";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TSConfigPaths(),
+    TSConfigPaths({ loose: true }),
     VueRouter({
       dts: "./src/typed-router.d.ts",
     }),
