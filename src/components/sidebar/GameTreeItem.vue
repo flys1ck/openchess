@@ -11,7 +11,7 @@
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ san }}
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
     <!-- black's move after a previous comment -->
@@ -26,7 +26,8 @@
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ san }}
+        {{ node.move.san }}
+        <span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
     <!-- black's move -->
@@ -37,7 +38,7 @@
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ san }}
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
   </template>
@@ -65,7 +66,6 @@
 
 <script setup lang="ts">
 import { PositionNode } from "@composables/useGameTree";
-import { toSAN } from "@utilities/move";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -80,9 +80,36 @@ defineEmits<{
 const moveNumber = computed(() => {
   return Math.ceil(props.node.ply / 2);
 });
-const san = computed(() => {
-  if (!props.node.move) return;
 
-  return toSAN(props.node.move);
+const nags: Record<string, string> = {
+  $1: "!",
+  $2: "?",
+  $3: "‼",
+  $4: "⁇",
+  $5: "⁉",
+  $6: "⁈",
+  $7: "□",
+  $10: "=",
+  $13: "∞",
+  $14: "⩲",
+  $15: "⩱",
+  $16: "±",
+  $17: "∓",
+  $18: "+-",
+  $19: "-+",
+  $22: "⨀",
+  $32: "⟳",
+  $36: "→",
+  $40: "↑",
+  $132: "⇆",
+  $220: "D",
+};
+
+const resolvedAnnotation = computed(() => {
+  if (!props.node.move?.annotations?.length) return;
+
+  return props.node.move.annotations.reduce((acc, nag) => {
+    return `${acc}${nags[nag]}`;
+  }, "");
 });
 </script>

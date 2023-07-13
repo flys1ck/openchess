@@ -31,7 +31,7 @@ supabase
   .limit(1)
   .single()
   .then(({ data }) => {
-    game.tree.fromPGN(data!.pgn);
+    game.tree.fromPgn(data!.pgn);
     if (!game.tree.root.value) return;
     game.setActivePosition(game.tree.root.value);
   });

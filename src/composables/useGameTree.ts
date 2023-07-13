@@ -1,3 +1,4 @@
+import { ParseTree, parse } from "@mliebelt/pgn-parser";
 import { playAudio } from "@utilities/audio";
 import { toColor, toPossibleMoves, toRole, toSAN } from "@utilities/move";
 import { Chess } from "chess.js";
@@ -11,6 +12,7 @@ export interface ChessMove {
   piece: Piece;
   isCheck: boolean;
   isCapture: boolean;
+  annotations?: string[];
 }
 
 // TODO rename turncolor to movecolor
@@ -33,7 +35,7 @@ export interface PositionNode {
   previousPosition?: PositionNode;
   variations?: PositionNode[];
   // extras
-  comment: string;
+  comment?: string;
 }
 
 interface AddMoveOptions {
@@ -54,7 +56,7 @@ export function useGameTree() {
       move: options && options.move,
       previousPosition: activeNode.value,
       possibleMoves,
-      comment: (options && options.comment) ?? "",
+      comment: options && options.comment,
     };
 
     if (!root.value) root.value = newNode;
@@ -105,25 +107,29 @@ export function useGameTree() {
     activeNode.value = undefined;
   }
 
-  async function fromPGN(pgn: string) {
+  async function fromPgn(pgn: string) {
     reset();
+
+    const parsedPgn = parse(pgn, { startRule: "game" }) as ParseTree;
 
     const chess = new Chess();
     chess.loadPgn(pgn);
     const history = chess.history({ verbose: true });
-    const comments = chess.getComments();
+    const parsedMoves = parsedPgn.moves;
+
+    if (history.length !== parsedMoves.length) throw new Error("Error while parsing PGN");
 
     if (!history.length) return;
     const firstMove = history[0];
     chess.load(firstMove.before);
 
     const rootNode = addNode(firstMove.before, toPossibleMoves(chess.moves({ verbose: true })), {
-      comment: comments.find((comment) => comment.fen === firstMove.before)?.comment,
+      comment: parsedPgn.gameComment?.comment,
     });
     root.value = rootNode;
     activeNode.value = rootNode;
 
-    history.forEach((move) => {
+    history.forEach((move, i) => {
       // TODO: highly inefficient, probably calculate possible moves on the fly
       chess.load(move.before);
       const possibleMoves = toPossibleMoves(chess.moves({ verbose: true }));
@@ -140,8 +146,9 @@ export function useGameTree() {
             color: toColor(move.color),
             promoted: move.flags.includes("p"),
           },
+          annotations: parsedMoves[i].nag,
         },
-        comment: comments.find((comment) => comment.fen === move.after)?.comment,
+        comment: parsedMoves[i].commentAfter,
       });
 
       setActiveNode(node);
@@ -183,6 +190,6 @@ export function useGameTree() {
     toPreviousMove,
     addNode,
     reset,
-    fromPGN,
+    fromPgn,
   };
 }
