@@ -118,14 +118,14 @@ onKeyStroke("ArrowUp", () => {
   if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toFirstMove((node) => {
     props.game.setActivePosition(node);
-    document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "start" });
+    document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
 });
 onKeyStroke("ArrowDown", () => {
   if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toLastMove((node) => {
     props.game.setActivePosition(node);
-    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "end" });
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 });
 </script>

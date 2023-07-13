@@ -47,7 +47,7 @@
       <span
         class="absolute inset-0"
         :class="[
-          node.ply % 2 === 1 ? 'border-l-4' : 'border-r-4',
+          { 'border-l-4': node.move?.piece.color === 'white', 'border-r-4': node.move?.piece.color === 'black' },
           node.id === activeNodeId ? 'border-orange-300' : 'border-gray-300',
         ]"
         aria-hidden
