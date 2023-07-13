@@ -1,10 +1,12 @@
 <template>
   <ul class="space-y-2">
-    <BaseCard v-for="line in lines" :key="line.id" as="li">
+    <BaseCard v-for="line in lines" :key="line.id" as="li" class="relative">
       <RouterLink
         class="font-medium"
         :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"
-        >{{ line.name }}</RouterLink
+      >
+        <span class="absolute inset-0" aria-hidden />
+        {{ line.name }}</RouterLink
       >
       <p class="text-gray-400 text-sm mt-2">{{ line.moves }}</p>
     </BaseCard>

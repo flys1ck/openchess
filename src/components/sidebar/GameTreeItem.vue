@@ -26,8 +26,7 @@
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ node.move.san }}
-        <span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
     <!-- black's move -->
