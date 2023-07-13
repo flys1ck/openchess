@@ -109,13 +109,20 @@ export function useGameTree() {
     reset();
 
     const chess = new Chess();
-    const rootNode = addNode(chess.fen(), toPossibleMoves(chess.moves({ verbose: true })));
-    root.value = rootNode;
-    activeNode.value = rootNode;
-
     chess.loadPgn(pgn);
     const history = chess.history({ verbose: true });
     const comments = chess.getComments();
+
+    if (!history.length) return;
+    const firstMove = history[0];
+    chess.load(firstMove.before);
+
+    const rootNode = addNode(firstMove.before, toPossibleMoves(chess.moves({ verbose: true })), {
+      comment: comments.find((comment) => comment.fen === firstMove.before)?.comment,
+    });
+    root.value = rootNode;
+    activeNode.value = rootNode;
+
     history.forEach((move) => {
       // TODO: highly inefficient, probably calculate possible moves on the fly
       chess.load(move.before);
