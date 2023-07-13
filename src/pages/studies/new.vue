@@ -227,7 +227,9 @@
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-x-6">
-      <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+      <button type="button" class="text-sm font-semibold leading-6 text-gray-900" @click="$router.push('/studies')">
+        Cancel
+      </button>
       <BaseButton type="submit">Save</BaseButton>
     </div>
   </form>
@@ -238,8 +240,10 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
 import BaseTextarea from "@components/base/BaseTextarea.vue";
 import { useSupabase } from "@composables/useSupabase";
+import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { reactive } from "vue";
-import { definePage } from "vue-router/auto";
+import { definePage, useRouter } from "vue-router/auto";
 
 definePage({
   meta: {
@@ -247,6 +251,20 @@ definePage({
   },
 });
 
+const { setBreadcrumbs } = useBreadcrumbs();
+setBreadcrumbs([
+  {
+    icon: AcademicCapIcon,
+    name: "Studies",
+    to: "/studies/",
+  },
+  {
+    name: "New Study",
+    to: "/studies/new",
+  },
+]);
+
+const router = useRouter();
 const supabase = useSupabase();
 const studyFormData = reactive({
   name: "",
@@ -254,9 +272,17 @@ const studyFormData = reactive({
 });
 
 async function onSubmit() {
-  await supabase.from("studies").insert({
-    name: studyFormData.name,
-    description: studyFormData.description,
-  });
+  // TODO check all requests for failure
+  const { data: study } = await supabase
+    .from("studies")
+    .insert({
+      name: studyFormData.name,
+      description: studyFormData.description,
+    })
+    .select("id")
+    .single();
+
+  if (!study) return;
+  router.push(`/studies/${study.id}`);
 }
 </script>

@@ -5,7 +5,7 @@ import type { RouteNamedMap } from "vue-router/auto/routes";
 interface Breadcrumb {
   icon?: FunctionalComponent;
   name: string;
-  to: keyof RouteNamedMap;
+  to: keyof RouteNamedMap | string;
 }
 
 export const useBreadcrumbs = defineStore("breadcrumbs", () => {
