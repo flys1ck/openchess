@@ -92,6 +92,8 @@ export function useChessground(
   }
 
   function toggleOrientation() {
+    console.log("toggle");
+
     chessground.toggleOrientation();
   }
 

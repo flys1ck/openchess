@@ -6,7 +6,7 @@ import { Ref, computed, ref, watchEffect } from "vue";
 interface BestMoveResponse {
   depth: number;
   evaluation: number;
-  nodes_per_second: number;
+  nodesPerSecond: number;
   source: Key;
   destination: Key;
 }
@@ -38,7 +38,8 @@ export function useEvaluation(
       const response = e.payload;
       depth.value = response.depth;
       score.value = response.evaluation;
-      nodesPerSecond.value = response.nodes_per_second;
+      nodesPerSecond.value = response.nodesPerSecond;
+
       if (options?.onEvaluationUpdate) options.onEvaluationUpdate(response);
     });
     onCleanup(unlisten);

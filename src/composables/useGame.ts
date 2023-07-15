@@ -67,9 +67,6 @@ export function useGame() {
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
-    console.log("processing", source, destination);
-    console.log(tree);
-
     // handle promotion
     const piece = board?.getPiece(destination);
     if (!piece) return;
@@ -180,8 +177,11 @@ export function useGame() {
     tree.setActiveNode(node);
   }
 
+  function toggleOrientation() {
+    board?.toggleOrientation();
+  }
+
   return {
-    board: board,
     tree: tree,
     evaluation,
     isPromoting,
@@ -193,7 +193,7 @@ export function useGame() {
     createNewGame,
     cancelPromotion,
     promote,
-    processMove,
     setActivePosition,
+    toggleOrientation,
   };
 }

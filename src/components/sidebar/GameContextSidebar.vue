@@ -24,7 +24,6 @@
           <div class="flex-grow overflow-y-auto">
             <div class="grid grid-cols-16 items-stretch">
               <GameTreeItem
-                v-if="game.tree.root.value"
                 :node="game.tree.root.value"
                 :active-node-id="game.tree.activeNode.value?.id"
                 @nodeselect="game.setActivePosition"
@@ -73,7 +72,7 @@
       <TabPanel>
         <div class="flex flex-col">
           <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
-          <BaseButton variant="secondary" @click="game.board?.toggleOrientation">Toggle Orientation</BaseButton>
+          <BaseButton variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
         </div>
       </TabPanel>
     </TabPanels>

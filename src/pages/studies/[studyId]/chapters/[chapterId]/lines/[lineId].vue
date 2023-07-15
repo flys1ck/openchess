@@ -30,12 +30,14 @@ const supabase = useSupabase();
 const game = useGame();
 supabase
   .from("lines")
-  .select("name, pgn, study(id, name), chapter(id, name)")
+  .select("name, pgn, study(id, name), chapter(id, name), is_white")
   .eq("id", route.params.lineId)
   .limit(1)
   .single()
   .then(({ data: line }) => {
-    game.tree.fromPgn(line!.pgn);
+    if (!line) return;
+    if (!line.is_white) game.toggleOrientation();
+    game.tree.fromPgn(line.pgn);
     if (!game.tree.root.value) return;
     game.setActivePosition(game.tree.root.value);
 
