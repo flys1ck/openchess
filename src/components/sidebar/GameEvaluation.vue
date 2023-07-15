@@ -32,9 +32,15 @@
 
 <script setup lang="ts">
 import { useGame } from "@composables/useGame";
+import { stopEvaluation } from "@services/evaluation";
+import { onUnmounted } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 
 defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
+
+onUnmounted(() => {
+  stopEvaluation();
+});
 </script>
