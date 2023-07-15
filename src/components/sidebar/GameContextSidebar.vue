@@ -18,7 +18,7 @@
       <!-- Game Tab -->
       <TabPanel class="flex-grow flex flex-col justify-between overflow-hidden">
         <!-- Engine evaluation -->
-        <!-- <GameEvaluation /> -->
+        <GameEvaluation :game="game" />
         <!-- Move history -->
         <template v-if="game.tree.root.value">
           <div class="flex-grow overflow-y-auto">
@@ -85,6 +85,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import BaseButton from "../base/BaseButton.vue";
 import GameTreeItem from "../sidebar/GameTreeItem.vue";
 
+import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import { useGame } from "@composables/useGame";
 import {
   ChevronDoubleLeftIcon,

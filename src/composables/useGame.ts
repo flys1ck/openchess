@@ -1,4 +1,5 @@
 import { Position, useChessground } from "@composables/useChessground";
+import { useEvaluation } from "@composables/useEvaluation";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
 import { isPromotion, toPiece, toPossibleMoves } from "@utilities/move";
@@ -15,7 +16,12 @@ export function useGame() {
   const tree = useGameTree();
 
   const fen = ref(chess.fen());
-  // const evaluation = useEvaluation(fen);
+  const evaluation = useEvaluation(fen, {
+    onEvaluationUpdate: (response) => {
+      board?.setAutoShapes([{ brush: "paleBlue", orig: response.source, dest: response.destination }]);
+    },
+    onEvaluationStop: () => board?.setAutoShapes([]),
+  });
   // TODO: revisit if they need to be refs
   const turnColor = ref<Color>("white");
   const possibleMoves = ref<Dests>();
@@ -177,7 +183,7 @@ export function useGame() {
   return {
     board: board,
     tree: tree,
-    // evaluation,
+    evaluation,
     isPromoting,
     promotionColor,
     promotionStyles,

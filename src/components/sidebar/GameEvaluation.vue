@@ -1,38 +1,40 @@
 <template>
   <div class="flex flex-col border-b border-gray-200">
     <div class="flex items-center gap-2 p-2">
-      <span class="flex w-16 items-center justify-center font-medium">0</span>
+      <span class="flex w-16 items-center justify-center font-medium">{{ game.evaluation.evaluatedScore.value }}</span>
       <div class="flex flex-grow flex-col gap-1">
         <span class="text-sm">Stockfish 15.1</span>
         <div class="flex gap-4">
           <div class="flex flex-col text-xs">
             <span class="font-thin uppercase tracking-widest text-gray-500">Depth</span>
-            <span>{{ analysisBoard.game.evaluation.depth }}</span>
+            <span>{{ game.evaluation.depth.value }}</span>
           </div>
           <div class="flex flex-col text-xs">
             <span class="font-thin uppercase tracking-widest text-gray-500">Nodes/s</span>
-            <span>{{ analysisBoard.game.evaluation.nodesPerSecond }}</span>
+            <span>{{ game.evaluation.nodesPerSecond.value }}</span>
           </div>
         </div>
       </div>
-      <BaseSwitch v-model="analysisBoard.game.evaluation.isEvaluationEnabled" />
+      <BaseSwitch v-model="game.evaluation.isEvaluationEnabled.value" />
     </div>
     <div
       class="flex h-1 flex-col bg-orange-100"
-      :class="analysisBoard.game.evaluation.isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'"
+      :class="game.evaluation.isEvaluationEnabled.value ? 'bg-orange-100' : 'bg-transparent'"
     >
       <span
-        v-show="analysisBoard.game.evaluation.isEvaluationEnabled"
-        class="h-full origin-left animate-pulse bg-orange-400 transition-transform duration-1000 ease-out"
-        :style="`transform: scaleX(${analysisBoard.game.evaluation.depth / 99})`"
+        v-show="game.evaluation.isEvaluationEnabled.value"
+        class="h-full origin-left animate-pulse bg-orange-400 transition-transform duration-200 ease-out"
+        :style="`transform: scaleX(${game.evaluation.depth.value / 99})`"
       ></span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAnalysisBoard } from "@stores/useAnalysisBoard";
+import { useGame } from "@composables/useGame";
 import BaseSwitch from "../base/BaseSwitch.vue";
 
-const analysisBoard = useAnalysisBoard();
+defineProps<{
+  game: ReturnType<typeof useGame>;
+}>();
 </script>
