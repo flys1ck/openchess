@@ -1,14 +1,14 @@
 import pinia from "@modules/pinia";
 import router from "@modules/router";
 import { useSession } from "@stores/useSession";
-import devtools from "@vue/devtools";
+// import devtools from "@vue/devtools";
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/css/main.css";
 
-if (process.env.NODE_ENV === "development") {
-  devtools.connect();
-}
+// if (process.env.NODE_ENV === "development") {
+//   devtools.connect();
+// }
 
 const app = createApp(App);
 

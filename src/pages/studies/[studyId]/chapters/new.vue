@@ -69,10 +69,14 @@ async function processPgn(pgn: string) {
   const chapterName = headers[chapterHeader.value];
   const lineName = lineHeader.value ? headers[lineHeader.value] : "";
 
-  const moves = game.history().reduce((acc, move, i) => {
-    if (i % 2 == 0) return `${acc} ${i / 2 + 1}. ${move}`;
-    return `${acc} ${move}`;
-  }, "");
+  // TODO same function in game index
+  const moves = game
+    .history()
+    .reduce((acc, move, i) => {
+      if (i % 2 == 0) return `${acc} ${i / 2 + 1}. ${move}`;
+      return `${acc} ${move}`;
+    }, "")
+    .trim();
 
   // TODO: !!! enable RLS !!!
   const { data: chapter } = await supabase
@@ -86,7 +90,7 @@ async function processPgn(pgn: string) {
         onConflict: "study, name",
       }
     )
-    .select("*")
+    .select("id, study")
     .limit(1)
     .single();
 
@@ -94,6 +98,7 @@ async function processPgn(pgn: string) {
 
   await supabase.from("lines").upsert(
     {
+      study: chapter.study,
       chapter: chapter.id,
       name: lineName,
       pgn,

@@ -70,6 +70,7 @@ export interface Database {
           moves: string
           name: string
           pgn: string
+          study: number
         }
         Insert: {
           chapter: number
@@ -78,6 +79,7 @@ export interface Database {
           moves: string
           name: string
           pgn: string
+          study: number
         }
         Update: {
           chapter?: number
@@ -86,12 +88,19 @@ export interface Database {
           moves?: string
           name?: string
           pgn?: string
+          study?: number
         }
         Relationships: [
           {
             foreignKeyName: "lines_chapter_fkey"
             columns: ["chapter"]
             referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lines_study_fkey"
+            columns: ["study"]
+            referencedRelation: "studies"
             referencedColumns: ["id"]
           }
         ]
@@ -135,6 +144,20 @@ export interface Database {
       delete_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      get_matching_lines: {
+        Args: {
+          _moves: string
+        }
+        Returns: {
+          chapter: number
+          created_at: string
+          id: number
+          moves: string
+          name: string
+          pgn: string
+          study: number
+        }[]
       }
     }
     Enums: {

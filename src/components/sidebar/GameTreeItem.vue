@@ -43,7 +43,7 @@
   </template>
   <template v-if="node.comment">
     <span v-if="node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
-    <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative">
+    <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
       <span
         class="absolute inset-0"
         :class="[
