@@ -54,6 +54,8 @@ const supabase = useSupabase();
 async function findStudy(moves: string) {
   const { data: longestMatchingPrefix } = await supabase.rpc("get_longest_matching_prefix", { _moves: moves });
 
+  console.log("prefix:", longestMatchingPrefix);
+
   if (!longestMatchingPrefix) return;
   prefix.value = longestMatchingPrefix;
 
