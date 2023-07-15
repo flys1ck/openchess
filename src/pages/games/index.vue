@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex-grow overflow-y-auto">
     <ul class="space-y-4 m-4">
       <li v-for="game in games" :key="game.tags?.Site" class="border p-4 flex items-center gap-8">
         <div>
@@ -11,11 +11,15 @@
       </li>
     </ul>
     <hr />
-    <ul class="space-y-4" v-if="matchingLines">
-      <li v-for="line in matchingLines" :key="line.id">
+    <div class="m-4">
+      {{ prefix }}
+    </div>
+    <ul class="space-y-4 m-4" v-if="matchingLines">
+      <li v-for="line in matchingLines" :key="line.id" class="border p-4 flex flex-col">
         <RouterLink :to="`/studies/${line.study}/chapters/${line.chapter}/lines/${line.id}`">
           {{ line.study.name }} > {{ line.chapter.name }} > {{ line.name }}
         </RouterLink>
+        <p class="text-sm text-gray-500 mt-2">{{ line.moves }}</p>
       </li>
     </ul>
   </div>
@@ -29,7 +33,8 @@ import { exportGamesByUser } from "@services/lichess";
 import { ref, toRaw } from "vue";
 
 const games = ref<ParseTree[]>([]);
-const matchingLines = ref();
+const matchingLines = ref<any[]>([]);
+const prefix = ref("");
 
 exportGamesByUser("Zwickzwackzwieback", { max: 3, opening: true }).then((lichessGames) => {
   games.value = parse(lichessGames, { startRule: "games" }) as ParseTree[];
@@ -47,13 +52,18 @@ function getMoves(moves: ParseTree["moves"]) {
 
 const supabase = useSupabase();
 async function findStudy(moves: string) {
+  const { data: longestMatchingPrefix } = await supabase.rpc("get_longest_matching_prefix", { _moves: moves });
+
+  if (!longestMatchingPrefix) return;
+  prefix.value = longestMatchingPrefix;
+
   const { data: lines } = await supabase
-    .rpc("get_matching_lines", { _moves: moves })
-    .select("id, name, study(id, name), chapter(id, name)")
+    .from("lines")
+    .select("id, name, moves, study(id, name), chapter(id, name)")
+    .like("moves", `${longestMatchingPrefix}%`)
     .limit(10);
 
-  console.log(lines);
-
+  if (!lines) return;
   matchingLines.value = lines;
 }
 </script>

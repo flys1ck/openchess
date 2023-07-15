@@ -67,6 +67,7 @@ export interface Database {
           chapter: number
           created_at: string
           id: number
+          is_white: boolean
           moves: string
           name: string
           pgn: string
@@ -76,6 +77,7 @@ export interface Database {
           chapter: number
           created_at?: string
           id?: number
+          is_white?: boolean
           moves: string
           name: string
           pgn: string
@@ -85,6 +87,7 @@ export interface Database {
           chapter?: number
           created_at?: string
           id?: number
+          is_white?: boolean
           moves?: string
           name?: string
           pgn?: string
@@ -145,19 +148,11 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      get_matching_lines: {
+      get_longest_matching_prefix: {
         Args: {
           _moves: string
         }
-        Returns: {
-          chapter: number
-          created_at: string
-          id: number
-          moves: string
-          name: string
-          pgn: string
-          study: number
-        }[]
+        Returns: string
       }
     }
     Enums: {
