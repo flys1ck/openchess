@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <div ref="chessboardRef" class="aspect-square max-h-[800px]"></div>
+    <div ref="chessboardRef" class="aspect-square max-w-3xl"></div>
     <div
       v-if="game.isPromoting.value"
       :style="`width: ${overlayWidth}px`"
@@ -55,6 +55,7 @@ const overlayWidth = computed(() => {
 onMounted(async () => {
   if (!chessboardRef.value) return;
   props.game.initializeBoard(chessboardRef.value);
+  props.game.createNewGame();
 });
 </script>
 

@@ -20,52 +20,54 @@
         <!-- Engine evaluation -->
         <!-- <GameEvaluation /> -->
         <!-- Move history -->
-        <div class="flex-grow overflow-y-auto">
-          <div class="grid grid-cols-16 items-stretch">
-            <GameTreeItem
-              v-if="game.tree.root.value"
-              :node="game.tree.root.value"
-              :active-node-id="game.tree.activeNode.value?.id"
-              @nodeselect="game.setActivePosition"
-            />
+        <template v-if="game.tree.root.value">
+          <div class="flex-grow overflow-y-auto">
+            <div class="grid grid-cols-16 items-stretch">
+              <GameTreeItem
+                v-if="game.tree.root.value"
+                :node="game.tree.root.value"
+                :active-node-id="game.tree.activeNode.value?.id"
+                @nodeselect="game.setActivePosition"
+              />
+            </div>
           </div>
-        </div>
-        <div class="p-4 flex flex-col gap-2 border-t">
-          <div class="flex justify-center gap-4">
-            <BaseButton
-              variant="secondary"
-              size="sm"
-              :prefix-icon="ChevronDoubleLeftIcon"
-              :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
-              aria-label="Skip to first move"
-              @click="game.tree.toFirstMove"
-            />
-            <BaseButton
-              variant="secondary"
-              size="sm"
-              :prefix-icon="ChevronLeftIcon"
-              :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
-              aria-label="Previous move"
-              @click="game.tree.toPreviousMove"
-            />
-            <BaseButton
-              variant="secondary"
-              size="sm"
-              :prefix-icon="ChevronRightIcon"
-              :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-              aria-label="Next move"
-              @click="game.tree.toNextMove"
-            />
-            <BaseButton
-              variant="secondary"
-              size="sm"
-              :prefix-icon="ChevronDoubleRightIcon"
-              :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-              aria-label="Skip to last move"
-              @click="game.tree.toLastMove"
-            />
+          <div class="p-4 flex flex-col gap-2 border-t">
+            <div class="flex justify-center gap-4">
+              <BaseButton
+                variant="secondary"
+                size="sm"
+                :prefix-icon="ChevronDoubleLeftIcon"
+                :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
+                aria-label="Skip to first move"
+                @click="game.tree.toFirstMove"
+              />
+              <BaseButton
+                variant="secondary"
+                size="sm"
+                :prefix-icon="ChevronLeftIcon"
+                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
+                aria-label="Previous move"
+                @click="game.tree.toPreviousMove"
+              />
+              <BaseButton
+                variant="secondary"
+                size="sm"
+                :prefix-icon="ChevronRightIcon"
+                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                aria-label="Next move"
+                @click="game.tree.toNextMove"
+              />
+              <BaseButton
+                variant="secondary"
+                size="sm"
+                :prefix-icon="ChevronDoubleRightIcon"
+                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                aria-label="Skip to last move"
+                @click="game.tree.toLastMove"
+              />
+            </div>
           </div>
-        </div>
+        </template>
       </TabPanel>
       <!-- Settings Tab -->
       <TabPanel>

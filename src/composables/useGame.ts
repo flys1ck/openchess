@@ -1,5 +1,4 @@
 import { Position, useChessground } from "@composables/useChessground";
-import { useEvaluation } from "@composables/useEvaluation";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
 import { isPromotion, toPiece, toPossibleMoves } from "@utilities/move";
@@ -12,15 +11,16 @@ export type PromotionPiece = "queen" | "rook" | "bishop" | "knight";
 
 export function useGame() {
   const chess = new Chess();
-  let chessground: ReturnType<typeof useChessground> | undefined;
-  const gameTree = useGameTree();
+  let board: ReturnType<typeof useChessground> | undefined;
+  const tree = useGameTree();
 
   const fen = ref(chess.fen());
-  const evaluation = useEvaluation(fen);
+  // const evaluation = useEvaluation(fen);
   // TODO: revisit if they need to be refs
   const turnColor = ref<Color>("white");
   const possibleMoves = ref<Dests>();
 
+  // TODO: promotion to own composable
   const isPromoting = ref(false);
   const promotionStyles = shallowRef<Pick<CSSProperties, "left" | "top" | "flexDirection">>({
     left: "0",
@@ -40,7 +40,7 @@ export function useGame() {
       isCheck: chess.isCheck(),
       lastMove: move && [move.from, move.to],
     };
-    chessground = useChessground(element, { position, onMove: processMove });
+    board = useChessground(element, { position, onMove: processMove });
   }
 
   function createNewGame() {
@@ -52,20 +52,23 @@ export function useGame() {
     isPromoting.value = false;
 
     // reset board
-    chessground?.setPosition({ fen: fen.value, turnColor: turnColor.value, possibleMoves: possibleMoves.value });
+    board?.setPosition({ fen: fen.value, turnColor: turnColor.value, possibleMoves: possibleMoves.value });
 
     // reset game tree to starting position
-    gameTree.reset();
-    const node = gameTree.addNode(fen.value, possibleMoves.value);
-    gameTree.setActiveNode(node);
+    tree.reset();
+    const node = tree.addNode(fen.value, possibleMoves.value);
+    tree.setActiveNode(node);
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
+    console.log("processing", source, destination);
+    console.log(tree);
+
     // handle promotion
-    const piece = chessground?.getPiece(destination);
+    const piece = board?.getPiece(destination);
     if (!piece) return;
     if (isPromotion(destination, piece.role)) {
-      const orientation = chessground?.getOrientation()!;
+      const orientation = board?.getOrientation()!;
       intentPromotion(destination, turnColor.value, orientation);
       return;
     }
@@ -80,9 +83,9 @@ export function useGame() {
     const isCheck = chess.inCheck();
 
     // remove en passanted pawn
-    if (isEnPassant) chessground?.setPiece((destination[0] + source[1]) as Key, undefined);
+    if (isEnPassant) board?.setPiece((destination[0] + source[1]) as Key, undefined);
 
-    if (isCheck) chessground?.setCheck();
+    if (isCheck) board?.setCheck();
 
     // play move audio
     if (isCapture) {
@@ -96,7 +99,7 @@ export function useGame() {
     turnColor.value = chess.turn() === "w" ? "white" : "black";
     possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
-    chessground?.setTurn(turnColor.value, possibleMoves.value);
+    board?.setTurn(turnColor.value, possibleMoves.value);
 
     // add recent move to game tree
     const nodeMove: ChessMove = {
@@ -107,8 +110,8 @@ export function useGame() {
       isCheck,
       piece,
     };
-    const node = gameTree.addNode(fen.value, possibleMoves.value, { move: nodeMove });
-    gameTree.setActiveNode(node);
+    const node = tree.addNode(fen.value, possibleMoves.value, { move: nodeMove });
+    tree.setActiveNode(node);
   }
 
   // TODO try to do it without turn color (can be inferred by the square)
@@ -130,10 +133,10 @@ export function useGame() {
       fen: fen.value,
       turnColor: turnColor.value,
       // TODO last move is wrong
-      lastMove: chessground?.getLastMove(),
+      lastMove: board?.getLastMove(),
       possibleMoves: possibleMoves.value,
     };
-    chessground?.setPosition(lastPosition);
+    board?.setPosition(lastPosition);
     isPromoting.value = false;
   }
 
@@ -143,11 +146,11 @@ export function useGame() {
       color: turnColor.value,
       promoted: true,
     };
-    const lastMove = chessground?.getLastMove();
+    const lastMove = board?.getLastMove();
     if (!lastMove) return;
 
     // TODO fix very weird animation, when setting piece
-    chessground?.setPiece(promotionSquare, piece);
+    board?.setPiece(promotionSquare, piece);
     processMove(lastMove[0], lastMove[1], { promotionPiece });
     isPromoting.value = false;
   }
@@ -165,22 +168,21 @@ export function useGame() {
       possibleMoves: node.possibleMoves,
     };
 
-    chessground?.setPosition(position);
-    if (node.move?.isCheck) chessground?.setCheck();
+    board?.setPosition(position);
+    if (node.move?.isCheck) board?.setCheck();
 
-    gameTree.setActiveNode(node);
+    tree.setActiveNode(node);
   }
 
   return {
-    board: chessground,
-    tree: gameTree,
-    evaluation,
+    board: board,
+    tree: tree,
+    // evaluation,
     isPromoting,
     promotionColor,
     promotionStyles,
     fen,
     turnColor,
-    possibleMoves,
     initializeBoard,
     createNewGame,
     cancelPromotion,
