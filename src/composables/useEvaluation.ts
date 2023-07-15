@@ -13,6 +13,7 @@ interface BestMoveResponse {
 
 export function useEvaluation(
   fen: Ref<string>,
+  turnColor: Ref<"white" | "black">,
   options?: {
     onEvaluationUpdate?: (evaluation: BestMoveResponse) => void;
     onEvaluationStop?: () => void;
@@ -45,16 +46,15 @@ export function useEvaluation(
 
   const evaluatedScore = computed(() => {
     const pawnAdvantage = score.value / 100;
-    // const s = game.turnColor === "white" ? pawnAdvantage : -pawnAdvantage;
-    return pawnAdvantage;
-    // switch (Math.sign(s)) {
-    //   case -1:
-    //     return s;
-    //   case 1:
-    //     return `+${s}`;
-    //   default:
-    //     return 0;
-    // }
+    const s = turnColor.value === "white" ? pawnAdvantage : -pawnAdvantage;
+    switch (Math.sign(s)) {
+      case -1:
+        return s;
+      case 1:
+        return `+${s}`;
+      default:
+        return 0;
+    }
   });
 
   return { isEvaluationEnabled, depth, score, nodesPerSecond, evaluatedScore };

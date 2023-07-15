@@ -1,6 +1,6 @@
 import { ChessMove } from "@composables/useGameTree";
 import { Color, Move, PieceSymbol } from "chess.js";
-import { Dests, Key, Role } from "chessground/types";
+import { Color as CgColor, Dests, Key, Role } from "chessground/types";
 
 export function isEnPassant(source: Key, destination: Key, pieceOnDestination: Role | undefined) {
   return source[0] !== destination[0] && pieceOnDestination === "pawn";
@@ -9,15 +9,6 @@ export function isEnPassant(source: Key, destination: Key, pieceOnDestination: R
 export function isPromotion(destination: Key, pieceOnDestination: Role | undefined) {
   return pieceOnDestination === "pawn" && (destination[1] === "1" || destination[1] === "8");
 }
-
-const pieceCodes = {
-  king: "K",
-  queen: "Q",
-  rook: "R",
-  bishop: "B",
-  knight: "N",
-  pawn: "",
-};
 
 export function toSAN(move: ChessMove) {
   return move.san;
@@ -58,7 +49,7 @@ export function toPiece(role: Role): PieceSymbol {
   return pieces[role];
 }
 
-export function toColor(color: Color): "white" | "black" {
+export function toColor(color: Color): CgColor {
   const colors: Record<Color, "white" | "black"> = {
     w: "white",
     b: "black",

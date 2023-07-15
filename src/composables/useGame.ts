@@ -2,7 +2,7 @@ import { Position, useChessground } from "@composables/useChessground";
 import { useEvaluation } from "@composables/useEvaluation";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
-import { isPromotion, toPiece, toPossibleMoves } from "@utilities/move";
+import { isPromotion, toColor, toPiece, toPossibleMoves } from "@utilities/move";
 import { Chess } from "chess.js";
 import { Color, Dests, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
@@ -14,16 +14,16 @@ export function useGame() {
   const chess = new Chess();
   let board: ReturnType<typeof useChessground> | undefined;
   const tree = useGameTree();
+  const turnColor = ref<Color>("white");
 
   const fen = ref(chess.fen());
-  const evaluation = useEvaluation(fen, {
+  const evaluation = useEvaluation(fen, turnColor, {
     onEvaluationUpdate: (response) => {
       board?.setAutoShapes([{ brush: "paleBlue", orig: response.source, dest: response.destination }]);
     },
     onEvaluationStop: () => board?.setAutoShapes([]),
   });
   // TODO: revisit if they need to be refs
-  const turnColor = ref<Color>("white");
   const possibleMoves = ref<Dests>();
 
   // TODO: promotion to own composable
@@ -41,7 +41,7 @@ export function useGame() {
 
     const position = {
       fen: chess.fen(),
-      turnColor: (chess.turn() === "w" ? "white" : "black") as Color,
+      turnColor: toColor(chess.turn()),
       possibleMoves: toPossibleMoves(chess.moves({ verbose: true })),
       isCheck: chess.isCheck(),
       lastMove: move && [move.from, move.to],
@@ -52,7 +52,7 @@ export function useGame() {
   function createNewGame() {
     chess.reset();
     fen.value = chess.fen();
-    turnColor.value = chess.turn() === "w" ? "white" : "black";
+    turnColor.value = toColor(chess.turn());
     possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
     isPromoting.value = false;
@@ -102,7 +102,7 @@ export function useGame() {
 
     // set up board for next move
     fen.value = chess.fen();
-    turnColor.value = chess.turn() === "w" ? "white" : "black";
+    turnColor.value = toColor(chess.turn());
     possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
     board?.setTurn(turnColor.value, possibleMoves.value);
