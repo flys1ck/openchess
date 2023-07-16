@@ -6,7 +6,7 @@ use vampirc_uci::{self, UciInfoAttribute, UciMessage};
 #[serde(rename_all = "camelCase")]
 struct GoResponse {
     evaluation: Option<i32>,
-    // principle_variation: Option<Vec<ChessMove>,
+    principle_variation: Option<Vec<String>>,
     depth: Option<u8>,
     source: String,
     destination: String,
@@ -26,8 +26,18 @@ pub fn begin_evaluation(state: tauri::State<State>, window: tauri::Window, fen: 
             let mut nodes_per_second = None;
             info.iter().for_each(|info_item| match info_item {
                 UciInfoAttribute::Pv(pv) => {
-                    principle_variation = Some(pv);
-                    best_move = Some(pv.first().unwrap())
+                    best_move = Some(pv.first().unwrap());
+                    principle_variation = Some(
+                        pv.iter()
+                            .map(|pv_move| {
+                                format!(
+                                    "{}{}",
+                                    pv_move.get_source().to_string(),
+                                    pv_move.get_dest().to_string()
+                                )
+                            })
+                            .collect(),
+                    )
                 }
                 UciInfoAttribute::Depth(d) => depth = Some(*d),
                 UciInfoAttribute::Score {
@@ -40,7 +50,7 @@ pub fn begin_evaluation(state: tauri::State<State>, window: tauri::Window, fen: 
                 _ => return,
             });
 
-            if principle_variation == None {
+            if principle_variation.is_none() {
                 return;
             }
 
@@ -48,7 +58,7 @@ pub fn begin_evaluation(state: tauri::State<State>, window: tauri::Window, fen: 
                 .emit(
                     "bestmove",
                     GoResponse {
-                        // principle_variation: principle_variation,
+                        principle_variation: principle_variation,
                         depth: depth,
                         evaluation: evaluation,
                         nodes_per_second: nodes_per_second,

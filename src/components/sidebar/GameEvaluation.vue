@@ -27,6 +27,9 @@
         :style="`transform: scaleX(${game.evaluation.depth.value / 99})`"
       ></span>
     </div>
+    <div v-if="game.evaluation.principleVariation.value" class="border-t text-sm text-gray-700 p-1 line-clamp-1">
+      {{ game.evaluation.principleVariation.value }}
+    </div>
   </div>
 </template>
 
