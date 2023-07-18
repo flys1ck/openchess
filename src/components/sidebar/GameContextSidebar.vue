@@ -16,7 +16,7 @@
     </TabList>
     <TabPanels as="template">
       <!-- Game Tab -->
-      <TabPanel class="flex-grow flex flex-col justify-between overflow-hidden">
+      <TabPanel class="flex-grow flex flex-col justify-between overflow-hidden focus:outline-none" :tab-index="-1">
         <!-- Engine evaluation -->
         <GameEvaluation :game="game" />
         <!-- Move history -->
@@ -103,28 +103,28 @@ const TABS = ["Game", "Settings"];
 // TODO: revisit, might be broken when activeElement `null`
 // also might work unexpected, when tabs/buttons have focus
 onKeyStroke("ArrowLeft", () => {
-  if (document.activeElement?.tagName !== "BODY") return;
+  // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toPreviousMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 });
 onKeyStroke("ArrowRight", () => {
-  if (document.activeElement?.tagName !== "BODY") return;
+  // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toNextMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 });
 onKeyStroke("ArrowUp", () => {
-  if (document.activeElement?.tagName !== "BODY") return;
+  // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toFirstMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
 });
 onKeyStroke("ArrowDown", () => {
-  if (document.activeElement?.tagName !== "BODY") return;
+  // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toLastMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });

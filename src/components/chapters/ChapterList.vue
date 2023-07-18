@@ -20,7 +20,7 @@ const route = useRoute("/studies/[studyId]/");
 // TODO: move studyId to props
 const [{ data: study }, { data: chapters }] = await Promise.all([
   supabase.from("studies").select("id, name").eq("id", route.params.studyId).single(),
-  await supabase.from("chapters").select("*").eq("study", route.params.studyId),
+  await supabase.from("chapters").select("*").eq("study", route.params.studyId).order("name"),
 ]);
 
 const { setBreadcrumbs } = useBreadcrumbs();
