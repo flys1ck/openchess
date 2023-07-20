@@ -164,6 +164,7 @@ export function useGame() {
   }
 
   function setActivePosition(node: PositionNode) {
+    chess.load(node.fen);
     fen.value = node.fen;
     turnColor.value = node.move?.piece.color === "white" ? "black" : "white";
     possibleMoves.value = node.possibleMoves;
