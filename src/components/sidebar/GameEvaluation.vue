@@ -39,11 +39,11 @@ import { stopEvaluation } from "@services/evaluation";
 import { onUnmounted } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 
-defineProps<{
+const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
 onUnmounted(() => {
-  stopEvaluation();
+  props.game.evaluation.isEvaluationEnabled.value = false;
 });
 </script>

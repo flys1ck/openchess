@@ -46,6 +46,10 @@ export function useChessground(
     });
   }
 
+  function move(source: Key, dest: Key) {
+    chessground.move(source, dest);
+  }
+
   function setAutoShapes(shapes: DrawShape[]) {
     chessground.setAutoShapes(shapes);
   }
@@ -99,6 +103,7 @@ export function useChessground(
 
   return {
     setPosition,
+    move,
     setAutoShapes,
     getLastMove,
     getPiece,

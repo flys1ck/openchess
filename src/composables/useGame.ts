@@ -4,6 +4,7 @@ import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
 import { isPromotion, toColor, toPiece, toPossibleMoves } from "@utilities/move";
 import { Chess } from "chess.js";
+import { DrawShape } from "chessground/draw";
 import { Color, Dests, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
 import { CSSProperties, ref, shallowRef } from "vue";
@@ -64,6 +65,10 @@ export function useGame() {
     tree.reset();
     const node = tree.addNode(fen.value, possibleMoves.value);
     tree.setActiveNode(node);
+  }
+
+  function playMove(source: Key, destination: Key) {
+    board?.move(source, destination);
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
@@ -181,6 +186,10 @@ export function useGame() {
     board?.toggleOrientation();
   }
 
+  function setAutoShapes(shapes: DrawShape[]) {
+    board?.setAutoShapes(shapes);
+  }
+
   return {
     tree: tree,
     evaluation,
@@ -195,5 +204,7 @@ export function useGame() {
     promote,
     setActivePosition,
     toggleOrientation,
+    playMove,
+    setAutoShapes,
   };
 }

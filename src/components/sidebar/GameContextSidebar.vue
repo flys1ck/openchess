@@ -16,7 +16,11 @@
     </TabList>
     <TabPanels as="template">
       <!-- Game Tab -->
-      <TabPanel class="flex-grow flex flex-col justify-between overflow-hidden focus:outline-none" :tab-index="-1">
+      <TabPanel
+        :unmount="false"
+        class="flex-grow flex flex-col justify-between overflow-hidden focus:outline-none"
+        :tab-index="-1"
+      >
         <!-- Engine evaluation -->
         <GameEvaluation :game="game" />
         <!-- Move history -->
@@ -68,6 +72,10 @@
           </div>
         </template>
       </TabPanel>
+      <!-- Positions Tab -->
+      <TabPanel :unmount="false" class="focus:outline-none">
+        <GamePositions :game="game" />
+      </TabPanel>
       <!-- Settings Tab -->
       <TabPanel>
         <div class="flex flex-col">
@@ -83,6 +91,7 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import BaseButton from "../base/BaseButton.vue";
 import GameTreeItem from "../sidebar/GameTreeItem.vue";
+import GamePositions from "../sidebar/GamePositions.vue";
 
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import { useGame } from "@composables/useGame";
@@ -98,7 +107,7 @@ const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
-const TABS = ["Game", "Settings"];
+const TABS = ["Game", "Positions", "Settings"];
 
 // TODO: revisit, might be broken when activeElement `null`
 // also might work unexpected, when tabs/buttons have focus

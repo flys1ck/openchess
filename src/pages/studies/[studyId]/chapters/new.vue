@@ -46,8 +46,8 @@ definePage({
 
 const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
-const chapterHeader = ref("");
-const lineHeader = ref("");
+const chapterHeader = ref("White");
+const lineHeader = ref("Black");
 
 function onSubmit() {
   files.value.forEach((file) => {
@@ -70,11 +70,11 @@ async function processPgn(pgn: string) {
   const lineName = lineHeader.value ? headers[lineHeader.value] : "";
 
   // TODO same function in game index
-  const moves = game
-    .history()
+  const history = game.history({ verbose: true });
+  const moves = history
     .reduce((acc, move, i) => {
-      if (i % 2 == 0) return `${acc} ${i / 2 + 1}. ${move}`;
-      return `${acc} ${move}`;
+      if (i % 2 == 0) return `${acc} ${i / 2 + 1}. ${move.san}`;
+      return `${acc} ${move.san}`;
     }, "")
     .trim();
 
@@ -96,17 +96,41 @@ async function processPgn(pgn: string) {
 
   if (!chapter) return;
 
-  await supabase.from("lines").upsert(
-    {
-      study: chapter.study,
-      chapter: chapter.id,
-      name: lineName,
-      pgn,
-      moves,
-    },
-    {
-      onConflict: "chapter, name",
-    }
-  );
+  const { data: line } = await supabase
+    .from("lines")
+    .upsert(
+      {
+        study: chapter.study,
+        chapter: chapter.id,
+        name: lineName,
+        pgn,
+        moves,
+      },
+      {
+        onConflict: "chapter, name",
+      }
+    )
+    .select("id")
+    .limit(1)
+    .single();
+
+  if (!line) return;
+
+  history.forEach(async (move) => {
+    const { error } = await supabase.from("positions").upsert(
+      {
+        fen: move.before,
+        source: move.from,
+        destination: move.to,
+        san: move.san,
+        study: chapter.study,
+        chapter: chapter.id,
+        line: line?.id,
+      },
+      {
+        onConflict: "line, fen",
+      }
+    );
+  });
 }
 </script>

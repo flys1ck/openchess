@@ -108,6 +108,61 @@ export interface Database {
           }
         ]
       }
+      positions: {
+        Row: {
+          chapter: number | null
+          created_at: string
+          destination: string
+          fen: string
+          id: number
+          line: number | null
+          san: string
+          source: string
+          study: number | null
+        }
+        Insert: {
+          chapter?: number | null
+          created_at?: string
+          destination?: string
+          fen: string
+          id?: number
+          line?: number | null
+          san: string
+          source?: string
+          study?: number | null
+        }
+        Update: {
+          chapter?: number | null
+          created_at?: string
+          destination?: string
+          fen?: string
+          id?: number
+          line?: number | null
+          san?: string
+          source?: string
+          study?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "positions_chapter_fkey"
+            columns: ["chapter"]
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "positions_line_fkey"
+            columns: ["line"]
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "positions_study_fkey"
+            columns: ["study"]
+            referencedRelation: "studies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       studies: {
         Row: {
           created_at: string
@@ -153,6 +208,17 @@ export interface Database {
           _moves: string
         }
         Returns: string
+      }
+      get_moves_by_fen: {
+        Args: {
+          _fen: string
+        }
+        Returns: {
+          source: string
+          destination: string
+          san: string
+          study_count: number
+        }[]
       }
     }
     Enums: {
