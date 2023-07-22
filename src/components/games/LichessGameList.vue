@@ -22,15 +22,4 @@ games.value = await exportGamesByUser(
   { max: 3, opening: true },
   { accept: "application/x-ndjson" }
 );
-
-// games.value = parse(lichessGames, { startRule: "games" }) as ParseTree[];
-
-// function getMoves(moves: ParseTree["moves"]) {
-//   return moves
-//     .reduce((acc, move, i) => {
-//       if (i % 2 == 0) return `${acc}${i / 2 + 1}. ${move.notation.notation}`;
-//       return `${acc} ${move.notation.notation} `;
-//     }, "")
-//     .trim();
-// }
 </script>
