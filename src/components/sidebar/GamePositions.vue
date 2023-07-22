@@ -1,20 +1,42 @@
 <template>
-  <ul class="flex flex-col">
-    <li v-for="position in positions">
-      <!-- TODO: shapes are not refreshing when there is no poitner movement -->
-      <button
-        class="flex justify-between w-full py-0.5 px-4 hover:bg-gray-200"
-        @click="() => game.playMove(position.source, position.destination)"
-        @pointermove="
-          () => game.setAutoShapes([{ brush: 'paleBlue', orig: position.source, dest: position.destination }])
-        "
-        @pointerleave="() => game.setAutoShapes([])"
-      >
-        <span>{{ position.san }}</span>
-        <span>{{ position.study_count }}</span>
-      </button>
-    </li>
-  </ul>
+  <div>
+    <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-b">
+      <span class="font-semibold">Moves in Study</span>
+      <span class="font-light">Number of Lines</span>
+    </div>
+    <ul class="flex flex-col divide-y">
+      <li v-for="position in positions">
+        <!-- TODO: shapes are not refreshing when there is no poitner movement -->
+        <button
+          class="flex justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
+          @click="() => game.playMove(position.source, position.destination)"
+          @pointermove="
+            () => game.setAutoShapes([{ brush: 'paleBlue', orig: position.source, dest: position.destination }])
+          "
+          @pointerleave="() => game.setAutoShapes([])"
+        >
+          <span class="font-medium">{{ position.san }}</span>
+          <span>{{ position.study_count }}</span>
+        </button>
+      </li>
+    </ul>
+    <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+      <span class="font-semibold">Lines with Position</span>
+    </div>
+    <ul class="divide-y">
+      <li v-for="line in lines" :key="line.line.id">
+        <RouterLink
+          :to="`/studies/${line.study.id}/chapters/${line.chapter.id}/lines/${line.line.id}`"
+          class="flex flex-col px-4 py-2 hover:bg-orange-200"
+          @pointermove="() => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }])"
+          @pointerleave="() => game.setAutoShapes([])"
+        >
+          <span class="text-xs text-gray-500"> {{ line.study.name }} - {{ line.chapter.name }} </span>
+          <span class="text-sm font-medium">{{ line.line.name }}</span>
+        </RouterLink>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -28,14 +50,24 @@ const props = defineProps<{
 
 const supabase = useSupabase();
 const positions = ref<any[]>([]);
+const lines = ref<any[]>([]);
 
 watchEffect(() => {
+  const fenWithoutMoves = props.game.fen.value.replaceAll(/ \d+ \d+$/g, "");
+  supabase.rpc("get_moves_by_fen", { _fen: fenWithoutMoves }).then(({ data }) => {
+    if (!data) return;
+    positions.value = data;
+  });
+
   supabase
-    .rpc("get_moves_by_fen", { _fen: props.game.fen.value })
-    .select("*")
+    .from("positions")
+    .select("source, destination, study (id, name), chapter (id, name), line (id, name)")
+    .eq("fen", fenWithoutMoves)
+    .order("name", { foreignTable: "line" })
+    .limit(10)
     .then(({ data }) => {
       if (!data) return;
-      positions.value = data;
+      lines.value = data;
     });
 });
 </script>
