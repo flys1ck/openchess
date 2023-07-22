@@ -107,7 +107,7 @@ export function useGameTree() {
     activeNode.value = undefined;
   }
 
-  async function fromPgn(pgn: string) {
+  function fromPgn(pgn: string) {
     reset();
 
     const parsedPgn = parse(pgn, { startRule: "game" }) as ParseTree;
