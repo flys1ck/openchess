@@ -1,5 +1,5 @@
 <template>
-  <TabGroup as="aside" class="flex flex-col border-l border-gray-200 w-96">
+  <TabGroup as="aside" class="flex flex-col border-l border-gray-200 w-96 flex-shrink-0">
     <TabList class="flex justify-around border-b border-gray-200">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button

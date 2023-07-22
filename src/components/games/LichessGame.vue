@@ -37,7 +37,7 @@ const game = useGame();
 // TODO: ???? why does it only work with timeout
 setTimeout(() => {
   game.tree.fromPgn(lichessGamePgn);
-}, 200);
+}, 500);
 
 if (game.tree.root.value) game.setActivePosition(game.tree.root.value);
 
