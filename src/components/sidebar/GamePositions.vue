@@ -63,7 +63,7 @@ watchEffect(() => {
     .from("positions")
     .select("source, destination, study (id, name), chapter (id, name), line (id, name)")
     .eq("fen", fenWithoutMoves)
-    .order("name", { foreignTable: "line" })
+    .order("line(name)")
     .limit(10)
     .then(({ data }) => {
       if (!data) return;
