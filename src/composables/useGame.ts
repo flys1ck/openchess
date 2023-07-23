@@ -37,7 +37,7 @@ export function useGame() {
   const promotionColor = shallowRef<Color>("white");
   let promotionSquare: Key;
 
-  function initializeBoard(element: HTMLElement) {
+  function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
     const move = chess.history({ verbose: true }).at(-1);
 
     const position = {
@@ -47,7 +47,7 @@ export function useGame() {
       isCheck: chess.isCheck(),
       lastMove: move && [move.from, move.to],
     };
-    board = useChessground(element, { position, onMove: processMove });
+    board = useChessground(element, { orientation: options?.orientation, position, onMove: processMove });
   }
 
   function createNewGame() {

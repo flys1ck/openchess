@@ -42,4 +42,5 @@ setBreadcrumbs([
 ]);
 
 const game = useGame();
+game.createNewGame();
 </script>

@@ -1,7 +1,12 @@
 <template>
   <main class="flex-grow overflow-x-hidden flex">
     <div class="flex-grow flex flex-col overflow-y-auto">
-      <GameChessboard :game="game" class="flex-grow p-4 max-w-4xl" />
+      <!-- use name from settings -->
+      <GameChessboard
+        :game="game"
+        :orientation="parsedGame.tags!['Black'] === 'Zwickzwackzwieback' ? 'black' : 'white'"
+        class="flex-grow p-4 max-w-4xl"
+      />
       <div>
         <hr class="mt-12" />
         <div class="m-4">
@@ -38,20 +43,14 @@ const lichessGamePgn = await exportGameById(route.params.gameId);
 
 const game = useGame();
 game.createNewGame();
-// if (!line.is_white) game.toggleOrientation();
-
 game.tree.fromPgn(lichessGamePgn);
 
 if (game.tree.root.value) game.setActivePosition(game.tree.root.value);
 
 const matchingLines = ref<any[]>([]);
-
 const prefix = ref("");
-
 const supabase = useSupabase();
-
 const parsedGame = parse(lichessGamePgn, { startRule: "game" }) as ParseTree;
-
 const moves = parsedGame.moves
   .reduce((acc, move, i) => {
     if (i % 2 == 0) return `${acc}${i / 2 + 1}. ${move.notation.notation}`;

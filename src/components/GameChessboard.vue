@@ -37,12 +37,17 @@ import { PromotionPiece, useGame } from "@composables/useGame";
 import { useElementBounding } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
 
-const props = defineProps<{
-  game: ReturnType<typeof useGame>;
-}>();
+const props = withDefaults(
+  defineProps<{
+    game: ReturnType<typeof useGame>;
+    orientation?: "white" | "black";
+  }>(),
+  {
+    orientation: "white",
+  }
+);
 
 const mode = import.meta.env.MODE;
-
 const chessboardRef = ref<HTMLDivElement>();
 
 // chessground board size are always divisible by 8
@@ -54,7 +59,9 @@ const overlayWidth = computed(() => {
 
 onMounted(async () => {
   if (!chessboardRef.value) return;
-  props.game.initializeBoard(chessboardRef.value);
+  console.log(props.orientation);
+
+  props.game.initializeBoard(chessboardRef.value, { orientation: props.orientation });
 });
 </script>
 

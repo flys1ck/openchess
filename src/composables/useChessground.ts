@@ -10,14 +10,16 @@ export interface Position {
   isCheck?: boolean;
 }
 
-export function useChessground(
-  element: HTMLElement,
-  options: {
-    position: Position;
-    onMove?: (source: Key, destination: Key) => void;
-  }
-) {
+interface UseChessgroundOptions {
+  orientation?: "white" | "black";
+  position: Position;
+  onMove?: (source: Key, destination: Key) => void;
+}
+
+export function useChessground(element: HTMLElement, options: UseChessgroundOptions) {
+  const orientation = options.orientation ?? "white";
   const chessground = Chessground(element, {
+    orientation: orientation,
     fen: options.position.fen,
     turnColor: options.position.turnColor,
     lastMove: options.position.lastMove,
