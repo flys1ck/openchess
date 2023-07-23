@@ -55,7 +55,6 @@ const overlayWidth = computed(() => {
 onMounted(async () => {
   if (!chessboardRef.value) return;
   props.game.initializeBoard(chessboardRef.value);
-  props.game.createNewGame();
 });
 </script>
 

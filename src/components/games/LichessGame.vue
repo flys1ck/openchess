@@ -33,11 +33,10 @@ const route = useRoute("/games/lichess/[gameId]");
 const lichessGamePgn = await exportGameById(route.params.gameId);
 
 const game = useGame();
+game.createNewGame();
 // if (!line.is_white) game.toggleOrientation();
-// TODO: ???? why does it only work with timeout
-setTimeout(() => {
-  game.tree.fromPgn(lichessGamePgn);
-}, 500);
+
+game.tree.fromPgn(lichessGamePgn);
 
 if (game.tree.root.value) game.setActivePosition(game.tree.root.value);
 

@@ -1,7 +1,7 @@
 <template>
   <TabGroup as="aside" class="flex flex-col border-l border-gray-200 w-96 flex-shrink-0">
     <TabList class="flex justify-around border-b border-gray-200">
-      <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
+      <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }" @keydown.stop>
         <button
           :class="
             selected
@@ -125,14 +125,16 @@ onKeyStroke("ArrowRight", () => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 });
-onKeyStroke("ArrowUp", () => {
+onKeyStroke("ArrowUp", (e) => {
+  e.preventDefault();
   // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toFirstMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
 });
-onKeyStroke("ArrowDown", () => {
+onKeyStroke("ArrowDown", (e) => {
+  e.preventDefault();
   // if (document.activeElement?.tagName !== "BODY") return;
   props.game.tree.toLastMove((node) => {
     props.game.setActivePosition(node);

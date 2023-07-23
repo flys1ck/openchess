@@ -62,6 +62,7 @@ export function useGame() {
     board?.setPosition({ fen: fen.value, turnColor: turnColor.value, possibleMoves: possibleMoves.value });
 
     // reset game tree to starting position
+    // TODO: check if tree reset is really necessary here
     tree.reset();
     const node = tree.addNode(fen.value, possibleMoves.value);
     tree.setActiveNode(node);
