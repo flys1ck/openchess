@@ -1,14 +1,14 @@
 <template>
   <main class="flex-grow overflow-y-auto overflow-x-hidden flex">
     <div class="flex-grow">
-      <TheChessboard :game="game" class="max-w-4xl p-4" />
+      <GameChessboard :game="game" class="max-w-4xl p-4" />
     </div>
     <GameContextSidebar :game="game" />
   </main>
 </template>
 
 <script setup lang="ts">
-import TheChessboard from "@components/TheChessboard.vue";
+import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
 import { useSupabase } from "@composables/useSupabase";

@@ -1,7 +1,7 @@
 <template>
   <main class="flex-grow overflow-y-auto flex">
     <div class="flex-grow p-4 flex flex-col overflow-y-auto">
-      <TheChessboard class="flex-grow min-h-0 flex-shrink-0 max-w-4xl" :game="game" />
+      <GameChessboard class="flex-grow min-h-0 flex-shrink-0 max-w-4xl" :game="game" />
       <!-- <div class="max-w-3xl"> -->
       <!-- <BaseInputGroup class="mt-8" v-model.trim="game.fen.value" label="FEN" :schema="z.string().refine(isFEN)" /> -->
       <!-- <BaseInputGroup
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import TheChessboard from "@components/TheChessboard.vue";
+import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";

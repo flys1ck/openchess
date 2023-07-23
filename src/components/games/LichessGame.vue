@@ -1,7 +1,7 @@
 <template>
   <main class="flex-grow overflow-x-hidden flex">
     <div class="flex-grow flex flex-col overflow-y-auto">
-      <TheChessboard :game="game" class="flex-grow p-4 max-w-4xl" />
+      <GameChessboard :game="game" class="flex-grow p-4 max-w-4xl" />
       <div>
         <hr class="mt-12" />
         <div class="m-4">
@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { exportGameById } from "@services/lichess";
 import { useRoute } from "vue-router/auto";
-import TheChessboard from "@components/TheChessboard.vue";
+import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
 import { useSupabase } from "@composables/useSupabase";
