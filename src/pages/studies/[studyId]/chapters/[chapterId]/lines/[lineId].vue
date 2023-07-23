@@ -1,7 +1,7 @@
 <template>
   <main class="flex-grow overflow-y-auto overflow-x-hidden flex">
     <div class="flex-grow">
-      <TheChessboard :game="game" />
+      <TheChessboard :game="game" class="max-w-4xl p-4" />
     </div>
     <GameContextSidebar :game="game" />
   </main>

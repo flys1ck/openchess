@@ -1,19 +1,21 @@
 <template>
-  <main class="flex-grow overflow-y-auto overflow-x-hidden flex">
-    <div class="flex-grow">
-      <TheChessboard :game="game" />
-      <hr class="mt-12" />
-      <div class="m-4">
-        {{ prefix }}
+  <main class="flex-grow overflow-x-hidden flex">
+    <div class="flex-grow flex flex-col overflow-y-auto">
+      <TheChessboard :game="game" class="flex-grow p-4 max-w-4xl" />
+      <div>
+        <hr class="mt-12" />
+        <div class="m-4">
+          {{ prefix }}
+        </div>
+        <ul class="space-y-4 m-4" v-if="matchingLines">
+          <li v-for="line in matchingLines" :key="line.id" class="border p-4 flex flex-col">
+            <RouterLink :to="`/studies/${line.study}/chapters/${line.chapter}/lines/${line.id}`">
+              {{ line.study.name }} > {{ line.chapter.name }} > {{ line.name }}
+            </RouterLink>
+            <p class="text-sm text-gray-500 mt-2">{{ line.moves }}</p>
+          </li>
+        </ul>
       </div>
-      <ul class="space-y-4 m-4" v-if="matchingLines">
-        <li v-for="line in matchingLines" :key="line.id" class="border p-4 flex flex-col">
-          <RouterLink :to="`/studies/${line.study}/chapters/${line.chapter}/lines/${line.id}`">
-            {{ line.study.name }} > {{ line.chapter.name }} > {{ line.name }}
-          </RouterLink>
-          <p class="text-sm text-gray-500 mt-2">{{ line.moves }}</p>
-        </li>
-      </ul>
     </div>
     <GameContextSidebar :game="game" />
   </main>
@@ -28,6 +30,8 @@ import { useGame } from "@composables/useGame";
 import { useSupabase } from "@composables/useSupabase";
 import { ref } from "vue";
 import { ParseTree, parse } from "@mliebelt/pgn-parser";
+import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichessGamePgn = await exportGameById(route.params.gameId);
@@ -68,4 +72,21 @@ if (longestMatchingPrefix) {
 
   if (lines) matchingLines.value = lines;
 }
+
+const { setBreadcrumbs } = useBreadcrumbs();
+setBreadcrumbs([
+  {
+    icon: AcademicCapIcon,
+    name: "Games",
+    to: "/games/",
+  },
+  {
+    name: "Lichess",
+    to: "/games/lichess/",
+  },
+  {
+    name: `${parsedGame.tags!["White"]} vs ${parsedGame.tags!["Black"]}`,
+    to: `/games/lichess/${route.params.gameId}`,
+  },
+]);
 </script>
