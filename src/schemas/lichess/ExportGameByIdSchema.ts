@@ -110,7 +110,7 @@ const GameSchema = z
         black: PlayerSchema,
       })
       .strict(),
-    initialFen: z.string(),
+    initialFen: z.string().optional(),
     winner: z.enum(["white", "black"]).optional(),
     opening: OpeningSchema.strict().optional(),
     moves: z.string().optional(),

@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { LichessGame, exportGamesByUser } from "@services/lichess";
-
 import { ref } from "vue";
 
 const games = ref<LichessGame[]>([]);
