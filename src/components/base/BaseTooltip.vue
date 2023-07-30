@@ -28,7 +28,9 @@ const isTriggerHovered = useElementHover(triggerRef);
 
 const computeTooltipPosition = () => {
   if (!triggerRef.value || !tooltipRef.value || !arrowRef.value) return;
-  const offsetWidth = Math.sqrt(2 * arrowRef.value.offsetWidth ** 2) / 2;
+
+  const OFFSET = 5;
+  const offsetWidth = Math.sqrt(2 * arrowRef.value.offsetWidth ** 2) / 2 + OFFSET;
 
   computePosition(triggerRef.value, tooltipRef.value, {
     placement: "top",
