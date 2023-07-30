@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@composables/*": ["src/composables/*"],
       "@data/*": ["src/data/*"],
