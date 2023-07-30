@@ -25,10 +25,10 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
-  const publicRoutes = ["/signin", "/signup"];
-  const { session } = useSession();
-  if (to.name && session === null && !publicRoutes.includes(to.name as string)) return { name: "/signin" };
-});
+// router.beforeEach((to, from) => {
+//   const publicRoutes = ["/signin", "/signup"];
+//   const { session } = useSession();
+//   if (to.name && session === null && !publicRoutes.includes(to.name as string)) return { name: "/signin" };
+// });
 
 export default router;
