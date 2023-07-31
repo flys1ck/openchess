@@ -41,7 +41,7 @@
       </button>
     </template>
   </template>
-  <template v-if="node.comment">
+  <template v-if="comment">
     <span v-if="node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
     <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
       <span
@@ -52,7 +52,7 @@
         ]"
         aria-hidden
       />
-      {{ node.comment }}
+      {{ comment }}
     </p>
   </template>
   <GameTreeItem
@@ -78,6 +78,11 @@ defineEmits<{
 
 const moveNumber = computed(() => {
   return Math.ceil(props.node.ply / 2);
+});
+
+const comment = computed(() => {
+  if (!props.node.comment) return;
+  return props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
 });
 
 const nags: Record<string, string> = {

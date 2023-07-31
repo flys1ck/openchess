@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="overflow-y-auto">
     <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-b">
       <span class="font-semibold">Moves in Study</span>
       <span class="font-light">Number of Lines</span>
     </div>
     <ul class="flex flex-col divide-y">
       <li v-for="position in positions">
-        <!-- TODO: shapes are not refreshing when there is no poitner movement -->
+        <!-- TODO: shapes are not refreshing when there is no pointer movement -->
         <button
           class="flex justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
           @click="() => game.playMove(position.source, position.destination)"
@@ -64,7 +64,7 @@ watchEffect(() => {
     .select("source, destination, study (id, name), chapter (id, name), line (id, name)")
     .eq("fen", fenWithoutMoves)
     .order("line(name)")
-    .limit(10)
+    .limit(20)
     .then(({ data }) => {
       if (!data) return;
       lines.value = data;

@@ -73,7 +73,7 @@
         </template>
       </TabPanel>
       <!-- Positions Tab -->
-      <TabPanel :unmount="false" class="focus:outline-none">
+      <TabPanel :unmount="false" class="focus:outline-none flex flex-col flex-grow overflow-hidden">
         <GamePositions :game="game" />
       </TabPanel>
       <!-- Settings Tab -->

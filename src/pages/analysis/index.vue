@@ -12,6 +12,8 @@
           :schema="z.string().optional()"
         /> -->
       <!-- </div> -->
+      <BaseTextarea v-model="pgn" />
+      <BaseButton @click="importPgn">Import</BaseButton>
     </div>
     <GameContextSidebar :game="game" />
   </main>
@@ -19,10 +21,13 @@
 
 <script setup lang="ts">
 import GameChessboard from "@components/GameChessboard.vue";
+import BaseButton from "@components/base/BaseButton.vue";
+import BaseTextarea from "@components/base/BaseTextarea.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { ref } from "vue";
 import { definePage } from "vue-router/auto";
 
 definePage({
@@ -43,4 +48,9 @@ setBreadcrumbs([
 
 const game = useGame();
 game.createNewGame();
+
+const pgn = ref("");
+function importPgn() {
+  game.tree.fromPgn(pgn.value);
+}
 </script>
