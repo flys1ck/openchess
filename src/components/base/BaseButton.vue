@@ -5,7 +5,7 @@
     :class="computedClasses"
     :type="as === 'button' && 'button'"
   >
-    <Component :is="prefixIcon" class="h-4 w-4 text-orange-900" />
+    <Component :is="prefixIcon" class="h-4 w-4" :class="computedIconClasses" />
     <slot />
   </Component>
 </template>
@@ -68,4 +68,9 @@ const computedClasses = computed(() => {
     "gap-1": slots.default && props.prefixIcon,
   };
 });
+
+const computedIconClasses = computed(() => ({
+  "text-orange-900": props.variant === "primary",
+  "text-gray-600": props.variant === "secondary",
+}));
 </script>
