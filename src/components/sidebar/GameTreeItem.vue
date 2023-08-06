@@ -15,7 +15,12 @@
       </button>
     </template>
     <!-- black's move after a previous comment -->
-    <template v-else-if="node.previousPosition?.comment && node.ply % 2 === 0">
+    <template
+      v-else-if="
+        (node.previousPosition?.previousPosition?.variations.length || node.previousPosition?.comment) &&
+        node.ply % 2 === 0
+      "
+    >
       <span class="col-span-2 font-thin border-r pr-2 py-0.5 text-sm flex justify-end items-center">
         {{ moveNumber }}
       </span>
@@ -41,8 +46,12 @@
       </button>
     </template>
   </template>
-  <template v-if="comment || (node.previousPosition && node.previousPosition.variations.length)">
-    <span v-if="comment && node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
+  <template v-if="comment || node.previousPosition?.variations.length">
+    <span
+      v-if="(comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
+      class="col-span-7 text-gray-500 pl-4"
+      >...</span
+    >
     <div class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
       <span
         class="absolute inset-0"
