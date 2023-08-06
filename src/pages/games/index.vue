@@ -3,7 +3,7 @@
     <li
       v-for="(platform, i) in platforms"
       :key="platform.title"
-      class="rounded-lg shadow-md p-6 relative bg-white focus-within:ring"
+      class="rounded-lg shadow-md p-6 relative bg-white focus-within:ring hover:bg-orange-50"
     >
       <div>
         <img class="aspect-square rounded" :src="platform.imgSrc" :alt="platform.imgAlt" />
