@@ -1,3 +1,4 @@
+import { getPossibleMoves } from "@utilities/move";
 import { Chessground } from "chessground";
 import { DrawShape } from "chessground/draw";
 import { Color, Dests, Key, Piece } from "chessground/types";
@@ -18,6 +19,8 @@ interface UseChessgroundOptions {
 
 export function useChessground(element: HTMLElement, options: UseChessgroundOptions) {
   const orientation = options.orientation ?? "white";
+  const pm = getPossibleMoves(options.position.fen);
+
   const chessground = Chessground(element, {
     orientation: orientation,
     fen: options.position.fen,
@@ -26,7 +29,7 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
     check: options.position.isCheck,
     movable: {
       color: options.position.turnColor,
-      dests: options.position.possibleMoves,
+      dests: getPossibleMoves(options.position.fen),
       free: false,
     },
     events: {
@@ -42,7 +45,7 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
       check: position.isCheck,
       movable: {
         color: position.turnColor,
-        dests: position.possibleMoves,
+        dests: getPossibleMoves(position.fen),
         free: false,
       },
     });
@@ -58,15 +61,13 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
 
   /**
    * Sets the color to move and possible moves for the current board position.
-   * @param color color of the player to move in the current position
-   * @param possibleMoves possible moves to play in the current position
    */
-  function setTurn(color: Color, possibleMoves: Dests) {
+  function setTurn(fen: string, color: Color) {
     chessground.set({
       turnColor: color,
       movable: {
         color: color,
-        dests: possibleMoves,
+        dests: getPossibleMoves(fen),
       },
     });
   }
@@ -98,8 +99,6 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
   }
 
   function toggleOrientation() {
-    console.log("toggle");
-
     chessground.toggleOrientation();
   }
 

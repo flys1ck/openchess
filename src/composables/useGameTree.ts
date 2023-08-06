@@ -26,8 +26,6 @@ export interface PositionNode {
   fen: string;
   // amount of half moves played
   ply: number;
-  // possible moves in the current position
-  possibleMoves?: Dests;
   // move is undefined, in the starting position
   move?: ChessMove;
   nextPosition?: PositionNode;
@@ -47,7 +45,7 @@ export function useGameTree() {
   const root = ref<PositionNode>();
   const activeNode = ref<PositionNode>();
 
-  function addNode(fen: string, possibleMoves: Dests, options?: AddMoveOptions) {
+  function addNode(fen: string, options?: AddMoveOptions) {
     const nodeId = window.crypto.randomUUID();
     const newNode: PositionNode = {
       id: nodeId,
@@ -55,7 +53,6 @@ export function useGameTree() {
       ply: activeNode.value ? activeNode.value.ply + 1 : 0,
       move: options && options.move,
       previousPosition: activeNode.value,
-      possibleMoves,
       comment: options && options.comment,
       variations: [],
     };
@@ -130,7 +127,7 @@ export function useGameTree() {
     const firstMove = history[0];
     chess.load(firstMove.before);
 
-    const rootNode = addNode(firstMove.before, toPossibleMoves(chess.moves({ verbose: true })), {
+    const rootNode = addNode(firstMove.before, {
       comment: parsedPgn.gameComment?.comment,
     });
     root.value = rootNode;
@@ -141,7 +138,7 @@ export function useGameTree() {
       chess.load(move.before);
       const possibleMoves = toPossibleMoves(chess.moves({ verbose: true }));
       chess.load(move.after);
-      const node = addNode(move.after, possibleMoves, {
+      const node = addNode(move.after, {
         move: {
           source: move.from,
           destination: move.to,

@@ -53,8 +53,6 @@ const computeTooltipPosition = () => {
     const staticSide: Side = staticSideMapping[side];
     const { x: arrowX, y: arrowY } = middlewareData.arrow;
 
-    console.log(arrowX, arrowY);
-
     Object.assign(arrowRef.value.style, {
       left: arrowX != null ? `${arrowX}px` : "",
       top: arrowY != null ? `${arrowY}px` : "",

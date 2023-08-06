@@ -59,8 +59,6 @@ const overlayWidth = computed(() => {
 
 onMounted(async () => {
   if (!chessboardRef.value) return;
-  console.log(props.orientation);
-
   props.game.initializeBoard(chessboardRef.value, { orientation: props.orientation });
 });
 </script>

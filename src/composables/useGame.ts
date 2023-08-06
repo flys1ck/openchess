@@ -24,8 +24,6 @@ export function useGame() {
     },
     onEvaluationStop: () => board?.setAutoShapes([]),
   });
-  // TODO: revisit if they need to be refs
-  const possibleMoves = ref<Dests>();
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -54,17 +52,15 @@ export function useGame() {
     chess.reset();
     fen.value = chess.fen();
     turnColor.value = toColor(chess.turn());
-    possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
-
     isPromoting.value = false;
 
     // reset board
-    board?.setPosition({ fen: fen.value, turnColor: turnColor.value, possibleMoves: possibleMoves.value });
+    board?.setPosition({ fen: fen.value, turnColor: turnColor.value });
 
     // reset game tree to starting position
     // TODO: check if tree reset is really necessary here
     tree.reset();
-    const node = tree.addNode(fen.value, possibleMoves.value);
+    const node = tree.addNode(fen.value);
     tree.setActiveNode(node);
   }
 
@@ -106,9 +102,8 @@ export function useGame() {
     // set up board for next move
     fen.value = chess.fen();
     turnColor.value = toColor(chess.turn());
-    possibleMoves.value = toPossibleMoves(chess.moves({ verbose: true }));
 
-    board?.setTurn(turnColor.value, possibleMoves.value);
+    board?.setTurn(fen.value, turnColor.value);
 
     // add recent move to game tree
     const nodeMove: ChessMove = {
@@ -119,7 +114,7 @@ export function useGame() {
       isCheck,
       piece,
     };
-    const node = tree.addNode(fen.value, possibleMoves.value, { move: nodeMove });
+    const node = tree.addNode(fen.value, { move: nodeMove });
     tree.setActiveNode(node);
   }
 
@@ -143,7 +138,6 @@ export function useGame() {
       turnColor: turnColor.value,
       // TODO last move is wrong
       lastMove: board?.getLastMove(),
-      possibleMoves: possibleMoves.value,
     };
     board?.setPosition(lastPosition);
     isPromoting.value = false;
@@ -168,14 +162,12 @@ export function useGame() {
     chess.load(node.fen);
     fen.value = node.fen;
     turnColor.value = node.move?.piece.color === "white" ? "black" : "white";
-    possibleMoves.value = node.possibleMoves;
 
     const lastMove = node.move && [node.move.source, node.move.destination];
     const position: Position = {
       fen: node.fen,
       turnColor: turnColor.value,
       lastMove,
-      possibleMoves: node.possibleMoves,
     };
 
     board?.setPosition(position);

@@ -1,5 +1,5 @@
 import { ChessMove } from "@composables/useGameTree";
-import { Color, Move, PieceSymbol } from "chess.js";
+import { Chess, Color, Move, PieceSymbol } from "chess.js";
 import { Color as CgColor, Dests, Key, Role } from "chessground/types";
 
 export function isEnPassant(source: Key, destination: Key, pieceOnDestination: Role | undefined) {
@@ -12,6 +12,13 @@ export function isPromotion(destination: Key, pieceOnDestination: Role | undefin
 
 export function toSAN(move: ChessMove) {
   return move.san;
+}
+
+export function getPossibleMoves(fen: string) {
+  const chess = new Chess();
+  chess.load(fen);
+
+  return toPossibleMoves(chess.moves({ verbose: true }));
 }
 
 export function toPossibleMoves(moves: Move[]): Dests {
