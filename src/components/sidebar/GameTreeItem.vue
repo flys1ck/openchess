@@ -41,9 +41,9 @@
       </button>
     </template>
   </template>
-  <template v-if="comment">
-    <span v-if="node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
-    <p class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
+  <template v-if="comment || (node.previousPosition && node.previousPosition.variations.length)">
+    <span v-if="comment && node.ply % 2 === 1" class="col-span-7 text-gray-500 pl-4">...</span>
+    <div class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
       <span
         class="absolute inset-0"
         :class="[
@@ -52,8 +52,17 @@
         ]"
         aria-hidden
       />
-      {{ comment }}
-    </p>
+      <p>{{ comment }}</p>
+      <!-- variations -->
+      <div v-for="variation in node.previousPosition?.variations" class="space-x-0.5">
+        <GameTreeVariationItem
+          v-if="variation"
+          :node="variation"
+          :active-node-id="activeNodeId"
+          @nodeselect="(node) => $emit('nodeselect', node)"
+        />
+      </div>
+    </div>
   </template>
   <GameTreeItem
     v-if="node.nextPosition"
@@ -64,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import GameTreeVariationItem from "@components/sidebar/GameTreeVariationItem.vue";
 import { PositionNode } from "@composables/useGameTree";
 import { computed } from "vue";
 

@@ -33,7 +33,7 @@ export interface PositionNode {
   nextPosition?: PositionNode;
   // last played move before current fen position was reached
   previousPosition?: PositionNode;
-  variations?: PositionNode[];
+  variations: PositionNode[];
   // extras
   comment?: string;
 }
@@ -57,10 +57,17 @@ export function useGameTree() {
       previousPosition: activeNode.value,
       possibleMoves,
       comment: options && options.comment,
+      variations: [],
     };
 
     if (!root.value) root.value = newNode;
-    if (activeNode.value) activeNode.value.nextPosition = newNode;
+    if (activeNode.value) {
+      if (activeNode.value.nextPosition) {
+        activeNode.value.variations.push(newNode);
+      } else {
+        activeNode.value.nextPosition = newNode;
+      }
+    }
 
     return newNode;
   }
