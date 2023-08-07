@@ -1,6 +1,7 @@
 <template>
   <div class="relative">
     <div ref="chessboardRef" class="aspect-square max-h-full"></div>
+    <!-- promotion overlay -->
     <div
       v-if="game.isPromoting.value"
       :style="`width: ${overlayWidth}px`"
@@ -18,6 +19,7 @@
         </button>
       </div>
     </div>
+    <!-- e2e test helper -->
     <div
       v-if="mode === 'development'"
       :style="`width: ${overlayWidth}px`"
