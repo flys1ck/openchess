@@ -1,14 +1,14 @@
 <template>
   <TabGroup as="aside" class="flex flex-col border-l border-gray-200 w-96 flex-shrink-0">
     <TabList class="flex justify-around border-b border-gray-200">
-      <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }" @keydown.stop>
+      <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
           :class="
             selected
-              ? 'border-orange-500 text-orange-600'
+              ? 'border-orange-400 text-orange-400'
               : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
           "
-          class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium w-1/2"
+          class="whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium w-1/2 focus:outline-none"
         >
           {{ tab }}
         </button>
