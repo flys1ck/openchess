@@ -8,7 +8,7 @@
               <span class="font-medium">{{ game.players.white.user.name }}</span>
               <span class="text-gray-600 text-sm" aria-hidden="true">
                 {{ game.players.white.rating }}
-                <RatingDifference v-if="game.players.white.ratingDiff" :difference="game.players.white.ratingDiff" />
+                <RatingDifference :difference="game.players.white.ratingDiff" />
               </span>
             </div>
             <span class="text-3xl font-thin text-gray-300 tracking-tighter">VS</span>
@@ -16,7 +16,7 @@
               <span class="font-medium">{{ game.players.black.user.name }}</span>
               <span class="text-gray-600 text-sm" aria-hidden="true">
                 {{ game.players.black.rating }}
-                <RatingDifference v-if="game.players.black.ratingDiff" :difference="game.players.black.ratingDiff" />
+                <RatingDifference :difference="game.players.black.ratingDiff" />
               </span>
             </div>
           </div>
