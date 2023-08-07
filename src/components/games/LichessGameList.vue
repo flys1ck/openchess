@@ -1,6 +1,6 @@
 <template>
   <ul class="space-y-4">
-    <li v-for="game in games" :key="game.id" class="gap-8 bg-white rounded shadow flex relative">
+    <BaseCard v-for="game in games" :key="game.id" as="li" class="gap-8 flex relative">
       <div class="p-4 flex-grow">
         <RouterLink :to="`/games/lichess/${game.id}`">
           <div class="flex gap-2 items-center">
@@ -23,9 +23,9 @@
           <span class="absolute inset-0" aria-hidden="true" />
         </RouterLink>
         <div v-if="game.opening" class="text-gray-800 text-xs font-medium mt-2">{{ game.opening.name }}</div>
-        <p class="text-xs text-gray-500">{{ game.moves }}</p>
+        <p class="text-xs text-gray-500 line-clamp-3">{{ game.moves }}</p>
       </div>
-      <div class="border-l p-4">
+      <div class="border-l p-4 flex items-center">
         <dl class="w-40 text-sm space-y-1">
           <div v-if="game.clock" class="flex gap-2 items-center">
             <dt>
@@ -43,7 +43,7 @@
           </div>
         </dl>
       </div>
-    </li>
+    </BaseCard>
   </ul>
 </template>
 
@@ -53,6 +53,7 @@ import { LichessGame, exportGamesByUser } from "@services/lichess";
 import BaseTime from "@components/base/BaseTime.vue";
 import { ref, h } from "vue";
 import RatingDifference from "@components/games/RatingDifference.vue";
+import BaseCard from "@components/base/BaseCard.vue";
 
 const games = ref<LichessGame[]>(
   await exportGamesByUser("Zwickzwackzwieback", { max: 5, opening: true }, { accept: "application/x-ndjson" })

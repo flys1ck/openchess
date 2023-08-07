@@ -1,6 +1,6 @@
 <template>
   <ul class="space-y-2">
-    <BaseCard v-for="line in lines" :key="line.id" as="li" class="relative">
+    <BaseCard v-for="line in lines" :key="line.id" as="li" class="relative p-4">
       <RouterLink
         class="font-medium"
         :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"

@@ -1,10 +1,6 @@
 <template>
   <ul class="grid grid-cols-2 md:grid-cols-3 gap-8 my-4 max-w-5xl mx-auto">
-    <li
-      v-for="(platform, i) in platforms"
-      :key="platform.title"
-      class="rounded-lg shadow-md p-6 relative bg-white focus-within:ring hover:bg-orange-50"
-    >
+    <BaseCard v-for="platform in platforms" :key="platform.title" as="li" class="p-6 relative">
       <div>
         <img class="aspect-square rounded" :src="platform.imgSrc" :alt="platform.imgAlt" />
       </div>
@@ -21,7 +17,7 @@
           et molestiae.
         </p>
       </div>
-    </li>
+    </BaseCard>
   </ul>
 </template>
 
@@ -31,6 +27,7 @@ import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { definePage } from "vue-router/auto";
 import OTBClockThumbnail from "@assets/images/otb_clock.png";
 import OTBThumbnail from "@assets/images/otb.png";
+import BaseCard from "@components/base/BaseCard.vue";
 
 definePage({
   meta: {

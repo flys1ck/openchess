@@ -1,16 +1,14 @@
 <template>
   <div v-if="studies" class="flex">
     <StudiesEmptyState v-if="!studies.length" />
-    <ul v-else role="list" class="divide-y divide-gray-100 flex-grow">
-      <li v-for="study in studies" :key="study.id" class="flex justify-between gap-x-6 py-5">
+    <ul v-else role="list" class="space-y-4 flex-grow mt-4">
+      <BaseCard v-for="study in studies" :key="study.id" as="li" class="flex justify-between gap-x-6 p-6">
         <div>
           <div class="flex items-start gap-x-3">
             <p class="text-sm font-semibold leading-6 text-gray-900">{{ study.name }}</p>
           </div>
           <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
-            <p class="whitespace-nowrap">
-              Due on <time :datetime="study.created_at">{{ study.created_at }}</time>
-            </p>
+            <p class="whitespace-nowrap">Created <BaseTime :date="new Date(study.created_at)" /></p>
             &bull;
             <!-- <p class="truncate">Created by {{ study.createdBy }}</p> -->
           </div>
@@ -24,7 +22,7 @@
               <span class="sr-only">Open options</span>
               <EllipsisVerticalIcon class="h-5 w-5" aria-hidden="true" />
             </MenuButton>
-            <transition
+            <Transition
               enter-active-class="transition ease-out duration-100"
               enter-from-class="transform opacity-0 scale-95"
               enter-to-class="transform opacity-100 scale-100"
@@ -54,10 +52,10 @@
                   </button>
                 </MenuItem>
               </MenuItems>
-            </transition>
+            </Transition>
           </Menu>
         </div>
-      </li>
+      </BaseCard>
     </ul>
   </div>
 </template>
@@ -68,6 +66,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import BaseButton from "../base/BaseButton.vue";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
+import BaseCard from "@components/base/BaseCard.vue";
+import BaseTime from "@components/base/BaseTime.vue";
 
 const supabase = useSupabase();
 

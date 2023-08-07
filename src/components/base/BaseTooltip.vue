@@ -1,5 +1,5 @@
 <template>
-  <div ref="triggerRef" class="relative">
+  <span ref="triggerRef" class="relative">
     <span class="underline decoration-dashed decoration-gray-400">
       <slot name="trigger" />
     </span>
@@ -13,7 +13,7 @@
         <span ref="arrowRef" class="w-2 h-2 bg-gray-900 absolute rotate-45" />
       </span>
     </Teleport>
-  </div>
+  </span>
 </template>
 
 <script setup lang="ts">
