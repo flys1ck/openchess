@@ -20,11 +20,6 @@ export const navigationItems: NavigationItem[] = [
     to: "/studies/",
   },
   {
-    icon: SwatchIcon,
-    text: "Reportoire",
-    to: "/reportoire/",
-  },
-  {
     icon: TrophyIcon,
     text: "Games",
     to: "/games/",

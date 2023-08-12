@@ -44,7 +44,6 @@ declare module 'vue-router/auto/routes' {
     '/games/': RouteRecordInfo<'/games/', '/games', Record<never, never>, Record<never, never>>,
     '/games/lichess/': RouteRecordInfo<'/games/lichess/', '/games/lichess', Record<never, never>, Record<never, never>>,
     '/games/lichess/[gameId]': RouteRecordInfo<'/games/lichess/[gameId]', '/games/lichess/:gameId', { gameId: ParamValue<true> }, { gameId: ParamValue<false> }>,
-    '/reportoire/': RouteRecordInfo<'/reportoire/', '/reportoire', Record<never, never>, Record<never, never>>,
     '/settings/': RouteRecordInfo<'/settings/', '/settings', Record<never, never>, Record<never, never>>,
     '/signin': RouteRecordInfo<'/signin', '/signin', Record<never, never>, Record<never, never>>,
     '/signup': RouteRecordInfo<'/signup', '/signup', Record<never, never>, Record<never, never>>,
