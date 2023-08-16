@@ -10,11 +10,15 @@
         class="block w-full rounded-md focus:outline-none text-sm py-1.5"
         :class="inputClasses"
       />
-      <div v-if="errors?.length" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <ExclamationCircleIcon class="h-5 w-5 text-red-500" aria-hidden="true" />
+      <div
+        v-if="errors.length || isEvaluating"
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+      >
+        <ExclamationCircleIcon v-if="!isEvaluating" class="h-5 w-5 text-red-500" aria-hidden="true" />
+        <MinusIcon v-if="isEvaluating" class="h-5 w-5 text-blue-500 animate-spin" />
       </div>
     </div>
-    <div v-if="errors?.length" class="mt-1">
+    <div v-if="errors.length" class="mt-1">
       <BaseInputFeedbackError v-for="error in errors" :key="error">
         {{ error }}
       </BaseInputFeedbackError>
@@ -28,6 +32,7 @@ import { useEventListener } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
 import { ZodFirstPartySchemaTypes } from "zod";
 import BaseInputFeedbackError from "./BaseInputFeedbackError.vue";
+import { MinusIcon } from "@heroicons/vue/24/solid";
 
 const props = withDefaults(
   defineProps<{
@@ -35,38 +40,56 @@ const props = withDefaults(
     name: string;
     type?: string;
     schema?: ZodFirstPartySchemaTypes;
+    /**
+     * Async schema, when the value requires async validation The value will
+     * only be validated against `asyncSchema`, when `schema` passes validation.
+     */
+    asyncSchema?: ZodFirstPartySchemaTypes;
   }>(),
   {
     type: "text",
   }
 );
 
+const errors = ref<string[]>([]);
+const isEvaluating = ref(false);
 const modelValue = defineModel<string>({ default: "" });
-const shouldValidate = ref<boolean>(false);
 
-const errors = computed(() => {
-  if (!props.schema || !shouldValidate.value) return;
-  const validationResult = props.schema.safeParse(modelValue.value);
-  if (validationResult.success) return;
-  return validationResult.error.issues.map((issue) => issue.message);
-});
+async function validate() {
+  if (!props.schema && !props.asyncSchema) return [];
+  if (props.schema) {
+    const validationResult = props.schema.safeParse(modelValue.value);
+    if (!validationResult.success) return validationResult.error.issues.map((issue) => issue.message);
+  }
+  if (props.asyncSchema) {
+    isEvaluating.value = true;
+    const validationResult = await props.asyncSchema.safeParseAsync(modelValue.value);
+    isEvaluating.value = false;
+    if (validationResult.success) return [];
+    return validationResult.error.issues.map((issue) => issue.message);
+  }
+  return [];
+}
 
 const inputClasses = computed(() => ({
-  "border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500/50": !errors.value,
-  "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500/50 pr-10": errors.value,
+  "border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500/50": !errors.value.length,
+  "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500/50 pr-10":
+    errors.value.length,
 }));
 
 const inputRef = ref<HTMLInputElement>();
-const cleanup = useEventListener(inputRef, "change", () => {
-  shouldValidate.value = true;
-  cleanup();
-});
+if (!props.asyncSchema) {
+  const cleanup = useEventListener(inputRef, "change", () => {
+    validate();
+    cleanup();
+  });
+}
 
 onMounted(() => {
   // trigger validation, when form containing input is submitted
   if (!inputRef.value?.form) return;
-  useEventListener(inputRef.value.form, "submit", () => {
-    shouldValidate.value = true;
+  useEventListener(inputRef.value.form, "submit", async () => {
+    errors.value = await validate();
   });
 });
 </script>

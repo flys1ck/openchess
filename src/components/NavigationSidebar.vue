@@ -29,12 +29,15 @@ import { useSession } from "@stores/useSession";
 import { useRouter } from "vue-router/auto";
 import profileUrl from "../assets/images/profile_default.png";
 import BaseAvatar from "./base/BaseAvatar.vue";
+import { useLichess } from "@stores/useLichess";
 
 const router = useRouter();
+const lichess = useLichess();
 const { session, signOut } = useSession();
 
 function onSignOut() {
   signOut();
+  lichess.clearToken();
   router.push("/signin");
 }
 </script>

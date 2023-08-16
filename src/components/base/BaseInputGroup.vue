@@ -1,7 +1,15 @@
 <template>
   <div>
     <BaseInputLabel :htmlFor="id">{{ label }}</BaseInputLabel>
-    <BaseInput :id="id" :name="label" class="mt-0.5" v-model="modelValue" :type="type" :schema="schema" />
+    <BaseInput
+      :id="id"
+      :name="label"
+      class="mt-0.5"
+      v-model="modelValue"
+      :type="type"
+      :schema="schema"
+      :async-schema="asyncSchema"
+    />
   </div>
 </template>
 
@@ -18,6 +26,11 @@ withDefaults(
     label: string;
     type?: string;
     schema?: ZodFirstPartySchemaTypes;
+    /**
+     * Async schema, when the value requires async validation The value will
+     * only be validated against `asyncSchema`, when `schema` passes validation.
+     */
+    asyncSchema?: ZodFirstPartySchemaTypes;
   }>(),
   {
     type: "text",

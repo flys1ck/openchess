@@ -15,17 +15,17 @@ export const useSession = defineStore("session", () => {
   }
 
   async function signUp(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const res = await supabase.auth.signUp({ email, password });
   }
 
   async function signInWithGoogle() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: "google",
     });
   }
 
   async function signInWithPassword(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    await supabase.auth.signInWithPassword({ email, password });
   }
 
   function signOut() {
@@ -33,10 +33,10 @@ export const useSession = defineStore("session", () => {
   }
 
   async function deleteAccount() {
-    const { data, error } = await supabase.rpc("delete_user");
+    await supabase.rpc("delete_user");
   }
 
-  supabase.auth.onAuthStateChange((_event, s) => {
+  supabase.auth.onAuthStateChange((event, s) => {
     session.value = s;
   });
 

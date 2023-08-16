@@ -51,7 +51,7 @@ const computedClasses = computed(() => {
   return {
     "hover:bg-orange-500 focus:ring-orange-400/50 active:bg-orange-300 text-orange-50 bg-orange-400 duration-100 border border-orange-400":
       props.variant === "primary",
-    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-transparent border":
+    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-white border":
       props.variant === "secondary",
     "hover:bg-red-500 focus:ring-red-600/50 active:bg-red-700 text-red-50 bg-red-600 duration-100 border border-red-600":
       props.variant === "danger",

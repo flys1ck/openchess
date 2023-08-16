@@ -49,19 +49,25 @@
 
 <script setup lang="ts">
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
-import { LichessGame, exportGamesByUser } from "@services/lichess";
+import { LichessGame } from "@services/lichess";
 import BaseTime from "@components/base/BaseTime.vue";
-import { ref, h } from "vue";
+import { ref } from "vue";
 import RatingDifference from "@components/games/RatingDifference.vue";
 import BaseCard from "@components/base/BaseCard.vue";
+import { useLichess } from "@stores/useLichess";
 
+const lichess = useLichess();
 const games = ref<LichessGame[]>(
-  await exportGamesByUser("Zwickzwackzwieback", { max: 5, opening: true }, { accept: "application/x-ndjson" })
+  await lichess.client.exportGamesByUser(
+    lichess.username,
+    { max: 5, opening: true },
+    { accept: "application/x-ndjson" }
+  )
 );
 
 async function refresh() {
-  games.value = await exportGamesByUser(
-    "Zwickzwackzwieback",
+  games.value = await lichess.client.exportGamesByUser(
+    lichess.username,
     { max: 5, opening: true },
     { accept: "application/x-ndjson" }
   );

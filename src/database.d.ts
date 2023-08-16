@@ -194,6 +194,28 @@ export interface Database {
           }
         ]
       }
+      users: {
+        Row: {
+          id: string
+          lichess_token: string
+        }
+        Insert: {
+          id: string
+          lichess_token?: string
+        }
+        Update: {
+          id?: string
+          lichess_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

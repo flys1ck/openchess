@@ -4,7 +4,7 @@
       <!-- use name from settings -->
       <GameChessboard
         :game="game"
-        :orientation="parsedGame.tags!['Black'] === 'Zwickzwackzwieback' ? 'black' : 'white'"
+        :orientation="parsedGame.tags!['Black'] === lichess.username ? 'black' : 'white'"
         class="flex-grow p-4 max-w-4xl"
       />
       <div>
@@ -27,7 +27,6 @@
 </template>
 
 <script setup lang="ts">
-import { exportGameById } from "@services/lichess";
 import { useRoute } from "vue-router/auto";
 import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
@@ -37,9 +36,11 @@ import { ref } from "vue";
 import { ParseTree, parse } from "@mliebelt/pgn-parser";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { useLichess } from "@stores/useLichess";
 
 const route = useRoute("/games/lichess/[gameId]");
-const lichessGamePgn = await exportGameById(route.params.gameId);
+const lichess = useLichess();
+const lichessGamePgn = await lichess.client.exportGameById(route.params.gameId);
 
 const game = useGame();
 game.createNewGame();

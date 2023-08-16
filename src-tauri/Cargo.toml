@@ -19,7 +19,7 @@ crossbeam = "0.8.2"
 futures = "0.3"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.2", features = ["shell-open"] }
+tauri = { version = "1.2", features = [ "dialog-confirm", "shell-open"] }
 tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
 vampirc-uci = { version = "0.11.1", features = ["chess"] }
 pgn-reader = "0.23.0"
