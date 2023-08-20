@@ -19,8 +19,6 @@ interface UseChessgroundOptions {
 
 export function useChessground(element: HTMLElement, options: UseChessgroundOptions) {
   const orientation = options.orientation ?? "white";
-  const pm = getPossibleMoves(options.position.fen);
-
   const chessground = Chessground(element, {
     orientation: orientation,
     fen: options.position.fen,

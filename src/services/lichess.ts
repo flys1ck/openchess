@@ -1,5 +1,6 @@
 import GameSchema from "@schemas/lichess/ExportGameByIdSchema";
 import GamesSchema from "@schemas/lichess/ExportGamesByUsernameSchema";
+import MasterGamesSchema from "@schemas/lichess/GetMasterGamesSchema";
 import { z } from "zod";
 
 type PerfType =
@@ -42,6 +43,15 @@ interface ExportGamesByUserQueryParameters {
   sort?: "dateAsc" | "dateDesc";
 }
 
+interface GetMasterGamesQueryParameters {
+  fen: string;
+  play?: string;
+  since?: number;
+  until?: number;
+  moves?: number;
+  topGames?: number;
+}
+
 type AcceptHeader = "application/x-ndjson" | "application/x-chess-pgn";
 interface LichessHeaders {
   accept: AcceptHeader;
@@ -60,6 +70,7 @@ interface ExportGameByIdQueryParameters {
 }
 
 export type LichessGame = z.infer<typeof GameSchema>;
+export type MasterGameCollection = z.infer<typeof MasterGamesSchema>;
 
 export class LichessClient {
   personalAccessToken = "";
@@ -152,5 +163,17 @@ export class LichessClient {
     });
 
     return await response.json();
+  }
+
+  async getMasterGames(queryParameters?: GetMasterGamesQueryParameters) {
+    // @ts-ignore URLSearchParams can handle numbers in Records
+    const params = new URLSearchParams(queryParameters).toString();
+    let url = `https://explorer.lichess.ovh/masters`;
+    if (params) url += `?${params}`;
+
+    const fetchResponse = await fetch(url);
+    const response = await fetchResponse.json();
+
+    return MasterGamesSchema.parse(response);
   }
 }

@@ -1,8 +1,8 @@
 import { ParseTree, parse } from "@mliebelt/pgn-parser";
 import { playAudio } from "@utilities/audio";
-import { toColor, toPossibleMoves, toRole, toSAN } from "@utilities/move";
+import { toColor, toRole, toSAN } from "@utilities/move";
 import { Chess } from "chess.js";
-import { Dests, Key, Piece } from "chessground/types";
+import { Key, Piece } from "chessground/types";
 import { computed, ref } from "vue";
 
 export interface ChessMove {
@@ -59,6 +59,19 @@ export function useGameTree() {
 
     if (!root.value) root.value = newNode;
     if (activeNode.value) {
+      // check if move node exists in tree
+      if (activeNode.value.nextPosition && activeNode.value.nextPosition.move?.san === newNode.move?.san) {
+        setActiveNode(activeNode.value.nextPosition);
+        return;
+      } else if (activeNode.value.variations.length) {
+        const variation = activeNode.value.variations.find((variation) => variation.move?.san === newNode.move?.san);
+        if (variation) {
+          setActiveNode(variation);
+          return;
+        }
+      }
+
+      // add move node to tree
       if (activeNode.value.nextPosition) {
         activeNode.value.variations.push(newNode);
       } else {
@@ -66,7 +79,8 @@ export function useGameTree() {
       }
     }
 
-    return newNode;
+    setActiveNode(newNode);
+    return;
   }
 
   function setActiveNode(node: PositionNode) {
@@ -127,18 +141,13 @@ export function useGameTree() {
     const firstMove = history[0];
     chess.load(firstMove.before);
 
-    const rootNode = addNode(firstMove.before, {
+    addNode(firstMove.before, {
       comment: parsedPgn.gameComment?.comment,
     });
-    root.value = rootNode;
-    activeNode.value = rootNode;
 
     history.forEach((move, i) => {
-      // TODO: highly inefficient, probably calculate possible moves on the fly
-      chess.load(move.before);
-      const possibleMoves = toPossibleMoves(chess.moves({ verbose: true }));
       chess.load(move.after);
-      const node = addNode(move.after, {
+      addNode(move.after, {
         move: {
           source: move.from,
           destination: move.to,
@@ -154,12 +163,10 @@ export function useGameTree() {
         },
         comment: parsedMoves[i].commentAfter,
       });
-
-      setActiveNode(node);
     });
 
     // reset active node to root position after import
-    setActiveNode(root.value);
+    if (root.value) setActiveNode(root.value);
   }
 
   const pgn = computed(() => {

@@ -60,8 +60,7 @@ export function useGame() {
     // reset game tree to starting position
     // TODO: check if tree reset is really necessary here
     tree.reset();
-    const node = tree.addNode(fen.value);
-    tree.setActiveNode(node);
+    tree.addNode(fen.value);
   }
 
   function playMove(source: Key, destination: Key) {
@@ -70,17 +69,42 @@ export function useGame() {
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
     // handle promotion
-    const piece = board?.getPiece(destination);
+    console.log(source, destination);
+    // fix lichess sending UCI for castling as `e1h1, `e1a1`
+    if (source === "a0" || destination === "a0") return;
+    const sourcePiece = chess.get(source);
+    let fixedDestination = destination;
+    if (
+      sourcePiece.type === "k" &&
+      (destination === "a1" || destination === "h1" || destination === "a8" || destination === "h8")
+    ) {
+      switch (destination) {
+        case "a1":
+          fixedDestination = "c1";
+          break;
+        case "h1":
+          fixedDestination = "g1";
+          break;
+        case "a8":
+          fixedDestination = "c8";
+          break;
+        case "h8":
+          fixedDestination = "g8";
+          break;
+      }
+    }
+
+    const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
-    if (isPromotion(destination, piece.role)) {
+    if (isPromotion(fixedDestination, piece.role)) {
       const orientation = board?.getOrientation()!;
-      intentPromotion(destination, turnColor.value, orientation);
+      intentPromotion(fixedDestination, turnColor.value, orientation);
       return;
     }
 
     const move = chess.move({
       from: source,
-      to: destination,
+      to: fixedDestination,
       promotion: options?.promotionPiece && toPiece(options.promotionPiece),
     });
     const isCapture = move.flags.includes("c") || move.flags.includes("e");
@@ -88,7 +112,7 @@ export function useGame() {
     const isCheck = chess.inCheck();
 
     // remove en passanted pawn
-    if (isEnPassant) board?.setPiece((destination[0] + source[1]) as Key, undefined);
+    if (isEnPassant) board?.setPiece((fixedDestination[0] + source[1]) as Key, undefined);
 
     if (isCheck) board?.setCheck();
 
@@ -114,8 +138,7 @@ export function useGame() {
       isCheck,
       piece,
     };
-    const node = tree.addNode(fen.value, { move: nodeMove });
-    tree.setActiveNode(node);
+    tree.addNode(fen.value, { move: nodeMove });
   }
 
   // TODO try to do it without turn color (can be inferred by the square)

@@ -1,7 +1,7 @@
 <template>
   <button
     v-if="node.move"
-    class="relative px-px rounded border"
+    class="relative px-px rounded border inline-flex gap-0.5"
     :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-200' : 'hover:bg-gray-200 border-transparent'"
     @click="$emit('nodeselect', node)"
   >
@@ -35,13 +35,15 @@
       </div>
     </div>
     <div v-for="variation in node.variations" :key="variation.id" class="flex items-start -translate-x-1.5 gap-0.5">
-      <span class="w-2 border-t-2 border-gray-400 inline-block translate-y-2" aria-hidden="true" />
-      <GameTreeVariationItem
-        :node="variation"
-        :active-node-id="activeNodeId"
-        :variation-depth="variationDepth + 1"
-        @nodeselect="(variation) => $emit('nodeselect', variation)"
-      />
+      <span class="w-2 border-t-2 border-gray-400 inline-block translate-y-2 flex-shrink-0" aria-hidden="true" />
+      <div>
+        <GameTreeVariationItem
+          :node="variation"
+          :active-node-id="activeNodeId"
+          :variation-depth="variationDepth + 1"
+          @nodeselect="(variation) => $emit('nodeselect', variation)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -54,7 +56,7 @@ const props = withDefaults(
   defineProps<{
     node: PositionNode;
     activeNodeId?: string;
-    variationDepth: number;
+    variationDepth?: number;
   }>(),
   { variationDepth: 1 }
 );

@@ -14,7 +14,8 @@
     "test:bench": "vitest bench",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.5.1",

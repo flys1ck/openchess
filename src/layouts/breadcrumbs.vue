@@ -1,8 +1,8 @@
 <template>
   <div class="flex h-screen overflow-hidden bg-gray-50">
     <NavigationSidebar />
-    <div class="flex-grow overflow-y-auto">
-      <nav aria-label="Breadcrumb">
+    <div class="flex-grow flex flex-col">
+      <nav aria-label="Breadcrumb" class="flex-shrink-0">
         <ol role="list" class="flex items-center p-2 border-b text-sm">
           <li v-for="(breadcrumb, i) in breadcrumbsStore.breadcrumbs" :key="breadcrumb.to">
             <div class="flex items-center">
