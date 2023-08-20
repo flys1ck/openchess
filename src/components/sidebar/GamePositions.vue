@@ -59,14 +59,15 @@
         <li v-for="move in masterMoves" :key="move.uci">
           <button
             class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
-            @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2) as Key)"
+            @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key)"
             @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2) as Key }])
+              () => game.setAutoShapes([{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key }])
             "
             @pointerleave="() => game.setAutoShapes([])"
           >
             <div class="inline-flex gap-2">
               <span class="font-medium w-12 text-left">{{ move.san }}</span>
+              <span class="font-medium w-12 text-left">{{ move.uci }}</span>
               <span class="font-light text-right w-10">{{ move.playPercentage }}%</span>
             </div>
             <div class="border w-56 inline-flex overflow-hidden font-light rounded text-xs">
@@ -98,9 +99,9 @@
         <li v-for="topGame in masterGames" :key="topGame.id">
           <button
             class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
-            @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2) as Key)"
+            @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key)"
             @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: topGame.uci.substring(0, 2) as Key, dest: topGame.uci.substring(2) as Key }])
+              () => game.setAutoShapes([{ brush: 'paleBlue', orig: topGame.uci.substring(0, 2) as Key, dest: topGame.uci.substring(2, 4) as Key }])
             "
             @pointerleave="() => game.setAutoShapes([])"
           >
