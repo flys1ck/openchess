@@ -51,13 +51,12 @@
         >Masters Database</span
       >
     </div>
-    <template v-if="masterMoves.length">
+    <template v-if="masterMoves.length || masterGames.length">
       <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
         <span class="font-semibold">Moves</span>
-        <span class="font-light">Number of Lines</span>
       </div>
       <ul class="flex flex-col divide-y">
-        <li v-for="move in masterMoves">
+        <li v-for="move in masterMoves" :key="move.uci">
           <button
             class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
             @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2) as Key)"
@@ -70,7 +69,7 @@
               <span class="font-medium w-12 text-left">{{ move.san }}</span>
               <span class="font-light text-right w-10">{{ move.playPercentage }}%</span>
             </div>
-            <div class="border w-56 inline-flex overflow-hidden font-light rounded">
+            <div class="border w-56 inline-flex overflow-hidden font-light rounded text-xs">
               <span
                 v-if="move.whiteWinPercentage"
                 class="bg-white text-gray-900"
@@ -88,6 +87,36 @@
               <span v-if="move.blackWinPercentage" class="bg-gray-600 text-gray-50 flex-grow">
                 {{ percentageText(move.blackWinPercentage) }}
               </span>
+            </div>
+          </button>
+        </li>
+      </ul>
+      <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+        <span class="font-semibold">Games</span>
+      </div>
+      <ul class="flex flex-col divide-y">
+        <li v-for="topGame in masterGames" :key="topGame.id">
+          <button
+            class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
+            @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2) as Key)"
+            @pointermove="
+              () => game.setAutoShapes([{ brush: 'paleBlue', orig: topGame.uci.substring(0, 2) as Key, dest: topGame.uci.substring(2) as Key }])
+            "
+            @pointerleave="() => game.setAutoShapes([])"
+          >
+            <div class="flex gap-2">
+              <div class="flex flex-col font-light text-left">
+                <span>{{ topGame.white.rating }}</span>
+                <span>{{ topGame.black.rating }}</span>
+              </div>
+              <div class="flex flex-col font-medium text-left">
+                <span>{{ topGame.white.name }}</span>
+                <span>{{ topGame.black.name }}</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <GameResultTag :result="topGame.winner" />
+              <span class="font-light">{{ topGame.month ?? topGame.year }}</span>
             </div>
           </button>
         </li>
@@ -148,11 +177,13 @@ watchEffect(() => {
       lines.value = data;
     });
 
-  lichess.client.getMasterGames({ fen: props.game.fen.value }).then(({ moves, topGames, white, black, draws }) => {
-    totalMasterMoves.value = white + black + draws;
-    masterMoves.value = moves.map((move) => ({ ...move, ...getMoveStatistics(move) }));
-    masterGames.value = topGames;
-  });
+  lichess.client
+    .getMasterGames({ fen: props.game.fen.value, topGames: 10 })
+    .then(({ moves, topGames, white, black, draws }) => {
+      totalMasterMoves.value = white + black + draws;
+      masterMoves.value = moves.map((move) => ({ ...move, ...getMoveStatistics(move) }));
+      masterGames.value = topGames;
+    });
 });
 
 function getMoveStatistics(move: MasterGameCollection["moves"][number]): MoveStatistics {
