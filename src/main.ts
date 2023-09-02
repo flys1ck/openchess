@@ -16,9 +16,9 @@ const app = createApp(App);
 app.use(pinia);
 // refresh initial session for first navigation
 const session = useSession();
-await session.refreshSession();
-const lichess = useLichess();
-if (session.session) await lichess.setPersonalAccessToken(session.session.user.id);
-app.use(router);
-
-app.mount("#app");
+session.refreshSession().then(() => {
+  const lichess = useLichess();
+  if (session.session) lichess.setPersonalAccessToken(session.session.user.id);
+  app.use(router);
+  app.mount("#app");
+});

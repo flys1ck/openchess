@@ -34,7 +34,7 @@ export const useLichess = defineStore("lichess", () => {
   async function validateAndSetPersonalAccessToken(token: string) {
     client.personalAccessToken = token;
     const response = await client.getCurrentAccount();
-    if (response.error) {
+    if (response.error || !session.session) {
       // reset token to previous one
       username.value = response.username;
       client.personalAccessToken = personalAccessToken.value;
@@ -45,7 +45,7 @@ export const useLichess = defineStore("lichess", () => {
     client.personalAccessToken = token;
     personalAccessToken.value = token;
 
-    await supabase.from("users").update({ lichess_token: token }).eq("id", session.session?.user.id);
+    await supabase.from("users").update({ lichess_token: token }).eq("id", session.session.user.id);
 
     return true;
   }
