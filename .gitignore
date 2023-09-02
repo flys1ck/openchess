@@ -24,9 +24,6 @@ dist-ssr
 # python vendor files
 src-python
 
-# seaorm
-src-tauri/migration/target
-
 # playwright
 /test-results/
 /tests-examples/
@@ -36,3 +33,5 @@ src-tauri/migration/target
 
 # env
 .env
+
+/bin/
