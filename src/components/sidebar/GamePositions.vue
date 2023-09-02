@@ -67,7 +67,6 @@
           >
             <div class="inline-flex gap-2">
               <span class="font-medium w-12 text-left">{{ move.san }}</span>
-              <span class="font-medium w-12 text-left">{{ move.uci }}</span>
               <span class="font-light text-right w-10">{{ move.playPercentage }}%</span>
             </div>
             <div class="border w-56 inline-flex overflow-hidden font-light rounded text-xs">
@@ -105,7 +104,7 @@
             "
             @pointerleave="() => game.setAutoShapes([])"
           >
-            <div class="flex gap-2">
+            <div class="flex gap-2 text-xs">
               <div class="flex flex-col font-light text-left">
                 <span>{{ topGame.white.rating }}</span>
                 <span>{{ topGame.black.rating }}</span>
@@ -159,8 +158,6 @@ type MasterMove = MasterGameCollection["moves"][number] & MoveStatistics;
 const masterMoves = shallowRef<MasterMove[]>([]);
 
 watchEffect(() => {
-  console.log(props.game.fen.value);
-
   const fenWithoutMoves = props.game.fen.value.replaceAll(/ \d+ \d+$/g, "");
   supabase.rpc("get_moves_by_fen", { _fen: fenWithoutMoves }).then(({ data }) => {
     if (!data) return;
@@ -170,7 +167,7 @@ watchEffect(() => {
   supabase
     .from("positions")
     .select("source, destination, study (id, name), chapter (id, name), line (id, name)")
-    .eq("fen", fenWithoutMoves)
+    .ilike("fen", `${fenWithoutMoves}%`)
     .order("line(name)")
     .limit(10)
     .then(({ data }) => {
