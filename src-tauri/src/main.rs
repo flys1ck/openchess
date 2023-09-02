@@ -5,10 +5,8 @@
 
 mod engine;
 mod engine_commands;
-mod game_commands;
 mod state;
 
-use chess::Game;
 use engine::Engine;
 use state::State;
 
@@ -17,14 +15,9 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .manage(State {
-            game: Game::new().into(),
             engine: Engine::new().into(),
         })
         .invoke_handler(tauri::generate_handler![
-            game_commands::get_next_move,
-            game_commands::create_new_game,
-            game_commands::set_position,
-            game_commands::parse_pgn,
             engine_commands::begin_evaluation,
             engine_commands::stop_evaluation
         ])
