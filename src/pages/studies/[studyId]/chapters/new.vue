@@ -73,7 +73,6 @@ async function processPgn(pgn: string) {
   const history = game.history({ verbose: true });
   const moves = history
     .reduce((acc, move, i) => {
-      if (i % 2 == 0) return `${acc} ${i / 2 + 1}. ${move.san}`;
       return `${acc} ${move.san}`;
     }, "")
     .trim();
@@ -96,7 +95,7 @@ async function processPgn(pgn: string) {
 
   if (!chapter) return;
 
-  const { data: line } = await supabase
+  const { data: line, error } = await supabase
     .from("lines")
     .upsert(
       {
@@ -107,7 +106,7 @@ async function processPgn(pgn: string) {
         moves,
       },
       {
-        onConflict: "chapter, name",
+        onConflict: "chapter, moves",
       }
     )
     .select("id")
@@ -116,21 +115,20 @@ async function processPgn(pgn: string) {
 
   if (!line) return;
 
-  history.forEach(async (move) => {
-    const { error } = await supabase.from("positions").upsert(
-      {
-        fen: move.before,
-        source: move.from,
-        destination: move.to,
-        san: move.san,
-        study: chapter.study,
-        chapter: chapter.id,
-        line: line?.id,
-      },
-      {
-        onConflict: "line, fen",
-      }
-    );
+  const positions = history.map((move) => {
+    return {
+      fen: move.before,
+      source: move.from,
+      destination: move.to,
+      san: move.san,
+      study: chapter.study,
+      chapter: chapter.id,
+      line: line?.id,
+    };
+  });
+
+  await supabase.from("positions").upsert(positions, {
+    onConflict: "line, fen",
   });
 }
 </script>

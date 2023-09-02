@@ -74,21 +74,19 @@ export function useGame() {
     if (source === "a0" || destination === "a0") return;
     const sourcePiece = chess.get(source);
     let fixedDestination = destination;
-    if (
-      sourcePiece.type === "k" &&
-      (destination === "a1" || destination === "h1" || destination === "a8" || destination === "h8")
-    ) {
-      switch (destination) {
-        case "a1":
+    const uci = `${source}${destination}`;
+    if (sourcePiece.type === "k" && (uci === "e1a1" || uci === "e1h1" || uci === "e8a8" || uci === "e8h8")) {
+      switch (uci) {
+        case "e1a1":
           fixedDestination = "c1";
           break;
-        case "h1":
+        case "e1h1":
           fixedDestination = "g1";
           break;
-        case "a8":
+        case "e8a8":
           fixedDestination = "c8";
           break;
-        case "h8":
+        case "e8h8":
           fixedDestination = "g8";
           break;
       }
