@@ -49,15 +49,20 @@ supabase
         to: "/studies/",
       },
       {
+        //@ts-ignore https://github.com/supabase/postgrest-js/issues?q=is:issue+is:open+SelectQueryError
         name: line?.study.name ?? "",
+        //@ts-ignore https://github.com/supabase/postgrest-js/issues?q=is:issue+is:open+SelectQueryError
         to: `/studies/${line?.study.id}`,
       },
       {
+        //@ts-ignore https://github.com/supabase/postgrest-js/issues?q=is:issue+is:open+SelectQueryError
         name: line?.chapter.name ?? "",
+        //@ts-ignore https://github.com/supabase/postgrest-js/issues?q=is:issue+is:open+SelectQueryError
         to: `/studies/${line?.study.id}/chapters/${line?.chapter?.id}`,
       },
       {
         name: line?.name ?? "",
+        //@ts-ignore https://github.com/supabase/postgrest-js/issues?q=is:issue+is:open+SelectQueryError
         to: `/studies/${line?.study.id}/chapters/${line?.chapter?.id}/lines/${line?.id}`,
       },
     ]);
