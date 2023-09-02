@@ -41,20 +41,8 @@ colima_uninstall: colima_delete
 docker_compose_up:
 	docker-compose up -d
 
-entitites:
-	sea-orm-cli generate entity -u ${DATABASE_URL} -o src-tauri/src/entities
-
-migration:
-	cd src-tauri
-	sea-orm-cli migrate refresh
-	cd ..
-
 #: Start the container stack.
 up: colima_start docker_compose_up
-
-#: Delete old images
-docker_prune:
-	docker system prune -a -f --volumes
 
 #: Start dev environment.
 dev: up
