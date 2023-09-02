@@ -30,11 +30,7 @@ pub fn begin_evaluation(state: tauri::State<State>, window: tauri::Window, fen: 
                     principle_variation = Some(
                         pv.iter()
                             .map(|pv_move| {
-                                format!(
-                                    "{}{}",
-                                    pv_move.get_source().to_string(),
-                                    pv_move.get_dest().to_string()
-                                )
+                                format!("{}{}", pv_move.from.to_string(), pv_move.to.to_string())
                             })
                             .collect(),
                     )
@@ -62,8 +58,8 @@ pub fn begin_evaluation(state: tauri::State<State>, window: tauri::Window, fen: 
                         depth: depth,
                         evaluation: evaluation,
                         nodes_per_second: nodes_per_second,
-                        source: best_move.unwrap().get_source().to_string(),
-                        destination: best_move.unwrap().get_dest().to_string(),
+                        source: best_move.unwrap().from.to_string(),
+                        destination: best_move.unwrap().to.to_string(),
                     },
                 )
                 .unwrap()

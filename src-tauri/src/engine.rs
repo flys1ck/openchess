@@ -13,7 +13,7 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Engine {
-        let mut child = Command::new("./assets/stockfish")
+        let mut child = Command::new("../bin/stockfish")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()
