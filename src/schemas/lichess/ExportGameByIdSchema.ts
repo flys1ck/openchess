@@ -51,8 +51,8 @@ const PlayerAnalysisSchema = z
   })
   .strict();
 
-const PlayerSchema = z
-  .object({
+export const PlayerSchema = z.union([
+  z.strictObject({
     user: LightUserSchema,
     rating: z.number().optional(),
     ratingDiff: z.number().optional(),
@@ -61,8 +61,11 @@ const PlayerSchema = z
     aiLevel: z.number().optional(),
     analysis: PlayerAnalysisSchema.optional(),
     team: z.string().optional(),
-  })
-  .strict();
+  }),
+  z.strictObject({
+    aiLevel: z.number(),
+  }),
+]);
 
 const OpeningSchema = z.object({
   eco: z.string(),
