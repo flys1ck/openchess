@@ -18,12 +18,6 @@ export function useGame() {
   const turnColor = ref<Color>("white");
 
   const fen = ref(chess.fen());
-  const evaluation = useEvaluation(fen, turnColor, {
-    onEvaluationUpdate: (response) => {
-      board?.setAutoShapes([{ brush: "paleBlue", orig: response.source, dest: response.destination }]);
-    },
-    onEvaluationStop: () => board?.setAutoShapes([]),
-  });
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -206,8 +200,7 @@ export function useGame() {
   }
 
   return {
-    tree: tree,
-    evaluation,
+    tree,
     isPromoting,
     promotionColor,
     promotionStyles,
