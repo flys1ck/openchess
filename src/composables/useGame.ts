@@ -62,8 +62,6 @@ export function useGame() {
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
-    // handle promotion
-    console.log(source, destination);
     // fix lichess sending UCI for castling as `e1h1, `e1a1`
     if (source === "a0" || destination === "a0") return;
     const sourcePiece = chess.get(source);
@@ -94,6 +92,7 @@ export function useGame() {
       return;
     }
 
+    // handle promotion
     const move = chess.move({
       from: source,
       to: fixedDestination,

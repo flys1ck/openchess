@@ -31,19 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { useGame } from "@composables/useGame";
-import { onUnmounted } from "vue";
+import { Ref, onUnmounted } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
 
 const props = defineProps<{
-  fen: string;
-  turnColor: "white" | "black";
+  fen: Ref<string>;
 }>();
 
 const { isEvaluationEnabled, depth, principleVariation, evaluatedScore, nodesPerSecond } = await useEvaluation(
-  props.fen,
-  props.turnColor
+  props.fen
 );
 
 onUnmounted(() => {

@@ -23,7 +23,7 @@
       >
         <!-- Engine evaluation -->
         <Suspense>
-          <GameEvaluation :fen="game.fen.value" :turn-color="game.turnColor.value" />
+          <GameEvaluation :fen="game.fen" />
         </Suspense>
         <!-- Move history -->
         <template v-if="game.tree.root.value">
