@@ -15,7 +15,7 @@ export const useSession = defineStore("session", () => {
   }
 
   async function signUp(email: string, password: string) {
-    const res = await supabase.auth.signUp({ email, password });
+    await supabase.auth.signUp({ email, password });
   }
 
   async function signInWithGoogle() {

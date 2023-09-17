@@ -1,6 +1,10 @@
 import { useSession } from "@stores/useSession";
 import { setupLayouts } from "virtual:generated-layouts";
-import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router/auto";
+import {
+  RouteRecordRaw,
+  createRouter,
+  createWebHistory,
+} from "vue-router/auto";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -25,11 +29,12 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   const publicRoutes = ["/signin", "/signup"];
   const { session } = useSession();
 
-  if (to.name && session === null && !publicRoutes.includes(to.name as string)) return { name: "/signin" };
+  if (to.name && session === null && !publicRoutes.includes(to.name as string))
+    return { name: "/signin" };
 });
 
 export default router;

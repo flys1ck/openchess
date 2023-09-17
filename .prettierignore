@@ -1,2 +1,5 @@
 src-tauri
 src/*.d.ts
+src-python
+test-results
+dist

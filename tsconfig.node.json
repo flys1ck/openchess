@@ -5,5 +5,5 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["*.config.ts"]
+  "include": ["*.config.ts", "*.config.cjs", "*.config.mjs", "scripts/*"]
 }

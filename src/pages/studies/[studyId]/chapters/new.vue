@@ -1,7 +1,9 @@
 <template>
   <form class="m-4 space-y-4" @submit.prevent="onSubmit">
     <div>
-      <BaseInputLabel htmlFor="chapter-name" class="block text-sm font-medium leading-6 text-gray-900"
+      <BaseInputLabel
+        htmlFor="chapter-name"
+        class="block text-sm font-medium leading-6 text-gray-900"
         >Chapter Header</BaseInputLabel
       >
       <select id="chapter-name" v-model="chapterHeader">
@@ -10,7 +12,9 @@
       </select>
     </div>
     <div>
-      <BaseInputLabel htmlFor="line-name" class="block text-sm font-medium leading-6 text-gray-900"
+      <BaseInputLabel
+        htmlFor="line-name"
+        class="block text-sm font-medium leading-6 text-gray-900"
         >Line Header</BaseInputLabel
       >
       <select id="line-name" v-model="lineHeader">
@@ -20,7 +24,9 @@
       </select>
     </div>
     <div>
-      <BaseInputLabel htmlFor="cover-photo" class="block text-sm font-medium leading-6 text-gray-900"
+      <BaseInputLabel
+        htmlFor="cover-photo"
+        class="block text-sm font-medium leading-6 text-gray-900"
         >PGNs</BaseInputLabel
       >
       <BaseFileUpload v-model="files" :multiple="true" accept=".pgn" />
@@ -72,7 +78,7 @@ async function processPgn(pgn: string) {
   // TODO same function in game index
   const history = game.history({ verbose: true });
   const moves = history
-    .reduce((acc, move, i) => {
+    .reduce((acc, move) => {
       return `${acc} ${move.san}`;
     }, "")
     .trim();
@@ -87,7 +93,7 @@ async function processPgn(pgn: string) {
       },
       {
         onConflict: "study, name",
-      }
+      },
     )
     .select("id, study")
     .limit(1)
@@ -95,7 +101,7 @@ async function processPgn(pgn: string) {
 
   if (!chapter) return;
 
-  const { data: line, error } = await supabase
+  const { data: line } = await supabase
     .from("lines")
     .upsert(
       {
@@ -107,7 +113,7 @@ async function processPgn(pgn: string) {
       },
       {
         onConflict: "chapter, moves",
-      }
+      },
     )
     .select("id")
     .limit(1)
