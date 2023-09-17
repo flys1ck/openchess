@@ -18,13 +18,13 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.5.1",
+    "@floating-ui/dom": "^1.5.3",
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
     "@mliebelt/pgn-parser": "^1.4.12",
-    "@supabase/supabase-js": "^2.33.1",
+    "@supabase/supabase-js": "^2.33.2",
     "@tauri-apps/api": "^1.4.0",
-    "@types/howler": "^2.2.8",
+    "@types/howler": "^2.2.9",
     "@vueuse/core": "^10.4.1",
     "chess.js": "1.0.0-beta.6",
     "chessground": "^8.4.0",
@@ -39,10 +39,10 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.37.1",
+    "@playwright/test": "^1.38.0",
     "@tailwindcss/forms": "^0.5.6",
     "@tauri-apps/cli": "^1.4.0",
-    "@types/node": "^18.17.13",
+    "@types/node": "^18.17.17",
     "@vitejs/plugin-vue": "^4.3.4",
     "@vue/devtools": "^6.5.0",
     "autoprefixer": "^10.4.15",
@@ -53,14 +53,14 @@
     "prettier": "^2.8.8",
     "prettier-plugin-organize-imports": "^3.2.3",
     "prettier-plugin-tailwindcss": "^0.4.1",
-    "supabase": "^1.88.0",
+    "supabase": "^1.93.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
     "unplugin-vue-router": "^0.6.4",
     "vite": "^4.4.9",
     "vite-plugin-vue-layouts": "^0.8.0",
-    "vite-tsconfig-paths": "^4.2.0",
+    "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^0.31.4",
-    "vue-tsc": "^1.8.8"
+    "vue-tsc": "^1.8.11"
   }
 }
