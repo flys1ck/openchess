@@ -34,4 +34,4 @@ src-python
 # env
 .env
 
-/bin/
+src-tauri/bin/

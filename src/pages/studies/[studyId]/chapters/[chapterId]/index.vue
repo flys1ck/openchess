@@ -1,5 +1,5 @@
 <template>
-  <BaseContainer>
+  <BaseContainer class="overflow-y-auto">
     <BaseSectionHeading heading="Lines">
       <template #actions>
         <BaseButton as="RouterLink" to="/studies/new">Create new line</BaseButton>
@@ -7,7 +7,7 @@
     </BaseSectionHeading>
     <Suspense>
       <LineList class="flex-grow mt-4" />
-      <template #fallback> TODO LOADIN... </template>
+      <template #fallback>TODO LOADIN...</template>
     </Suspense>
   </BaseContainer>
 </template>

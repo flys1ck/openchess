@@ -22,7 +22,9 @@
         :tab-index="-1"
       >
         <!-- Engine evaluation -->
-        <GameEvaluation :game="game" />
+        <Suspense>
+          <GameEvaluation :fen="game.fen" />
+        </Suspense>
         <!-- Move history -->
         <template v-if="game.tree.root.value">
           <div class="flex-grow overflow-y-auto">

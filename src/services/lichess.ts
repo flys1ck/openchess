@@ -113,6 +113,10 @@ export class LichessClient {
         .split("\n")
         .map((game) => JSON.parse(game));
 
+      console.log(games);
+
+      console.log(GamesSchema.safeParse(games));
+
       return GamesSchema.parse(games);
     }
 

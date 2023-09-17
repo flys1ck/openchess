@@ -18,12 +18,6 @@ export function useGame() {
   const turnColor = ref<Color>("white");
 
   const fen = ref(chess.fen());
-  const evaluation = useEvaluation(fen, turnColor, {
-    onEvaluationUpdate: (response) => {
-      board?.setAutoShapes([{ brush: "paleBlue", orig: response.source, dest: response.destination }]);
-    },
-    onEvaluationStop: () => board?.setAutoShapes([]),
-  });
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -68,8 +62,6 @@ export function useGame() {
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
-    // handle promotion
-    console.log(source, destination);
     // fix lichess sending UCI for castling as `e1h1, `e1a1`
     if (source === "a0" || destination === "a0") return;
     const sourcePiece = chess.get(source);
@@ -100,6 +92,7 @@ export function useGame() {
       return;
     }
 
+    // handle promotion
     const move = chess.move({
       from: source,
       to: fixedDestination,
@@ -206,8 +199,7 @@ export function useGame() {
   }
 
   return {
-    tree: tree,
-    evaluation,
+    tree,
     isPromoting,
     promotionColor,
     promotionStyles,

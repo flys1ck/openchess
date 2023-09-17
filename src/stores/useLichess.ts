@@ -2,7 +2,7 @@ import { useSupabase } from "@composables/useSupabase";
 import { LichessClient } from "@services/lichess";
 import { useSession } from "@stores/useSession";
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 export const useLichess = defineStore("lichess", () => {
   const supabase = useSupabase();
