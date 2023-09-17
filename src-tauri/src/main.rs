@@ -4,7 +4,6 @@
 )]
 
 fn main() {
-    fix_path_env::fix().expect("fixes env");
     tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())
