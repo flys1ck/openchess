@@ -5,7 +5,7 @@
       <nav class="flex overflow-x-auto py-4">
         <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm leading-6 text-gray-400 sm:px-6 lg:px-8">
           <li v-for="item in secondaryNavigation" :key="item.name">
-            <RouterLink :to="item.to" :class="item.current ? 'text-orange-400 font-semibold' : ''">{{
+            <RouterLink :to="item.to" :class="item.current ? 'font-semibold text-orange-400' : ''">{{
               item.name
             }}</RouterLink>
           </li>
@@ -26,9 +26,9 @@
               There are no permissions required.
             </p>
           </div>
-          <form class="md:col-span-2 space-y-2" @submit.prevent>
+          <form class="space-y-2 md:col-span-2" @submit.prevent>
             <BaseInputLabel html-for="token">Personal API Access Token</BaseInputLabel>
-            <div class="flex gap-2 items-start">
+            <div class="flex items-start gap-2">
               <BaseInput
                 id="token"
                 name="token"
@@ -40,8 +40,8 @@
               />
               <BaseButton variant="primary" type="submit">Save</BaseButton>
             </div>
-            <p v-if="lichess.username" class="text-sm text-gray-500 flex gap-1 items-center">
-              <CheckBadgeIcon class="w-4 h-4 text-blue-500" />Token connected to {{ lichess.username }}
+            <p v-if="lichess.username" class="flex items-center gap-1 text-sm text-gray-500">
+              <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Token connected to {{ lichess.username }}
             </p>
           </form>
         </div>

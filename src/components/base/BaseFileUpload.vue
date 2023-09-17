@@ -3,7 +3,7 @@
     <div
       class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
     >
-      <PhotoIcon class="w-12 h-12 text-gray-400" />
+      <PhotoIcon class="h-12 w-12 text-gray-400" />
       <div class="mt-4 flex text-sm leading-6 text-gray-600">
         <label
           for="file-upload"
@@ -29,13 +29,13 @@
       <div class="mt-2 space-x-2">
         <span>{{ files.length }} File(s)</span><span>{{ totalUploadSize }}</span>
       </div>
-      <ul class="space-y-2 max-h-48 overflow-auto shadow-inner mt-2 rounded-lg">
-        <li v-for="file in files" :key="file.name" class="bg-gray-100 p-4 flex items-center rounded-lg justify-between">
-          <div class="flex gap-2 items-center">
-            <DocumentIcon class="w-8 h-8 text-orange-400" />
+      <ul class="mt-2 max-h-48 space-y-2 overflow-auto rounded-lg shadow-inner">
+        <li v-for="file in files" :key="file.name" class="flex items-center justify-between rounded-lg bg-gray-100 p-4">
+          <div class="flex items-center gap-2">
+            <DocumentIcon class="h-8 w-8 text-orange-400" />
             <div>
               <div class="text-sm font-semibold">{{ file.name }}</div>
-              <div class="text-xs text-gray-400 leading-5">{{ formatFileSize(file.size) }}</div>
+              <div class="text-xs leading-5 text-gray-400">{{ formatFileSize(file.size) }}</div>
             </div>
           </div>
           <BaseButton

@@ -1,12 +1,12 @@
 <template>
   <div class="overflow-y-auto">
     <!-- Study Database -->
-    <div class="relative text-center bg-gray-50 py-2">
-      <span class="absolute inset-x-2 border-t top-1/2" aria-hidden="true" />
-      <span class="relative bg-inherit px-2 uppercase tracking-wider text-xs font-light text-gray-500">Studies</span>
+    <div class="relative bg-gray-50 py-2 text-center">
+      <span class="absolute inset-x-2 top-1/2 border-t" aria-hidden="true" />
+      <span class="relative bg-inherit px-2 text-xs font-light uppercase tracking-wider text-gray-500">Studies</span>
     </div>
     <template v-if="positions.length">
-      <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Moves in Study</span>
         <span class="font-light">Number of Lines</span>
       </div>
@@ -14,7 +14,7 @@
         <li v-for="position in positions" :key="position.id">
           <!-- TODO: shapes are not refreshing when there is no pointer movement -->
           <button
-            class="flex justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
+            class="flex w-full justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
             @click="() => game.playMove(position.source, position.destination)"
             @pointermove="
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: position.source, dest: position.destination }])
@@ -26,7 +26,7 @@
           </button>
         </li>
       </ul>
-      <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Lines with Position</span>
       </div>
       <ul class="divide-y">
@@ -43,33 +43,36 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 italic text-gray-700 text-sm text-center">No lines with this position</p>
+    <p v-else class="p-2 text-center text-sm italic text-gray-700">No lines with this position</p>
     <!-- Masters Database -->
-    <div class="relative text-center bg-gray-50 py-2">
-      <span class="absolute inset-x-2 border-t top-1/2" aria-hidden="true" />
-      <span class="relative bg-inherit px-2 uppercase tracking-wider text-xs font-light text-gray-500"
+    <div class="relative bg-gray-50 py-2 text-center">
+      <span class="absolute inset-x-2 top-1/2 border-t" aria-hidden="true" />
+      <span class="relative bg-inherit px-2 text-xs font-light uppercase tracking-wider text-gray-500"
         >Masters Database</span
       >
     </div>
     <template v-if="masterMoves.length || masterGames.length">
-      <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Moves</span>
       </div>
       <ul class="flex flex-col divide-y">
         <li v-for="move in masterMoves" :key="move.uci">
           <button
-            class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
+            class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
             @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key)"
             @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key }])
+              () =>
+                game.setAutoShapes([
+                  { brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key },
+                ])
             "
             @pointerleave="() => game.setAutoShapes([])"
           >
             <div class="inline-flex gap-2">
-              <span class="font-medium w-12 text-left">{{ move.san }}</span>
-              <span class="font-light text-right w-10">{{ move.playPercentage }}%</span>
+              <span class="w-12 text-left font-medium">{{ move.san }}</span>
+              <span class="w-10 text-right font-light">{{ move.playPercentage }}%</span>
             </div>
-            <div class="border w-56 inline-flex overflow-hidden font-light rounded text-xs">
+            <div class="inline-flex w-56 overflow-hidden rounded border text-xs font-light">
               <span
                 v-if="move.whiteWinPercentage"
                 class="bg-white text-gray-900"
@@ -84,32 +87,39 @@
               >
                 {{ percentageText(move.drawPercentage) }}
               </span>
-              <span v-if="move.blackWinPercentage" class="bg-gray-600 text-gray-50 flex-grow">
+              <span v-if="move.blackWinPercentage" class="flex-grow bg-gray-600 text-gray-50">
                 {{ percentageText(move.blackWinPercentage) }}
               </span>
             </div>
           </button>
         </li>
       </ul>
-      <div class="text-xs leading-6 text-gray-600 px-4 py-0.5 flex justify-between bg-gray-100 border-y">
+      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Games</span>
       </div>
       <ul class="flex flex-col divide-y">
         <li v-for="topGame in masterGames" :key="topGame.id">
           <button
-            class="flex items-center justify-between w-full py-0.5 px-4 hover:bg-orange-200 text-sm"
+            class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
             @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key)"
             @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: topGame.uci.substring(0, 2) as Key, dest: topGame.uci.substring(2, 4) as Key }])
+              () =>
+                game.setAutoShapes([
+                  {
+                    brush: 'paleBlue',
+                    orig: topGame.uci.substring(0, 2) as Key,
+                    dest: topGame.uci.substring(2, 4) as Key,
+                  },
+                ])
             "
             @pointerleave="() => game.setAutoShapes([])"
           >
             <div class="flex gap-2 text-xs">
-              <div class="flex flex-col font-light text-left">
+              <div class="flex flex-col text-left font-light">
                 <span>{{ topGame.white.rating }}</span>
                 <span>{{ topGame.black.rating }}</span>
               </div>
-              <div class="flex flex-col font-medium text-left">
+              <div class="flex flex-col text-left font-medium">
                 <span>{{ topGame.white.name }}</span>
                 <span>{{ topGame.black.name }}</span>
               </div>
@@ -122,7 +132,7 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 italic text-gray-700 text-sm text-center">No games with this position</p>
+    <p v-else class="p-2 text-center text-sm italic text-gray-700">No games with this position</p>
   </div>
 </template>
 

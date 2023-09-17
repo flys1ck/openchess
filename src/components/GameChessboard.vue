@@ -6,7 +6,7 @@
       v-if="game.isPromoting.value"
       :style="`width: ${overlayWidth}px`"
       @click="game.cancelPromotion"
-      class="absolute top-0 left-0 z-10 bg-black/70 aspect-square"
+      class="absolute left-0 top-0 z-10 aspect-square bg-black/70"
     >
       <div class="absolute flex h-1/2 w-1/8 items-center justify-center" :style="game.promotionStyles.value">
         <button
@@ -23,7 +23,7 @@
     <div
       v-if="mode === 'development'"
       :style="`width: ${overlayWidth}px`"
-      class="absolute top-0 left-0 pointer-events-none aspect-square grid grid-cols-8"
+      class="pointer-events-none absolute left-0 top-0 grid aspect-square grid-cols-8"
     >
       <template v-for="rank in ['1', '2', '3', '4', '5', '6', '7', '8'].reverse()">
         <template v-for="file in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']">

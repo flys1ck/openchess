@@ -6,9 +6,9 @@
       aria-describedby="comments-description"
       name="comments"
       type="checkbox"
-      class="h-4 w-4 rounded border-gray-300 text-orange-400 focus:ring-orange-500/50 shadow-sm"
+      class="h-4 w-4 rounded border-gray-300 text-orange-400 shadow-sm focus:ring-orange-500/50"
     />
-    <label :for="id" class="font-medium text-gray-700 text-sm ml-2">{{ label }}</label>
+    <label :for="id" class="ml-2 text-sm font-medium text-gray-700">{{ label }}</label>
   </div>
 </template>
 

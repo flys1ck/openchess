@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center flex flex-col">
+  <div class="flex flex-col text-center">
     <h3 class="text-sm font-semibold text-gray-900">No studies</h3>
     <p class="mt-1 text-sm text-gray-500">Get started by creating a new study.</p>
     <div class="mt-6">

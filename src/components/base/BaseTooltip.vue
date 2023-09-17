@@ -1,16 +1,16 @@
 <template>
   <span ref="triggerRef" class="relative">
-    <span class="underline decoration-dashed decoration-gray-400">
+    <span class="underline decoration-gray-400 decoration-dashed">
       <slot name="trigger" />
     </span>
     <Teleport to="body">
       <span
         v-show="isTriggerHovered"
         ref="tooltipRef"
-        class="absolute z-10 max-w-xs rounded bg-gray-900 px-2 py-1 text-gray-50 shadow-lg text-xs"
+        class="absolute z-10 max-w-xs rounded bg-gray-900 px-2 py-1 text-xs text-gray-50 shadow-lg"
       >
         <slot />
-        <span ref="arrowRef" class="w-2 h-2 bg-gray-900 absolute rotate-45" />
+        <span ref="arrowRef" class="absolute h-2 w-2 rotate-45 bg-gray-900" />
       </span>
     </Teleport>
   </span>

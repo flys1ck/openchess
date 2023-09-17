@@ -32,11 +32,11 @@
           </form>
           <div class="mt-6">
             <div class="flex items-center">
-              <span class="border-t flex-grow" aria-hidden="true" />
+              <span class="flex-grow border-t" aria-hidden="true" />
               <div class="relative flex justify-center text-sm font-medium leading-6">
                 <span class="px-6 text-gray-900">Or continue with</span>
               </div>
-              <span class="border-t flex-grow" aria-hidden="true" />
+              <span class="flex-grow border-t" aria-hidden="true" />
             </div>
 
             <div class="mt-6 grid grid-cols-2 gap-4">

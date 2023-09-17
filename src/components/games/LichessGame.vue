@@ -1,23 +1,23 @@
 <template>
-  <main class="flex-grow overflow-x-hidden flex">
-    <div class="flex-grow flex flex-col overflow-y-auto">
+  <main class="flex flex-grow overflow-x-hidden">
+    <div class="flex flex-grow flex-col overflow-y-auto">
       <!-- use name from settings -->
       <GameChessboard
         :game="game"
         :orientation="parsedGame.tags!['Black'] === lichess.username ? 'black' : 'white'"
-        class="flex-grow p-4 max-w-4xl"
+        class="max-w-4xl flex-grow p-4"
       />
       <div>
         <hr class="mt-12" />
         <div class="m-4">
           {{ prefix }}
         </div>
-        <ul class="space-y-4 m-4" v-if="matchingLines">
-          <li v-for="line in matchingLines" :key="line.id" class="border p-4 flex flex-col">
+        <ul class="m-4 space-y-4" v-if="matchingLines">
+          <li v-for="line in matchingLines" :key="line.id" class="flex flex-col border p-4">
             <RouterLink :to="`/studies/${line.study}/chapters/${line.chapter}/lines/${line.id}`">
               {{ line.study.name }} > {{ line.chapter.name }} > {{ line.name }}
             </RouterLink>
-            <p class="text-sm text-gray-500 mt-2">{{ line.moves }}</p>
+            <p class="mt-2 text-sm text-gray-500">{{ line.moves }}</p>
           </li>
         </ul>
       </div>

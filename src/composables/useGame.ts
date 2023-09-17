@@ -1,11 +1,10 @@
 import { Position, useChessground } from "@composables/useChessground";
-import { useEvaluation } from "@composables/useEvaluation";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
 import { isPromotion, toColor, toPiece, toPossibleMoves } from "@utilities/move";
 import { Chess } from "chess.js";
 import { DrawShape } from "chessground/draw";
-import { Color, Dests, Key, Piece } from "chessground/types";
+import { Color, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
 import { CSSProperties, ref, shallowRef } from "vue";
 
