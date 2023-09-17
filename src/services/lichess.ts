@@ -85,30 +85,27 @@ export class LichessClient {
   async exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers?: { accept: "application/x-chess-pgn" },
+    headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
   async exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers?: { accept: "application/x-ndjson" },
+    headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame[]>;
   async exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers: LichessHeaders = { accept: "application/x-chess-pgn" },
+    headers: LichessHeaders = { accept: "application/x-chess-pgn" }
   ): Promise<string | LichessGame[]> {
     // @ts-ignore URLSearchParams can handle numbers in Records
     const params = new URLSearchParams(queryParameters).toString();
 
-    const response = await fetch(
-      `https://lichess.org/api/games/user/${username}?${params}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.personalAccessToken}`,
-          accept: headers.accept,
-        },
+    const response = await fetch(`https://lichess.org/api/games/user/${username}?${params}`, {
+      headers: {
+        Authorization: `Bearer ${this.personalAccessToken}`,
+        accept: headers.accept,
       },
-    );
+    });
 
     if (headers.accept === "application/x-ndjson") {
       const games = (await response.text())
@@ -125,17 +122,17 @@ export class LichessClient {
   async exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers?: { accept: "application/x-chess-pgn" },
+    headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
   async exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers?: { accept: "application/x-ndjson" },
+    headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame>;
   async exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers: LichessHeaders = { accept: "application/x-chess-pgn" },
+    headers: LichessHeaders = { accept: "application/x-chess-pgn" }
   ): Promise<string | LichessGame> {
     // @ts-ignore URLSearchParams can handle numbers in Records
     const params = new URLSearchParams(queryParameters).toString();

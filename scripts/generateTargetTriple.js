@@ -13,10 +13,7 @@ async function main() {
   if (!targetTriple) {
     console.error("Failed to determine platform target triple");
   }
-  renameSync(
-    `src-tauri/bin/stockfish${extension}`,
-    `src-tauri/bin/stockfish-${targetTriple}${extension}`,
-  );
+  renameSync(`src-tauri/bin/stockfish${extension}`, `src-tauri/bin/stockfish-${targetTriple}${extension}`);
 }
 
 main().catch((e) => {

@@ -2,10 +2,7 @@
   <BaseContainer>
     <BaseSectionHeading heading="Games on Lichess">
       <template #actions>
-        <BaseButton
-          variant="secondary"
-          :prefix-icon="ArrowPathIcon"
-          @click="lichessGameList?.refresh"
+        <BaseButton variant="secondary" :prefix-icon="ArrowPathIcon" @click="lichessGameList?.refresh"
           >Refresh</BaseButton
         >
       </template>

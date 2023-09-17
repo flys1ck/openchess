@@ -1,33 +1,18 @@
 <template>
   <ul class="space-y-4">
-    <BaseCard
-      v-for="game in games"
-      :key="game.id"
-      as="li"
-      class="relative flex gap-8"
-    >
+    <BaseCard v-for="game in games" :key="game.id" as="li" class="relative flex gap-8">
       <div class="flex-grow p-4">
         <RouterLink :to="`/games/lichess/${game.id}`">
           <div class="flex items-center gap-2">
-            <LichessPlayer
-              :player="game.players.white"
-              class="flex flex-1 flex-col items-end"
-            />
-            <span class="text-3xl font-thin tracking-tighter text-gray-300"
-              >VS</span
-            >
-            <LichessPlayer
-              :player="game.players.black"
-              class="flex flex-1 flex-col"
-            />
+            <LichessPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
+            <span class="text-3xl font-thin tracking-tighter text-gray-300">VS</span>
+            <LichessPlayer :player="game.players.black" class="flex flex-1 flex-col" />
           </div>
           <span class="absolute inset-0" aria-hidden="true" />
         </RouterLink>
         <div class="mt-2 text-xs font-medium text-gray-800">
           <template v-if="game.opening">{{ game.opening.name }}</template>
-          <template v-else-if="game.variant === 'fromPosition'"
-            >From position: {{ game.initialFen }}</template
-          >
+          <template v-else-if="game.variant === 'fromPosition'">From position: {{ game.initialFen }}</template>
         </div>
         <p class="line-clamp-3 text-xs text-gray-500">{{ game.moves }}</p>
       </div>
@@ -38,9 +23,7 @@
               <span class="sr-only">Time control</span>
               <PlayIcon class="h-4 w-4 text-gray-400" />
             </dt>
-            <dd class="text-gray-800">
-              {{ game.clock.initial / 60 }}+{{ game.clock.increment }}
-            </dd>
+            <dd class="text-gray-800">{{ game.clock.initial / 60 }}+{{ game.clock.increment }}</dd>
           </div>
           <div class="flex items-center gap-2">
             <dt>
@@ -73,15 +56,15 @@ const games = ref<LichessGame[]>(
   await lichess.client.exportGamesByUser(
     lichess.username,
     { max: 5, opening: true },
-    { accept: "application/x-ndjson" },
-  ),
+    { accept: "application/x-ndjson" }
+  )
 );
 
 async function refresh() {
   games.value = await lichess.client.exportGamesByUser(
     lichess.username,
     { max: 5, opening: true },
-    { accept: "application/x-ndjson" },
+    { accept: "application/x-ndjson" }
   );
 }
 </script>

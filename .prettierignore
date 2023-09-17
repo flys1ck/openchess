@@ -1,5 +1,8 @@
+.vscode
+dist
+pnpm-lock.yaml
 src-tauri
 src/*.d.ts
 src-python
+supabase
 test-results
-dist

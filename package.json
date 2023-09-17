@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "eslint . --ext .vue,.js,.cjs,.ts --fix --ignore-path .prettierignore",
-    "format": "prettier --write .",
+    "format": "prettier --ignore-path .prettierignore --ignore-path .gitignore --write .",
     "supabase:gen:types": "supabase gen types typescript --linked > src/database.d.ts",
     "test:bench": "vitest bench",
     "test:e2e": "playwright test",

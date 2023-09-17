@@ -27,39 +27,36 @@ export async function useEvaluation(fen: Ref<string>) {
   const nodesPerSecond = ref(0);
   const principleVariation = ref("");
 
-  watch(
-    [fen, isEvaluationEnabled],
-    async ([newFen, newIsEvaluationEnabled], _oldValues, onCleanup) => {
-      if (newIsEvaluationEnabled === false) {
-        depth.value = 0;
-        centipawns.value = 0;
-        nodesPerSecond.value = 0;
-        principleVariation.value = "";
-        command.stdout.removeAllListeners();
-        child.write("stop\n");
-        return;
-      }
+  watch([fen, isEvaluationEnabled], async ([newFen, newIsEvaluationEnabled], _oldValues, onCleanup) => {
+    if (newIsEvaluationEnabled === false) {
+      depth.value = 0;
+      centipawns.value = 0;
+      nodesPerSecond.value = 0;
+      principleVariation.value = "";
+      command.stdout.removeAllListeners();
+      child.write("stop\n");
+      return;
+    }
 
-      // wait for engine to be ready
-      await new Promise((resolve) => {
-        command.stdout.on("data", (line) => {
-          const command = tryParseOne(line);
-          if (command instanceof ReadyOkCommand) resolve(true);
-        });
-        child.write("isready\n");
+    // wait for engine to be ready
+    await new Promise((resolve) => {
+      command.stdout.on("data", (line) => {
+        const command = tryParseOne(line);
+        if (command instanceof ReadyOkCommand) resolve(true);
       });
+      child.write("isready\n");
+    });
 
-      command.stdout.on("data", onEngineResponse);
-      await child.write(`position fen ${newFen}\n`);
-      await child.write("go depth 30\n");
+    command.stdout.on("data", onEngineResponse);
+    await child.write(`position fen ${newFen}\n`);
+    await child.write("go depth 30\n");
 
-      // cleanup is called, if there are running promises, when the watcher updates
-      onCleanup(() => {
-        command.stdout.removeAllListeners();
-        child.write("stop\n");
-      });
-    },
-  );
+    // cleanup is called, if there are running promises, when the watcher updates
+    onCleanup(() => {
+      command.stdout.removeAllListeners();
+      child.write("stop\n");
+    });
+  });
 
   const evaluatedScore = computed(() => {
     if (mate.value !== undefined) return `#${mate.value}`;
@@ -89,15 +86,13 @@ export async function useEvaluation(fen: Ref<string>) {
     if (command instanceof InfoCommand) {
       command.attributes.forEach((attribute) => {
         if (attribute instanceof DepthInfoAttr) _depth = attribute.depth;
-        if (attribute instanceof SelectiveDepthInfoAttr)
-          _selectiveDepth = attribute.depth;
+        if (attribute instanceof SelectiveDepthInfoAttr) _selectiveDepth = attribute.depth;
         if (attribute instanceof ScoreInfoAttr) {
           _centipawns = attribute.centipawn;
           _mate = attribute.mate;
         }
         if (attribute instanceof NpsInfoAttr) _nodesPerSecond = attribute.nps;
-        if (attribute instanceof PrincipalVariationInfoAttr)
-          _principleVariation = attribute.moves;
+        if (attribute instanceof PrincipalVariationInfoAttr) _principleVariation = attribute.moves;
       });
       // skip update if selective depth is not present
       if (!_selectiveDepth) return;
@@ -108,10 +103,7 @@ export async function useEvaluation(fen: Ref<string>) {
       const turnColor = chess.turn();
       const movesString = _principleVariation.reduce((acc, uciMove) => {
         const move = chess.move(uciMove);
-        const moveDescriptor =
-          move.color === "w"
-            ? `${chess.moveNumber()}. ${move.san}`
-            : `${move.san}`;
+        const moveDescriptor = move.color === "w" ? `${chess.moveNumber()}. ${move.san}` : `${move.san}`;
         return `${acc} ${moveDescriptor}`;
       }, "");
 
@@ -119,10 +111,7 @@ export async function useEvaluation(fen: Ref<string>) {
       centipawns.value = _centipawns;
       mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
-      principleVariation.value =
-        turnColor === "w"
-          ? movesString
-          : `${initialMoveNumber} ... ${movesString}`;
+      principleVariation.value = turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
     }
   }
 

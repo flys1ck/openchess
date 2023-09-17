@@ -2,47 +2,36 @@
   <template v-if="node.move">
     <!-- white's move -->
     <template v-if="node.ply % 2 === 1">
-      <span
-        class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin"
-      >
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="
-          node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'
-        "
+        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ node.move.san
-        }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
     <!-- black's move after a previous comment -->
     <template
       v-else-if="
-        (node.previousPosition?.previousPosition?.variations.length ||
-          node.previousPosition?.comment) &&
+        (node.previousPosition?.previousPosition?.variations.length || node.previousPosition?.comment) &&
         node.ply % 2 === 0
       "
     >
-      <span
-        class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin"
-      >
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <span class="col-span-7 pl-4 text-gray-500">...</span>
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="
-          node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'
-        "
+        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ node.move.san
-        }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
     <!-- black's move -->
@@ -50,28 +39,20 @@
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="
-          node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'
-        "
+        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
-        {{ node.move.san
-        }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
+        {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
       </button>
     </template>
   </template>
   <template v-if="comment || node.previousPosition?.variations.length">
     <span
-      v-if="
-        (comment || node.previousPosition?.variations.length) &&
-        node.ply % 2 === 1
-      "
+      v-if="(comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
       class="col-span-7 pl-4 text-gray-500"
       >...</span
     >
-    <div
-      class="relative col-span-full break-words border-y bg-gray-100 p-2 text-xs text-gray-700 shadow-inner"
-    >
+    <div class="relative col-span-full break-words border-y bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
       <span
         class="absolute inset-0"
         :class="[
@@ -85,11 +66,7 @@
       />
       <p>{{ comment }}</p>
       <!-- variations -->
-      <div
-        v-for="variation in node.previousPosition?.variations"
-        :key="variation.id"
-        class="space-x-0.5"
-      >
+      <div v-for="variation in node.previousPosition?.variations" :key="variation.id" class="space-x-0.5">
         <GameTreeVariationItem
           v-if="variation"
           :node="variation"
@@ -127,9 +104,7 @@ const moveNumber = computed(() => {
 
 const comment = computed(() => {
   if (!props.node.comment) return;
-  return props.node.comment
-    .replaceAll("@@StartBracket@@", "(")
-    .replaceAll("@@EndBracket@@", ")");
+  return props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
 });
 
 const nags: Record<string, string> = {
