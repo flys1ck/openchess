@@ -1,6 +1,6 @@
 .vscode
 dist
-pnpm-lock.yaml
+bun.lockb
 src-tauri
 src/*.d.ts
 src-python
