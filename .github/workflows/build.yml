@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - if: matrix.platform == 'ubuntu-latest'
+        run: |
+          apt-get update
+          apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+      - name: Generate bundled binaries
+        run: |
+          mkdir src-tauri/bin
+          touch src-tauri/bin/stockfish
+          bun run scripts/generateTargetTriple.ts
+      - name: Build application
+        run: npm run tauri build
