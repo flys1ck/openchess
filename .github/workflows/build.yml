@@ -57,7 +57,8 @@ jobs:
           node scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
-        workspaces: "src-tauri -> target"
+        with:
+          workspaces: src-tauri -> target
 
       - name: Build application
         run: pnpm tauri build
