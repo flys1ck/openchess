@@ -32,12 +32,12 @@ prepare:
 
 build:
     FROM +prepare
-    COPY package.json bun.lockb .
-    RUN bun install --frozen-lockfile
+    COPY package.json pnpm.lockb .
+    RUN pnpm install --frozen-lockfile
     COPY --dir src src-tauri scripts public .
     COPY index.html tsconfig*.json vite.config.ts tailwind.config.cjs postcss.config.cjs .
-    RUN bun run scripts/generateTargetTriple.ts
-    # FIXME: can't run with bun, throws SIGKILL
+    RUN pnpm run scripts/generateTargetTriple.ts
+    # FIXME: can't run with pnpm, throws SIGKILL
     RUN cargo tauri build --verbose
 
 build-all-platforms:
