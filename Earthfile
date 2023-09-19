@@ -1,12 +1,22 @@
 VERSION 0.7
-FROM node:18-bookworm-slim
+FROM ubuntu:22.04
 WORKDIR /openchess
 
+# switch to earthly, once it supports macos and windows
 prepare:
-    # update
-    RUN apt-get update -y --allow-releaseinfo-change && apt-get upgrade -y && apt-get autoremove -y
-    # install tauri deps
-    RUN apt-get install libwebkit2gtk-4.0-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev -y
+    # install apt deps
+    ENV DEBIAN_FRONTEND="noninteractive"
+    RUN apt-get update -y --allow-releaseinfo-change && \
+        apt-get upgrade -y && \
+        apt-get autoremove -y && \
+        apt-get install libwebkit2gtk-4.0-dev build-essential ca-certificates gnupg curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev unzip -y && \
+        rm -rf /var/lib/apt/lists/*
+    # install node
+    RUN mkdir -p /etc/apt/keyrings
+    RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    ENV NODE_MAJOR="18"
+    RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+    RUN apt-get update -y && apt-get install nodejs -y
     # install rust
     # use /root as default home for rust binaries
     ENV HOME="/root"
@@ -17,7 +27,6 @@ prepare:
     # install tauri-cli
     RUN cargo install tauri-cli
     # install bun
-    RUN apt-get install unzip
     RUN curl -fsSL https://bun.sh/install | bash
     ENV PATH="$HOME/.bun/bin:${PATH}"
 
