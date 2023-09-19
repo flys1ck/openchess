@@ -2,7 +2,7 @@ VERSION 0.7
 FROM ubuntu:22.04
 WORKDIR /openchess
 
-# switch to earthly, once it supports macos and windows
+# switch to earthly, once it supports multi-platform builds on MacOS and Windows
 prepare:
     # install apt deps
     ENV DEBIAN_FRONTEND="noninteractive"
