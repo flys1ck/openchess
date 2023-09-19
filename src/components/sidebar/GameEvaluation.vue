@@ -24,7 +24,7 @@
         :style="`transform: scaleX(${depth / 99})`"
       ></span>
     </div>
-    <div v-if="principleVariation" class="border-t text-sm text-gray-700 p-1 line-clamp-1">
+    <div v-if="principleVariation" class="line-clamp-1 border-t p-1 text-sm text-gray-700">
       {{ principleVariation }}
     </div>
   </div>

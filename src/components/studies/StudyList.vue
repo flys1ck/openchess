@@ -1,7 +1,7 @@
 <template>
   <div v-if="studies" class="flex">
     <StudiesEmptyState v-if="!studies.length" />
-    <ul v-else role="list" class="space-y-4 flex-grow">
+    <ul v-else role="list" class="flex-grow space-y-4">
       <BaseCard v-for="study in studies" :key="study.id" as="li" class="flex justify-between gap-x-6 p-6">
         <div>
           <div class="flex items-start gap-x-3">

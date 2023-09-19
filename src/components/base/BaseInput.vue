@@ -7,7 +7,7 @@
         :id="id"
         :type="type"
         :name="name"
-        class="block w-full rounded-md focus:outline-none text-sm py-1.5"
+        class="block w-full rounded-md py-1.5 text-sm focus:outline-none"
         :class="inputClasses"
       />
       <div
@@ -15,7 +15,7 @@
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <ExclamationCircleIcon v-if="!isEvaluating" class="h-5 w-5 text-red-500" aria-hidden="true" />
-        <MinusIcon v-if="isEvaluating" class="h-5 w-5 text-blue-500 animate-spin" />
+        <MinusIcon v-if="isEvaluating" class="h-5 w-5 animate-spin text-blue-500" />
       </div>
     </div>
     <div v-if="errors.length" class="mt-1">

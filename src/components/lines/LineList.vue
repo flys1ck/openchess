@@ -8,7 +8,7 @@
         <span class="absolute inset-0" aria-hidden />
         {{ line.name }}</RouterLink
       >
-      <p class="text-gray-400 text-sm mt-2">{{ line.moves }}</p>
+      <p class="mt-2 text-sm text-gray-400">{{ line.moves }}</p>
     </BaseCard>
   </ul>
 </template>

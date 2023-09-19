@@ -1,12 +1,12 @@
 <template>
   <button
     v-if="node.move"
-    class="relative px-px rounded border inline-flex gap-0.5"
-    :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-200' : 'hover:bg-gray-200 border-transparent'"
+    class="relative inline-flex gap-0.5 rounded border px-px"
+    :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-200' : 'border-transparent hover:bg-gray-200'"
     @click="$emit('nodeselect', node)"
   >
     <span v-if="node.previousPosition?.variations.length || node.ply % 2 === 1">{{ moveNumber }}. </span>
-    <span v-if="node.previousPosition?.variations.length && node.ply % 2 === 0">... </span>
+    <span v-if="node.previousPosition?.variations.length && node.ply % 2 === 0">...</span>
     <span>{{ node.move.san }}</span>
   </button>
   <GameTreeVariationItem
@@ -16,14 +16,14 @@
     :variation-depth="variationDepth"
     @nodeselect="(node) => $emit('nodeselect', node)"
   />
-  <div v-if="node.variations.length" class="pl-1 border-l-2 border-gray-400 relative">
+  <div v-if="node.variations.length" class="relative border-l-2 border-gray-400 pl-1">
     <span
       v-if="variationDepth !== 1"
-      class="w-2.5 flex-shrink-0 border-t-2 border-gray-400 inline-block -translate-x-full absolute top-0 left-0"
+      class="absolute left-0 top-0 inline-block w-2.5 flex-shrink-0 -translate-x-full border-t-2 border-gray-400"
       aria-hidden="true"
     />
-    <div class="flex items-start gap-0.5 -translate-x-1.5">
-      <span class="w-2 flex-shrink-0 border-t-2 border-gray-400 inline-block translate-y-2" aria-hidden="true" />
+    <div class="flex -translate-x-1.5 items-start gap-0.5">
+      <span class="inline-block w-2 flex-shrink-0 translate-y-2 border-t-2 border-gray-400" aria-hidden="true" />
       <div class="inline-block">
         <GameTreeVariationItem
           v-if="node.nextPosition"
@@ -34,8 +34,8 @@
         />
       </div>
     </div>
-    <div v-for="variation in node.variations" :key="variation.id" class="flex items-start -translate-x-1.5 gap-0.5">
-      <span class="w-2 border-t-2 border-gray-400 inline-block translate-y-2 flex-shrink-0" aria-hidden="true" />
+    <div v-for="variation in node.variations" :key="variation.id" class="flex -translate-x-1.5 items-start gap-0.5">
+      <span class="inline-block w-2 flex-shrink-0 translate-y-2 border-t-2 border-gray-400" aria-hidden="true" />
       <div>
         <GameTreeVariationItem
           :node="variation"
@@ -67,10 +67,5 @@ defineEmits<{
 
 const moveNumber = computed(() => {
   return Math.ceil(props.node.ply / 2);
-});
-
-const comment = computed(() => {
-  if (!props.node.comment) return;
-  return props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
 });
 </script>

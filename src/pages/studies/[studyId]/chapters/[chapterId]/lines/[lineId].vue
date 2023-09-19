@@ -1,5 +1,5 @@
 <template>
-  <main class="flex-grow overflow-y-auto overflow-x-hidden flex">
+  <main class="flex flex-grow overflow-y-auto overflow-x-hidden">
     <div class="flex-grow">
       <GameChessboard :game="game" class="max-w-4xl p-4" />
     </div>

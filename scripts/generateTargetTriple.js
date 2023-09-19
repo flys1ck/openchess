@@ -1,3 +1,4 @@
+/* eslint-env node */
 import { execa } from "execa";
 import { renameSync } from "fs";
 

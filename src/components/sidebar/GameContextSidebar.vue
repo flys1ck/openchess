@@ -1,5 +1,5 @@
 <template>
-  <TabGroup as="aside" class="flex flex-col border-l border-gray-200 w-96 shrink-0" manual>
+  <TabGroup as="aside" class="flex w-96 shrink-0 flex-col border-l border-gray-200" manual>
     <TabList class="flex justify-around border-b border-gray-200">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
@@ -8,7 +8,7 @@
               ? 'border-orange-400 text-orange-400'
               : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
           "
-          class="whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium w-1/2 focus:outline-none"
+          class="w-1/2 whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium focus:outline-none"
         >
           {{ tab }}
         </button>
@@ -18,7 +18,7 @@
       <!-- Game Tab -->
       <TabPanel
         :unmount="false"
-        class="flex-grow flex flex-col justify-between overflow-hidden focus:outline-none"
+        class="flex flex-grow flex-col justify-between overflow-hidden focus:outline-none"
         :tab-index="-1"
       >
         <!-- Engine evaluation -->
@@ -36,7 +36,7 @@
               />
             </div>
           </div>
-          <div class="p-4 flex flex-col gap-2 border-t">
+          <div class="flex flex-col gap-2 border-t p-4">
             <div class="flex justify-center gap-4">
               <BaseButton
                 variant="secondary"
@@ -75,7 +75,7 @@
         </template>
       </TabPanel>
       <!-- Positions Tab -->
-      <TabPanel :unmount="false" class="focus:outline-none flex flex-col flex-grow overflow-hidden">
+      <TabPanel :unmount="false" class="flex flex-grow flex-col overflow-hidden focus:outline-none">
         <GamePositions :game="game" />
       </TabPanel>
       <!-- Settings Tab -->

@@ -1,7 +1,7 @@
 <template>
   <Component
     :is="as"
-    class="inline-flex flex-none whitespace-nowrap rounded-md font-medium transition-colors focus:outline-none focus:ring items-center justify-center"
+    class="inline-flex flex-none items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus:outline-none focus:ring"
     :class="computedClasses"
     :type="as === 'button' && 'button'"
   >

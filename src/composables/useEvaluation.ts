@@ -39,12 +39,12 @@ export async function useEvaluation(fen: Ref<string>) {
     }
 
     // wait for engine to be ready
-    await new Promise(async (resolve) => {
+    await new Promise((resolve) => {
       command.stdout.on("data", (line) => {
         const command = tryParseOne(line);
         if (command instanceof ReadyOkCommand) resolve(true);
       });
-      await child.write("isready\n");
+      child.write("isready\n");
     });
 
     command.stdout.on("data", onEngineResponse);
@@ -115,5 +115,11 @@ export async function useEvaluation(fen: Ref<string>) {
     }
   }
 
-  return { isEvaluationEnabled, depth, nodesPerSecond, evaluatedScore, principleVariation };
+  return {
+    isEvaluationEnabled,
+    depth,
+    nodesPerSecond,
+    evaluatedScore,
+    principleVariation,
+  };
 }

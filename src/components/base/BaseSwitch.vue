@@ -21,7 +21,6 @@
 import { Switch, SwitchGroup, SwitchLabel } from "@headlessui/vue";
 
 defineProps<{
-  modelValue: boolean;
   label?: string;
 }>();
 

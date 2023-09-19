@@ -2,12 +2,12 @@
   <template v-if="node.move">
     <!-- white's move -->
     <template v-if="node.ply % 2 === 1">
-      <span class="col-span-2 font-thin border-r pr-2 py-0.5 text-sm flex justify-end items-center">
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <button
         :data-node-id="node.id"
-        class="text-left pl-4 col-span-7 font-light py-0.5"
+        class="col-span-7 py-0.5 pl-4 text-left font-light"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -21,13 +21,13 @@
         node.ply % 2 === 0
       "
     >
-      <span class="col-span-2 font-thin border-r pr-2 py-0.5 text-sm flex justify-end items-center">
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
-      <span class="col-span-7 text-gray-500 pl-4">...</span>
+      <span class="col-span-7 pl-4 text-gray-500">...</span>
       <button
         :data-node-id="node.id"
-        class="text-left pl-4 col-span-7 font-light py-0.5"
+        class="col-span-7 py-0.5 pl-4 text-left font-light"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -38,7 +38,7 @@
     <template v-else>
       <button
         :data-node-id="node.id"
-        class="text-left pl-4 col-span-7 font-light py-0.5"
+        class="col-span-7 py-0.5 pl-4 text-left font-light"
         :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
         @click="$emit('nodeselect', node)"
       >
@@ -49,21 +49,24 @@
   <template v-if="comment || node.previousPosition?.variations.length">
     <span
       v-if="(comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
-      class="col-span-7 text-gray-500 pl-4"
+      class="col-span-7 pl-4 text-gray-500"
       >...</span
     >
-    <div class="col-span-full text-xs text-gray-700 border-y bg-gray-100 p-2 shadow-inner relative break-words">
+    <div class="relative col-span-full break-words border-y bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
       <span
         class="absolute inset-0"
         :class="[
-          { 'border-l-4': node.move?.piece.color === 'white', 'border-r-4': node.move?.piece.color === 'black' },
+          {
+            'border-l-4': node.move?.piece.color === 'white',
+            'border-r-4': node.move?.piece.color === 'black',
+          },
           node.id === activeNodeId ? 'border-orange-300' : 'border-gray-300',
         ]"
         aria-hidden
       />
       <p>{{ comment }}</p>
       <!-- variations -->
-      <div v-for="variation in node.previousPosition?.variations" class="space-x-0.5">
+      <div v-for="variation in node.previousPosition?.variations" :key="variation.id" class="space-x-0.5">
         <GameTreeVariationItem
           v-if="variation"
           :node="variation"

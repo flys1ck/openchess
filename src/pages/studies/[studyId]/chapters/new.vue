@@ -72,7 +72,7 @@ async function processPgn(pgn: string) {
   // TODO same function in game index
   const history = game.history({ verbose: true });
   const moves = history
-    .reduce((acc, move, i) => {
+    .reduce((acc, move) => {
       return `${acc} ${move.san}`;
     }, "")
     .trim();
@@ -95,7 +95,7 @@ async function processPgn(pgn: string) {
 
   if (!chapter) return;
 
-  const { data: line, error } = await supabase
+  const { data: line } = await supabase
     .from("lines")
     .upsert(
       {
