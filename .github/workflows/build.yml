@@ -47,7 +47,7 @@ jobs:
         id: pgn-extract-cache
         with:
           path: |
-            external/
+            external/pgn-extract
           key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}
 
       - name: Install pgn-extract
@@ -55,6 +55,26 @@ jobs:
         if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
         env:
           PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
+
+      - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
+
+      - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
+        # if: "{{matrix.platform == ubuntu-22.04}}"
+
+      - uses: actions/cache@v3
+        id: stockfish-cache
+        with:
+          path: |
+            external/stockfish
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ env.STOCKFISH_PLATFORM }}
+
+      - name: Install Stockfish
+        run: make stockfish
+        if: steps.stockfish-cache.outputs.cache-hit != 'true'
+        env:
+          PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
+          STOCKFISH_VERSION: ${{ env.STOCKFISH_VERSION }}
+          STOCKFISH_PLATFORM: ${{ env.STOCKFISH_PLATFORM }}
 
       # - name: Mock bundled binaries
       #   run: |
