@@ -44,6 +44,7 @@ jobs:
       - name: Mock bundled binaries
         run: |
           mkdir external
+          mkdir -p src-tauri/bin
           touch external/stockfish
           touch external/pgn-extract
           node scripts/generateTargetTriple.js
