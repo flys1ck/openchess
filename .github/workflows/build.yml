@@ -17,8 +17,6 @@ jobs:
       matrix:
         platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
-    # Open questions
-    # - Rust version is not pinned @setup/cargo?
 
     steps:
       - uses: actions/checkout@v4
