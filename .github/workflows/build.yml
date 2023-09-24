@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [macos-latest]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     # Open questions
     # - Rust version is not pinned @setup/cargo?
@@ -59,7 +59,7 @@ jobs:
 
       - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
 
-      - run: echo "STOCKFISH_PLATFORM=macos" >> $GITHUB_ENV
+      - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
         # if: "{{matrix.platform == ubuntu-22.04}}"
 
       - uses: actions/cache@v3
@@ -96,3 +96,8 @@ jobs:
 
       - name: Build application
         run: pnpm tauri build --ci
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: src-tauri/target/release/bundle/
