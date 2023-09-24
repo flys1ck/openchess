@@ -35,6 +35,12 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Install Rust toolchain
+        run: |
+          rustup update --no-self-update 1.72.0
+          rustup component add --toolchain 1.72.0 rustfmt rust-src
+          rustup default 1.72.0
+
       - run: pnpm install
 
       - name: Install OS dependencies
