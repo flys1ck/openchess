@@ -11,6 +11,7 @@ concurrency:
 
 jobs:
   build:
+    name: Build
     strategy:
       fail-fast: true
       matrix:
@@ -83,6 +84,11 @@ jobs:
       #     touch external/stockfish
       #     touch external/pgn-extract
       #     node scripts/generateTargetTriple.js
+
+      - name: Generate Target Triple
+        run: |
+          mkdir src-tauri/bin
+          node scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
         with:
