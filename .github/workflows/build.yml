@@ -14,38 +14,27 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [ubuntu-latest]
-
+        platform: [ubuntu-22.04]
     runs-on: ${{ matrix.platform }}
+    # Open questions
+    # - Rust version is not pinned @setup/cargo?
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
           version: 8
-          run_install: false
+          run_install: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "PNPM_HOME=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.PNPM_HOME }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - run: pnpm install
-
-      - if: matrix.platform == 'ubuntu-latest'
+      - name: Install OS dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev

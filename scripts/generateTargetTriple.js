@@ -1,6 +1,6 @@
 /* eslint-env node */
 import { execa } from "execa";
-import { renameSync } from "fs";
+import { copyFileSync } from "fs";
 
 let extension = "";
 if (process.platform === "win32") {
@@ -13,8 +13,9 @@ async function main() {
   if (!targetTriple) {
     console.error("Failed to determine platform target triple");
   }
-  renameSync(`external/stockfish${extension}`, `src-tauri/bin/stockfish-${targetTriple}${extension}`);
-  renameSync(`external/pgn-extract${extension}`, `src-tauri/bin/pgn-extract-${targetTriple}${extension}`);
+
+  copyFileSync(`external/stockfish${extension}`, `src-tauri/bin/stockfish-${targetTriple}${extension}`);
+  copyFileSync(`external/pgn-extract${extension}`, `src-tauri/bin/pgn-extract-${targetTriple}${extension}`);
 }
 
 main().catch((e) => {
