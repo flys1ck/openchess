@@ -43,8 +43,9 @@ jobs:
 
       - name: Mock bundled binaries
         run: |
-          mkdir src-tauri/bin
-          touch src-tauri/bin/stockfish
+          mkdir external
+          touch external/stockfish
+          touch external/pgn-extract
           node scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
