@@ -41,13 +41,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Mock bundled binaries
-        run: |
-          mkdir external
-          mkdir -p src-tauri/bin
-          touch external/stockfish
-          touch external/pgn-extract
-          node scripts/generateTargetTriple.js
+      - run: echo "PGN_EXTRACT_VERSION=22-11" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        id: pgn-extract-cache
+        with:
+          path: |
+            external/
+          key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}
+
+      - name: Install pgn-extract
+        run: make pgn-extract
+        if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
+        env:
+          PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
+
+      # - name: Mock bundled binaries
+      #   run: |
+      #     mkdir external
+      #     mkdir -p src-tauri/bin
+      #     touch external/stockfish
+      #     touch external/pgn-extract
+      #     node scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
         with:
