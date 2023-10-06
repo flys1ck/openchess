@@ -13,7 +13,6 @@ import "./assets/css/main.css";
 const app = createApp(App);
 
 app.use(pinia);
-// refresh initial session for first navigation
 const lichess = useLichess();
 await lichess.setPersonalAccessToken();
 app.use(router);
