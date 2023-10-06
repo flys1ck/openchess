@@ -37,7 +37,8 @@
         "depends": []
       },
       "externalBin": [
-        "bin/stockfish"
+        "bin/stockfish",
+        "bin/pgn-extract"
       ],
       "icon": [
         "icons/32x32.png",
