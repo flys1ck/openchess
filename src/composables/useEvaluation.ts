@@ -16,7 +16,8 @@ import { computed, Ref, ref, watch } from "vue";
 export async function useEvaluation(fen: Ref<string>) {
   const chess = new Chess();
   chess.load(fen.value);
-  const turnColor = chess.turn();
+  let currentTurnColor = chess.turn();
+
   const command = Command.sidecar("bin/stockfish");
   const child = await command.spawn();
 
@@ -47,6 +48,9 @@ export async function useEvaluation(fen: Ref<string>) {
       child.write("isready\n");
     });
 
+    chess.load(fen.value);
+    currentTurnColor = chess.turn();
+
     command.stdout.on("data", onEngineResponse);
     await child.write(`position fen ${newFen}\n`);
     await child.write("go depth 30\n");
@@ -62,7 +66,7 @@ export async function useEvaluation(fen: Ref<string>) {
     if (mate.value !== undefined) return `#${mate.value}`;
     if (centipawns.value === undefined) return "-";
     const pawnAdvantage = centipawns.value / 100;
-    const score = turnColor === "w" ? pawnAdvantage : -pawnAdvantage;
+    const score = currentTurnColor === "w" ? pawnAdvantage : -pawnAdvantage;
     switch (Math.sign(score)) {
       case -1:
         return score;
