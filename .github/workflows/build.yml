@@ -11,18 +11,15 @@ concurrency:
 
 jobs:
   build:
+    name: Build
     strategy:
       fail-fast: true
       matrix:
         platform: [ubuntu-latest]
-
     runs-on: ${{ matrix.platform }}
+
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -30,30 +27,71 @@ jobs:
           version: 8
           run_install: false
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "PNPM_HOME=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
+      - uses: actions/setup-node@v3
         with:
-          path: ${{ env.PNPM_HOME }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          node-version: 18
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install Rust toolchain
+        run: |
+          rustup update --no-self-update 1.72.0
+          rustup component add --toolchain 1.72.0 rustfmt rust-src
+          rustup default 1.72.0
 
       - run: pnpm install
 
-      - if: matrix.platform == 'ubuntu-latest'
+      - name: Install OS dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Mock bundled binaries
+      - run: echo "PGN_EXTRACT_VERSION=22-11" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        id: pgn-extract-cache
+        with:
+          path: |
+            external/pgn-extract
+          key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}
+
+      - name: Install pgn-extract
+        run: make pgn-extract
+        if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
+        env:
+          PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
+
+      - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
+
+      - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
+        # if: "{{matrix.platform == ubuntu-22.04}}"
+
+      - uses: actions/cache@v3
+        id: stockfish-cache
+        with:
+          path: |
+            external/stockfish
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ env.STOCKFISH_PLATFORM }}
+
+      - name: Install Stockfish
+        run: make stockfish
+        if: steps.stockfish-cache.outputs.cache-hit != 'true'
+        env:
+          PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
+          STOCKFISH_VERSION: ${{ env.STOCKFISH_VERSION }}
+          STOCKFISH_PLATFORM: ${{ env.STOCKFISH_PLATFORM }}
+
+      # - name: Mock bundled binaries
+      #   run: |
+      #     mkdir external
+      #     mkdir -p src-tauri/bin
+      #     touch external/stockfish
+      #     touch external/pgn-extract
+      #     node scripts/generateTargetTriple.js
+
+      - name: Generate Target Triple
         run: |
           mkdir src-tauri/bin
-          touch src-tauri/bin/stockfish
           node scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
@@ -61,4 +99,14 @@ jobs:
           workspaces: src-tauri -> target
 
       - name: Build application
-        run: pnpm tauri build
+        run: pnpm tauri build --ci
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-ubuntu-deb
+          path: src-tauri/target/release/bundle/deb/openchess_0.0.0_amd64.deb
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-ubuntu-appimage
+          path: src-tauri/target/release/bundle/appimage/openchess_0.0.0_amd64.AppImage

@@ -33,6 +33,8 @@ src-python
 
 # env
 .arg
-.env
+.envrc
 
+# external binaries
+external
 src-tauri/bin/
