@@ -27,6 +27,12 @@
       "dialog": {
         "all": false,
         "confirm": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$LOCALDATA/*"
+        ]
       }
     },
     "bundle": {
