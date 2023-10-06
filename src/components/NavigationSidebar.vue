@@ -13,31 +13,10 @@
           </div>
         </RouterLink>
       </nav>
-      <button v-if="session" @click="onSignOut">
-        <BaseAvatar
-          :src="session.user.user_metadata.picture ?? profileUrl"
-          alt="Profile picture of your user account"
-        />
-      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { navigationItems } from "@data/navigationItems";
-import { useSession } from "@stores/useSession";
-import { useRouter } from "vue-router/auto";
-import profileUrl from "../assets/images/profile_default.png";
-import BaseAvatar from "./base/BaseAvatar.vue";
-import { useLichess } from "@stores/useLichess";
-
-const router = useRouter();
-const lichess = useLichess();
-const { session, signOut } = useSession();
-
-function onSignOut() {
-  signOut();
-  lichess.clearToken();
-  router.push("/signin");
-}
 </script>

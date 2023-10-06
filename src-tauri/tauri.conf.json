@@ -13,6 +13,16 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "dialog": {
+        "all": false,
+        "confirm": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$LOCALDATA/*"
+        ]
+      },
       "shell": {
         "all": false,
         "open": true,
@@ -22,16 +32,6 @@
             "name": "bin/stockfish",
             "sidecar": true
           }
-        ]
-      },
-      "dialog": {
-        "all": false,
-        "confirm": true
-      },
-      "fs": {
-        "all": true,
-        "scope": [
-          "$LOCALDATA/*"
         ]
       }
     },

@@ -1,4 +1,3 @@
-import { useSession } from "@stores/useSession";
 import { setupLayouts } from "virtual:generated-layouts";
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router/auto";
 
@@ -23,13 +22,6 @@ const router = createRouter({
   extendRoutes(routes) {
     return routes.map(recursiveLayouts);
   },
-});
-
-router.beforeEach((to) => {
-  const publicRoutes = ["/signin", "/signup"];
-  const { session } = useSession();
-
-  if (to.name && session === null && !publicRoutes.includes(to.name as string)) return { name: "/signin" };
 });
 
 export default router;
