@@ -61,20 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { useSupabase } from "@composables/useSupabase";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import BaseButton from "../base/BaseButton.vue";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
 import BaseCard from "@components/base/BaseCard.vue";
 import BaseTime from "@components/base/BaseTime.vue";
-
-const supabase = useSupabase();
+import { deleteStudy, getStudies } from "@services/db";
 
 // TODO move this to services
-const { data: studies } = await supabase.from("studies").select("*");
-
-async function deleteStudy(studyId: number) {
-  await supabase.from("studies").delete().eq("id", studyId);
-}
+const studies = await getStudies();
 </script>

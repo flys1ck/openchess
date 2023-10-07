@@ -239,8 +239,8 @@
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
 import BaseTextarea from "@components/base/BaseTextarea.vue";
-import { useSupabase } from "@composables/useSupabase";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { createStudy } from "@services/db";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { reactive } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
@@ -265,7 +265,6 @@ setBreadcrumbs([
 ]);
 
 const router = useRouter();
-const supabase = useSupabase();
 const studyFormData = reactive({
   name: "",
   description: "",
@@ -273,16 +272,9 @@ const studyFormData = reactive({
 
 async function onSubmit() {
   // TODO check all requests for failure
-  const { data: study } = await supabase
-    .from("studies")
-    .insert({
-      name: studyFormData.name,
-      description: studyFormData.description,
-    })
-    .select("id")
-    .single();
+  const studyId = await createStudy(studyFormData);
 
-  if (!study) return;
-  router.push(`/studies/${study.id}`);
+  if (!studyId) return;
+  router.push(`/studies/${studyId}`);
 }
 </script>

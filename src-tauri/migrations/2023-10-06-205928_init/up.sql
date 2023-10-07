@@ -1,7 +1,7 @@
 create table if not exists studies (
     id integer primary key,
     created_at timestamp default current_timestamp not null,
-    name text not null,
+    name text not null unique,
     description text
 );
 
@@ -9,7 +9,7 @@ create table if not exists chapters (
     id integer primary key,
     created_at timestamp default current_timestamp not null,
     study integer not null,
-    name text not null,
+    name text not null unique,
     foreign key (study) references studies(id) on delete cascade
 );
 

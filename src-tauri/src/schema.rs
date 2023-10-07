@@ -37,6 +37,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    settings (setting_key) {
+        setting_key -> Text,
+        setting_value -> Text,
+    }
+}
+
+diesel::table! {
     studies (id) {
         id -> Nullable<Integer>,
         created_at -> Timestamp,
@@ -56,5 +63,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     chapters,
     lines,
     positions,
+    settings,
     studies,
 );

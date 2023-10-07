@@ -85,7 +85,7 @@ setBreadcrumbs([
     to: "/games/lichess/",
   },
   {
-    name: `${parsedGame.tags!["White"]} vs ${parsedGame.tags!["Black"]}`,
+    name: `${parsedGame.tags!["White"]} vs. ${parsedGame.tags!["Black"]}`,
     to: `/games/lichess/${route.params.gameId}`,
   },
 ]);
