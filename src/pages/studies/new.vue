@@ -240,8 +240,10 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
 import BaseTextarea from "@components/base/BaseTextarea.vue";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
-import { createStudy } from "@services/db";
+import { db, execute } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { Insertable } from "kysely";
+import { Studies } from "@/database";
 import { reactive } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
 
@@ -265,16 +267,17 @@ setBreadcrumbs([
 ]);
 
 const router = useRouter();
-const studyFormData = reactive({
+const studyFormData = reactive<Insertable<Studies>>({
   name: "",
   description: "",
 });
 
 async function onSubmit() {
   // TODO check all requests for failure
-  const studyId = await createStudy(studyFormData);
+  const query = db.insertInto("studies").values(studyFormData).compile();
+  const result = await execute(query);
 
-  if (!studyId) return;
-  router.push(`/studies/${studyId}`);
+  if (!result) return;
+  router.push(`/studies/${result.lastInsertId}`);
 }
 </script>

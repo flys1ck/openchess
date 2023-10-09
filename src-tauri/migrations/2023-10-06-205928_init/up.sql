@@ -1,12 +1,12 @@
 create table if not exists studies (
-    id integer primary key,
+    id integer primary key not null,
     created_at timestamp default current_timestamp not null,
     name text not null unique,
     description text
 );
 
 create table if not exists chapters (
-    id integer primary key,
+    id integer primary key not null,
     created_at timestamp default current_timestamp not null,
     study integer not null,
     name text not null unique,
@@ -14,7 +14,7 @@ create table if not exists chapters (
 );
 
 create table if not exists lines (
-    id integer primary key,
+    id integer primary key not null,
     created_at timestamp default current_timestamp not null,
     name text not null,
     pgn text not null,
@@ -27,7 +27,7 @@ create table if not exists lines (
 );
 
 create table if not exists positions (
-    id integer primary key,
+    id integer primary key not null,
     created_at timestamp default current_timestamp not null,
     fen text not null,
     study integer,

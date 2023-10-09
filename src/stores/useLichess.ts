@@ -1,4 +1,4 @@
-import { getSetting, setSetting } from "@services/db";
+import { db, execute, selectFirst } from "@services/database";
 import { LichessClient } from "@services/lichess";
 import { defineStore } from "pinia";
 import { ref } from "vue";
@@ -9,7 +9,12 @@ export const useLichess = defineStore("lichess", () => {
   const client = new LichessClient(personalAccessToken.value);
 
   async function setPersonalAccessToken() {
-    const lichessToken = await getSetting("lichess_token");
+    const query = db
+      .selectFrom("settings")
+      .select("setting_value")
+      .where("setting_key", "=", "lichess_token")
+      .compile();
+    const { setting_value: lichessToken } = await selectFirst(query);
 
     if (!lichessToken) return;
 
@@ -41,7 +46,12 @@ export const useLichess = defineStore("lichess", () => {
     client.personalAccessToken = token;
     personalAccessToken.value = token;
 
-    await setSetting("lichess_token", token);
+    const query = db
+      .updateTable("settings")
+      .set({ setting_value: token })
+      .where("setting_key", "=", "lichess_token")
+      .compile();
+    await execute(query);
 
     return true;
   }

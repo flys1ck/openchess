@@ -2,7 +2,7 @@
 
 diesel::table! {
     chapters (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         created_at -> Timestamp,
         study -> Integer,
         name -> Text,
@@ -11,7 +11,7 @@ diesel::table! {
 
 diesel::table! {
     lines (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         created_at -> Timestamp,
         name -> Text,
         pgn -> Text,
@@ -24,7 +24,7 @@ diesel::table! {
 
 diesel::table! {
     positions (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         created_at -> Timestamp,
         fen -> Text,
         study -> Nullable<Integer>,
@@ -45,7 +45,7 @@ diesel::table! {
 
 diesel::table! {
     studies (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         created_at -> Timestamp,
         name -> Text,
         description -> Nullable<Text>,

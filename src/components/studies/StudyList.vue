@@ -9,8 +9,6 @@
           </div>
           <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
             <p class="whitespace-nowrap">Created <BaseTime :date="new Date(study.created_at)" /></p>
-            &bull;
-            <!-- <p class="truncate">Created by {{ study.createdBy }}</p> -->
           </div>
         </div>
         <div class="flex items-center gap-x-4">
@@ -67,8 +65,14 @@ import BaseButton from "../base/BaseButton.vue";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
 import BaseCard from "@components/base/BaseCard.vue";
 import BaseTime from "@components/base/BaseTime.vue";
-import { deleteStudy, getStudies } from "@services/db";
+import { db, execute, select } from "@services/database";
 
 // TODO move this to services
-const studies = await getStudies();
+const query = db.selectFrom("studies").selectAll().compile();
+const studies = await select(query);
+
+async function deleteStudy(studyId: number) {
+  const query = db.deleteFrom("studies").where("id", "=", studyId).compile();
+  await execute(query);
+}
 </script>
