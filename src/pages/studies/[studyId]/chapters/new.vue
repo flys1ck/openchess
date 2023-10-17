@@ -30,10 +30,10 @@
 </template>
 
 <script setup lang="ts">
+import { db, execute } from "@/services/database";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
-import { useSupabase } from "@composables/useSupabase";
 import { Chess } from "chess.js";
 import { ref } from "vue";
 import { definePage, useRoute } from "vue-router/auto";
@@ -59,8 +59,6 @@ function onSubmit() {
   });
 }
 
-const supabase = useSupabase();
-
 async function processPgn(pgn: string) {
   const game = new Chess();
   game.loadPgn(pgn);
@@ -78,42 +76,22 @@ async function processPgn(pgn: string) {
     .trim();
 
   // TODO: !!! enable RLS !!!
-  const { data: chapter } = await supabase
-    .from("chapters")
-    .upsert(
-      {
-        name: chapterName,
-        study: Number(route.params.studyId),
-      },
-      {
-        onConflict: "study, name",
-      }
-    )
-    .select("id, study")
-    .limit(1)
-    .single();
+  const chapterQuery = db
+    .insertInto("chapters")
+    .values({
+      name: chapterName,
+      study: Number(route.params.studyId),
+    })
+    .onConflict((oc) => oc.columns(["study", "name"]).doNothing())
+    .compile();
+  const chapterId = (await execute(chapterQuery)).lastInsertId;
 
-  if (!chapter) return;
-
-  const { data: line } = await supabase
-    .from("lines")
-    .upsert(
-      {
-        study: chapter.study,
-        chapter: chapter.id,
-        name: lineName,
-        pgn,
-        moves,
-      },
-      {
-        onConflict: "chapter, moves",
-      }
-    )
-    .select("id")
-    .limit(1)
-    .single();
-
-  if (!line) return;
+  const lineQuery = db
+    .insertInto("lines")
+    .values({ study: Number(route.params.studyId), chapter: chapterId, name: lineName, pgn, moves })
+    .onConflict((oc) => oc.columns(["chapter", "moves"]).doNothing())
+    .compile();
+  const lineId = (await execute(lineQuery)).lastInsertId;
 
   const positions = history.map((move) => {
     return {
@@ -121,14 +99,17 @@ async function processPgn(pgn: string) {
       source: move.from,
       destination: move.to,
       san: move.san,
-      study: chapter.study,
-      chapter: chapter.id,
-      line: line?.id,
+      study: Number(route.params.studyId),
+      chapter: chapterId,
+      line: lineId,
     };
   });
 
-  await supabase.from("positions").upsert(positions, {
-    onConflict: "line, fen",
-  });
+  const positionsQuery = db
+    .insertInto("positions")
+    .values(positions)
+    .onConflict((oc) => oc.columns(["line", "fen"]).doNothing())
+    .compile();
+  execute(positionsQuery);
 }
 </script>
