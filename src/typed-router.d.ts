@@ -45,8 +45,6 @@ declare module 'vue-router/auto/routes' {
     '/games/lichess/': RouteRecordInfo<'/games/lichess/', '/games/lichess', Record<never, never>, Record<never, never>>,
     '/games/lichess/[gameId]': RouteRecordInfo<'/games/lichess/[gameId]', '/games/lichess/:gameId', { gameId: ParamValue<true> }, { gameId: ParamValue<false> }>,
     '/settings/': RouteRecordInfo<'/settings/', '/settings', Record<never, never>, Record<never, never>>,
-    '/signin': RouteRecordInfo<'/signin', '/signin', Record<never, never>, Record<never, never>>,
-    '/signup': RouteRecordInfo<'/signup', '/signup', Record<never, never>, Record<never, never>>,
     '/studies/': RouteRecordInfo<'/studies/', '/studies', Record<never, never>, Record<never, never>>,
     '/studies/[studyId]/': RouteRecordInfo<'/studies/[studyId]/', '/studies/:studyId', { studyId: ParamValue<true> }, { studyId: ParamValue<false> }>,
     '/studies/[studyId]/chapters/[chapterId]/': RouteRecordInfo<'/studies/[studyId]/chapters/[chapterId]/', '/studies/:studyId/chapters/:chapterId', { studyId: ParamValue<true>, chapterId: ParamValue<true> }, { studyId: ParamValue<false>, chapterId: ParamValue<false> }>,

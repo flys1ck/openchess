@@ -9,8 +9,6 @@
           </div>
           <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
             <p class="whitespace-nowrap">Created <BaseTime :date="new Date(study.created_at)" /></p>
-            &bull;
-            <!-- <p class="truncate">Created by {{ study.createdBy }}</p> -->
           </div>
         </div>
         <div class="flex items-center gap-x-4">
@@ -61,20 +59,20 @@
 </template>
 
 <script setup lang="ts">
-import { useSupabase } from "@composables/useSupabase";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 import BaseButton from "../base/BaseButton.vue";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
 import BaseCard from "@components/base/BaseCard.vue";
 import BaseTime from "@components/base/BaseTime.vue";
-
-const supabase = useSupabase();
+import { db, execute, select } from "@services/database";
 
 // TODO move this to services
-const { data: studies } = await supabase.from("studies").select("*");
+const query = db.selectFrom("studies").selectAll().compile();
+const studies = await select(query);
 
 async function deleteStudy(studyId: number) {
-  await supabase.from("studies").delete().eq("id", studyId);
+  const query = db.deleteFrom("studies").where("id", "=", studyId).compile();
+  await execute(query);
 }
 </script>

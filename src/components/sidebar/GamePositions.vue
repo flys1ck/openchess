@@ -30,15 +30,15 @@
         <span class="font-semibold">Lines with Position</span>
       </div>
       <ul class="divide-y">
-        <li v-for="line in lines" :key="line.line.id">
+        <li v-for="line in lines" :key="line.line_id">
           <RouterLink
-            :to="`/studies/${line.study.id}/chapters/${line.chapter.id}/lines/${line.line.id}`"
+            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
             @pointermove="() => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }])"
             @pointerleave="() => game.setAutoShapes([])"
           >
-            <span class="text-xs text-gray-500"> {{ line.study.name }} - {{ line.chapter.name }} </span>
-            <span class="text-sm font-medium">{{ line.line.name }}</span>
+            <span class="text-xs text-gray-500"> {{ line.study_name }} - {{ line.chapter_name }} </span>
+            <span class="text-sm font-medium">{{ line.line_name }}</span>
           </RouterLink>
         </li>
       </ul>
@@ -137,9 +137,9 @@
 </template>
 
 <script setup lang="ts">
+import { db, select } from "@/services/database";
 import GameResultTag from "@components/sidebar/GameResultTag.vue";
 import { useGame } from "@composables/useGame";
-import { useSupabase } from "@composables/useSupabase";
 import { MasterGameCollection } from "@services/lichess";
 import { useLichess } from "@stores/useLichess";
 import { roundToFixed } from "@utilities/math";
@@ -158,7 +158,6 @@ const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
-const supabase = useSupabase();
 const lichess = useLichess();
 const positions = shallowRef<any[]>([]);
 const lines = shallowRef<any[]>([]);
@@ -167,23 +166,38 @@ const masterGames = shallowRef<MasterGameCollection["topGames"]>([]);
 type MasterMove = MasterGameCollection["moves"][number] & MoveStatistics;
 const masterMoves = shallowRef<MasterMove[]>([]);
 
-watchEffect(() => {
+watchEffect(async () => {
   const fenWithoutMoves = props.game.fen.value.replaceAll(/ \d+ \d+$/g, "");
-  supabase.rpc("get_moves_by_fen", { _fen: fenWithoutMoves }).then(({ data }) => {
-    if (!data) return;
-    positions.value = data;
-  });
+  const positionGroupByQuery = db
+    .selectFrom("positions")
+    .select(({ fn }) => ["source", "destination", "san", fn.count<number>("study").as("study_count")])
+    .where("positions.fen", "like", `${fenWithoutMoves}%`)
+    .groupBy(["source", "destination", "san"])
+    .orderBy("study_count desc")
+    .compile();
 
-  supabase
-    .from("positions")
-    .select("source, destination, study (id, name), chapter (id, name), line (id, name)")
-    .ilike("fen", `${fenWithoutMoves}%`)
-    .order("line(name)")
+  positions.value = await select(positionGroupByQuery);
+
+  const positionQuery = db
+    .selectFrom("positions")
+    .innerJoin("studies", "studies.id", "positions.study")
+    .innerJoin("chapters", "chapters.id", "positions.chapter")
+    .innerJoin("lines", "lines.id", "positions.line")
+    .select([
+      "positions.source",
+      "positions.destination",
+      "studies.id as study_id",
+      "studies.name as study_name",
+      "chapters.id as chapter_id",
+      "chapters.name as chapter_name",
+      "lines.id as line_id",
+      "lines.name as line_name",
+    ])
+    .where("positions.fen", "like", `${fenWithoutMoves}%`)
     .limit(10)
-    .then(({ data }) => {
-      if (!data) return;
-      lines.value = data;
-    });
+    .compile();
+
+  lines.value = await select(positionQuery);
 
   lichess.client
     .getMasterGames({ fen: props.game.fen.value, topGames: 10 })

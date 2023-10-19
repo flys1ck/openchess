@@ -1,23 +1,24 @@
-import { useSupabase } from "@composables/useSupabase";
+import { db, execute, selectFirst } from "@services/database";
 import { LichessClient } from "@services/lichess";
-import { useSession } from "@stores/useSession";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useLichess = defineStore("lichess", () => {
-  const supabase = useSupabase();
-  const session = useSession();
-
   const personalAccessToken = ref("");
   const username = ref("");
   const client = new LichessClient(personalAccessToken.value);
 
-  async function setPersonalAccessToken(userId: string) {
-    const { data: user } = await supabase.from("users").select("lichess_token").eq("id", userId).single();
+  async function setPersonalAccessToken() {
+    const query = db
+      .selectFrom("settings")
+      .select("setting_value")
+      .where("setting_key", "=", "lichess_token")
+      .compile();
+    const { setting_value: lichessToken } = await selectFirst(query);
 
-    if (!user || !user.lichess_token) return;
+    if (!lichessToken) return;
 
-    client.personalAccessToken = user.lichess_token;
+    client.personalAccessToken = lichessToken;
     const response = await client.getCurrentAccount();
     if (response.error) {
       // reset token to previous one
@@ -27,14 +28,14 @@ export const useLichess = defineStore("lichess", () => {
     }
 
     username.value = response.username;
-    client.personalAccessToken = user.lichess_token;
-    personalAccessToken.value = user.lichess_token;
+    client.personalAccessToken = lichessToken;
+    personalAccessToken.value = lichessToken;
   }
 
   async function validateAndSetPersonalAccessToken(token: string) {
     client.personalAccessToken = token;
     const response = await client.getCurrentAccount();
-    if (response.error || !session.session) {
+    if (response.error) {
       // reset token to previous one
       username.value = response.username;
       client.personalAccessToken = personalAccessToken.value;
@@ -45,7 +46,12 @@ export const useLichess = defineStore("lichess", () => {
     client.personalAccessToken = token;
     personalAccessToken.value = token;
 
-    await supabase.from("users").update({ lichess_token: token }).eq("id", session.session.user.id);
+    const query = db
+      .updateTable("settings")
+      .set({ setting_value: token })
+      .where("setting_key", "=", "lichess_token")
+      .compile();
+    await execute(query);
 
     return true;
   }
