@@ -3,7 +3,7 @@
     <div class="flex items-center gap-2 p-2">
       <span class="flex w-16 items-center justify-center font-medium">{{ evaluatedScore }}</span>
       <div class="flex flex-grow flex-col gap-1">
-        <span class="text-sm">Stockfish 15.1</span>
+        <span class="text-sm">Stockfish {{ STOCKFISH_VERSION }}</span>
         <div class="flex gap-4">
           <div class="flex flex-col text-xs">
             <span class="font-thin uppercase tracking-widest text-gray-500">Depth</span>
@@ -35,6 +35,7 @@ import { Ref, onUnmounted } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
 
+const STOCKFISH_VERSION = import.meta.env.STOCKFISH_VERSION;
 const props = defineProps<{
   fen: Ref<string>;
 }>();
