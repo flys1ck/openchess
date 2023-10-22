@@ -34,15 +34,23 @@
 import { Ref, onUnmounted } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
+import { useSettings } from "@/stores/useSettings";
+import { storeToRefs } from "pinia";
 
 const STOCKFISH_VERSION = import.meta.env.STOCKFISH_VERSION;
 const props = defineProps<{
   fen: Ref<string>;
 }>();
 
-const { isEvaluationEnabled, depth, principleVariations, evaluatedScore, nodesPerSecond } = await useEvaluation(
-  props.fen
-);
+const { engineDepth, engineLines } = storeToRefs(useSettings());
+
+const {
+  isEvaluationEnabled,
+  currentDepth: depth,
+  principleVariations,
+  evaluatedScore,
+  nodesPerSecond,
+} = await useEvaluation(props.fen, { depth: engineDepth, multipv: engineLines });
 
 onUnmounted(() => {
   isEvaluationEnabled.value = false;

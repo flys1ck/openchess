@@ -14,7 +14,12 @@ import {
 } from "uci-parser-ts";
 import { computed, Ref, ref, watch } from "vue";
 
-export async function useEvaluation(fen: Ref<string>) {
+interface UseEvaluationOptions {
+  depth?: Ref<[number]>;
+  multipv?: Ref<[number]>;
+}
+
+export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOptions) {
   const chess = new Chess();
   chess.load(fen.value);
   let currentTurnColor = chess.turn();
@@ -23,15 +28,15 @@ export async function useEvaluation(fen: Ref<string>) {
   const child = await command.spawn();
 
   const isEvaluationEnabled = ref(false);
-  const depth = ref(0);
+  const currentDepth = ref(0);
   const centipawns = ref<number>();
   const mate = ref<number>();
   const nodesPerSecond = ref(0);
   const principleVariations = ref<string[]>([]);
 
-  watch([fen, isEvaluationEnabled], async ([newFen, newIsEvaluationEnabled], _oldValues, onCleanup) => {
-    if (newIsEvaluationEnabled === false) {
-      depth.value = 0;
+  watch([fen, isEvaluationEnabled, options?.depth, options?.multipv], async (_newValues, _oldValues, onCleanup) => {
+    if (isEvaluationEnabled.value === false) {
+      currentDepth.value = 0;
       centipawns.value = 0;
       nodesPerSecond.value = 0;
       principleVariations.value = [];
@@ -53,9 +58,9 @@ export async function useEvaluation(fen: Ref<string>) {
     currentTurnColor = chess.turn();
 
     command.stdout.on("data", onEngineResponse);
-    await child.write(`setoption name multipv value 2\n`);
-    await child.write(`position fen ${newFen}\n`);
-    await child.write("go depth 30\n");
+    if (options && options.multipv) await child.write(`setoption name multipv value ${options.multipv.value}\n`);
+    await child.write(`position fen ${fen.value}\n`);
+    options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
 
     // cleanup is called, if there are running promises, when the watcher updates
     onCleanup(() => {
@@ -115,7 +120,7 @@ export async function useEvaluation(fen: Ref<string>) {
         return `${acc} ${moveDescriptor}`;
       }, "");
 
-      depth.value = _depth;
+      currentDepth.value = _depth;
       centipawns.value = _centipawns;
       mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
@@ -125,7 +130,7 @@ export async function useEvaluation(fen: Ref<string>) {
 
   return {
     isEvaluationEnabled,
-    depth,
+    currentDepth,
     nodesPerSecond,
     evaluatedScore,
     principleVariations,

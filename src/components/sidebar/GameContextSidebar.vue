@@ -87,14 +87,14 @@
           <BaseSectionHeading class="mt-2" heading="Engine" />
           <div class="flex items-center justify-between">
             <BaseInputLabel html-for="depth">Multiple Lines</BaseInputLabel>
-            <span class="text-sm text-gray-600">{{ engineLines[0] }}</span>
+            <span class="text-sm text-gray-600">{{ settings.engineLines[0] }}</span>
           </div>
-          <BaseSlider id="depth" :min="1" :max="5" v-model="engineLines" />
+          <BaseSlider id="depth" :min="1" :max="5" v-model="settings.engineLines" />
           <div class="mt-2 flex items-center justify-between">
             <BaseInputLabel html-for="depth">Depth</BaseInputLabel>
-            <span class="text-sm text-gray-600">{{ engineDepth[0] }}</span>
+            <span class="text-sm text-gray-600">{{ settings.engineDepth[0] }}</span>
           </div>
-          <BaseSlider id="depth" :min="1" :max="100" v-model="engineDepth" />
+          <BaseSlider id="depth" :min="1" :max="100" v-model="settings.engineDepth" />
         </div>
       </TabPanel>
     </TabPanels>
@@ -118,17 +118,15 @@ import {
 import { onKeyStroke } from "@vueuse/core";
 import BaseSlider from "@/components/base/BaseSlider.vue";
 import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
-import { ref } from "vue";
 import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
+import { useSettings } from "@/stores/useSettings";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
 const TABS = ["Game", "Positions", "Settings"];
-
-const engineLines = ref<[number]>([1]);
-const engineDepth = ref<[number]>([30]);
+const settings = useSettings();
 
 // TODO: revisit, might be broken when activeElement `null`
 // also might work unexpected, when tabs/buttons have focus
