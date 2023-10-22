@@ -3,6 +3,7 @@ import { Chess } from "chess.js";
 import {
   DepthInfoAttr,
   InfoCommand,
+  MultiPrincipalVariationInfoAttr,
   NpsInfoAttr,
   PrincipalVariationInfoAttr,
   ReadyOkCommand,
@@ -26,14 +27,14 @@ export async function useEvaluation(fen: Ref<string>) {
   const centipawns = ref<number>();
   const mate = ref<number>();
   const nodesPerSecond = ref(0);
-  const principleVariation = ref("");
+  const principleVariations = ref<string[]>([]);
 
   watch([fen, isEvaluationEnabled], async ([newFen, newIsEvaluationEnabled], _oldValues, onCleanup) => {
     if (newIsEvaluationEnabled === false) {
       depth.value = 0;
       centipawns.value = 0;
       nodesPerSecond.value = 0;
-      principleVariation.value = "";
+      principleVariations.value = [];
       command.stdout.removeAllListeners();
       child.write("stop\n");
       return;
@@ -52,6 +53,7 @@ export async function useEvaluation(fen: Ref<string>) {
     currentTurnColor = chess.turn();
 
     command.stdout.on("data", onEngineResponse);
+    await child.write(`setoption name multipv value 2\n`);
     await child.write(`position fen ${newFen}\n`);
     await child.write("go depth 30\n");
 
@@ -78,8 +80,11 @@ export async function useEvaluation(fen: Ref<string>) {
   });
 
   function onEngineResponse(line: string) {
+    console.log(line);
+
     let _depth = 0;
     let _selectiveDepth = 0;
+    let _multipv: number | undefined;
     let _centipawns: number | undefined;
     let _mate: number | undefined;
     let _nodesPerSecond = 0;
@@ -91,6 +96,7 @@ export async function useEvaluation(fen: Ref<string>) {
       command.attributes.forEach((attribute) => {
         if (attribute instanceof DepthInfoAttr) _depth = attribute.depth;
         if (attribute instanceof SelectiveDepthInfoAttr) _selectiveDepth = attribute.depth;
+        if (attribute instanceof MultiPrincipalVariationInfoAttr) _multipv = attribute.multiPv;
         if (attribute instanceof ScoreInfoAttr) {
           _centipawns = attribute.centipawn;
           _mate = attribute.mate;
@@ -99,7 +105,7 @@ export async function useEvaluation(fen: Ref<string>) {
         if (attribute instanceof PrincipalVariationInfoAttr) _principleVariation = attribute.moves;
       });
       // skip update if selective depth is not present
-      if (!_selectiveDepth) return;
+      if (!_selectiveDepth || !_multipv) return;
 
       // generate moves string with SAN
       chess.load(fen.value);
@@ -115,7 +121,7 @@ export async function useEvaluation(fen: Ref<string>) {
       centipawns.value = _centipawns;
       mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
-      principleVariation.value = turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
+      principleVariations.value[_multipv] = turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
     }
   }
 
@@ -124,6 +130,6 @@ export async function useEvaluation(fen: Ref<string>) {
     depth,
     nodesPerSecond,
     evaluatedScore,
-    principleVariation,
+    principleVariations,
   };
 }
