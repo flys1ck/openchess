@@ -80,9 +80,21 @@
       </TabPanel>
       <!-- Settings Tab -->
       <TabPanel>
-        <div class="flex flex-col">
+        <div class="flex flex-col p-4">
+          <BaseSectionHeading heading="Game & Board" />
           <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
-          <BaseButton variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
+          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
+          <BaseSectionHeading class="mt-2" heading="Engine" />
+          <div class="flex items-center justify-between">
+            <BaseInputLabel html-for="depth">Multiple Lines</BaseInputLabel>
+            <span class="text-sm text-gray-600">{{ engineLines[0] }}</span>
+          </div>
+          <BaseSlider id="depth" :min="1" :max="5" v-model="engineLines" />
+          <div class="mt-2 flex items-center justify-between">
+            <BaseInputLabel html-for="depth">Depth</BaseInputLabel>
+            <span class="text-sm text-gray-600">{{ engineDepth[0] }}</span>
+          </div>
+          <BaseSlider id="depth" :min="1" :max="100" v-model="engineDepth" />
         </div>
       </TabPanel>
     </TabPanels>
@@ -104,12 +116,19 @@ import {
   ChevronRightIcon,
 } from "@heroicons/vue/20/solid";
 import { onKeyStroke } from "@vueuse/core";
+import BaseSlider from "@/components/base/BaseSlider.vue";
+import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
+import { ref } from "vue";
+import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
 const TABS = ["Game", "Positions", "Settings"];
+
+const engineLines = ref<[number]>([1]);
+const engineDepth = ref<[number]>([30]);
 
 // TODO: revisit, might be broken when activeElement `null`
 // also might work unexpected, when tabs/buttons have focus

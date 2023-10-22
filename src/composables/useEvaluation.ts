@@ -80,8 +80,6 @@ export async function useEvaluation(fen: Ref<string>) {
   });
 
   function onEngineResponse(line: string) {
-    console.log(line);
-
     let _depth = 0;
     let _selectiveDepth = 0;
     let _multipv: number | undefined;
