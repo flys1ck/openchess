@@ -128,7 +128,8 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       centipawns.value = _centipawns;
       mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
-      principleVariations.value[_multipv] = turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
+      principleVariations.value[_multipv - 1] =
+        turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
     } else if (command instanceof BestMoveCommand) {
       isEvaluating.value = false;
     }

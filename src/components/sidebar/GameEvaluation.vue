@@ -25,7 +25,7 @@
         :style="`transform: scaleX(${depth / computedDepth})`"
       ></span>
     </div>
-    <div v-for="pv in principleVariations" :key="pv" class="line-clamp-1 border-t p-1 text-sm text-gray-700">
+    <div v-for="pv in principleVariations" :key="pv" class="line-clamp-1 p-1 text-sm text-gray-700">
       {{ pv }}
     </div>
   </div>
