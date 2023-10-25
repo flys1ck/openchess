@@ -1,7 +1,9 @@
 <template>
   <div class="flex flex-col border-b border-gray-200">
     <div class="flex items-center gap-2 p-2">
-      <span class="flex w-16 items-center justify-center font-medium">{{ evaluatedScore }}</span>
+      <span class="flex w-16 items-center justify-center font-medium">
+        {{ multiPvInfo.length > 0 ? multiPvInfo[0].evaluatedScore : "-" }}
+      </span>
       <div class="flex flex-grow flex-col gap-1">
         <span class="text-sm">Stockfish {{ STOCKFISH_VERSION }}</span>
         <div class="flex gap-4">
@@ -25,9 +27,13 @@
         :style="`transform: scaleX(${depth / computedDepth})`"
       ></span>
     </div>
-    <div v-for="pv in principleVariations" :key="pv" class="line-clamp-1 p-1 text-sm text-gray-700">
-      {{ pv }}
-    </div>
+    <ul v-if="multiPvInfo.length" class="divide-y border-t">
+      <!-- TODO: probably not a good idea to take first move as key -->
+      <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
+        <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
+        <span class="ml-2">{{ getMoveString(fen, info.principleVariation) }}</span>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -37,6 +43,7 @@ import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
 import { useSettings } from "@/stores/useSettings";
 import { storeToRefs } from "pinia";
+import { getMoveString } from "@/utilities/uci";
 
 const STOCKFISH_VERSION = import.meta.env.STOCKFISH_VERSION;
 const props = defineProps<{
@@ -50,8 +57,7 @@ const {
   isEvaluationEnabled,
   isEvaluating,
   currentDepth: depth,
-  principleVariations,
-  evaluatedScore,
+  multiPvInfo,
   nodesPerSecond,
 } = await useEvaluation(props.fen, { depth: engineDepth, multipv: engineLines });
 

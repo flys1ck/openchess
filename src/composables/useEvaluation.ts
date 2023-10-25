@@ -13,11 +13,17 @@ import {
   tryParseOne,
   UciMove,
 } from "uci-parser-ts";
-import { computed, Ref, ref, watch } from "vue";
+import { ref, Ref, watch } from "vue";
 
 interface UseEvaluationOptions {
   depth?: Ref<[number]>;
   multipv?: Ref<[number]>;
+}
+
+interface MultiPvInfo {
+  id: number;
+  principleVariation: UciMove[];
+  evaluatedScore: string;
 }
 
 export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOptions) {
@@ -31,22 +37,25 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   const isEvaluationEnabled = ref(false);
   const isEvaluating = ref(false);
   const currentDepth = ref(0);
-  const centipawns = ref<number>();
-  const mate = ref<number>();
   const nodesPerSecond = ref(0);
-  const principleVariations = ref<string[]>([]);
+  const multiPvInfo = ref<MultiPvInfo[]>([]);
 
   watch([fen, isEvaluationEnabled, options?.depth, options?.multipv], async (_newValues, _oldValues, onCleanup) => {
     if (isEvaluationEnabled.value === false) {
       isEvaluating.value = false;
       currentDepth.value = 0;
-      centipawns.value = 0;
       nodesPerSecond.value = 0;
-      principleVariations.value = [];
+      multiPvInfo.value = [];
       command.stdout.removeAllListeners();
       child.write("stop\n");
       return;
     }
+
+    // TODO: check correct order of commands
+    // TODO: get threads/hash size from system
+    await child.write(`setoption name Threads value 4\n`);
+    await child.write(`setoption name Hash value 2048\n`);
+    await child.write(`setoption name UCI_AnalyseMode value true\n`);
 
     // wait for engine to be ready
     await new Promise((resolve) => {
@@ -73,20 +82,20 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     });
   });
 
-  const evaluatedScore = computed(() => {
-    if (mate.value !== undefined) return `#${mate.value}`;
-    if (centipawns.value === undefined) return "-";
-    const pawnAdvantage = centipawns.value / 100;
+  function getEvaluatedScore(centipawns: number | undefined, mate: number | undefined): string {
+    if (mate !== undefined) return `#${mate}`;
+    if (centipawns === undefined) return "-";
+    const pawnAdvantage = centipawns / 100;
     const score = currentTurnColor === "w" ? pawnAdvantage : -pawnAdvantage;
     switch (Math.sign(score)) {
       case -1:
-        return score;
+        return score.toFixed(2);
       case 1:
-        return `+${score}`;
+        return `+${score.toFixed(2)}`;
       default:
-        return 0;
+        return "0.00";
     }
-  });
+  }
 
   function onEngineResponse(line: string) {
     let _depth = 0;
@@ -114,22 +123,13 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       // skip update if selective depth is not present
       if (!_selectiveDepth || !_multipv) return;
 
-      // generate moves string with SAN
-      chess.load(fen.value);
-      const initialMoveNumber = chess.moveNumber();
-      const turnColor = chess.turn();
-      const movesString = _principleVariation.reduce((acc, uciMove) => {
-        const move = chess.move(uciMove);
-        const moveDescriptor = move.color === "w" ? `${chess.moveNumber()}. ${move.san}` : `${move.san}`;
-        return `${acc} ${moveDescriptor}`;
-      }, "");
-
       currentDepth.value = _depth;
-      centipawns.value = _centipawns;
-      mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
-      principleVariations.value[_multipv - 1] =
-        turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
+      multiPvInfo.value[_multipv - 1] = {
+        id: _multipv - 1,
+        principleVariation: _principleVariation,
+        evaluatedScore: getEvaluatedScore(_centipawns, _mate),
+      };
     } else if (command instanceof BestMoveCommand) {
       isEvaluating.value = false;
     }
@@ -140,7 +140,6 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     isEvaluating,
     currentDepth,
     nodesPerSecond,
-    evaluatedScore,
-    principleVariations,
+    multiPvInfo,
   };
 }
