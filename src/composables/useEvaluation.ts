@@ -1,6 +1,7 @@
 import { Command } from "@tauri-apps/api/shell";
 import { Chess } from "chess.js";
 import {
+  BestMoveCommand,
   DepthInfoAttr,
   InfoCommand,
   MultiPrincipalVariationInfoAttr,
@@ -28,6 +29,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   const child = await command.spawn();
 
   const isEvaluationEnabled = ref(false);
+  const isEvaluating = ref(false);
   const currentDepth = ref(0);
   const centipawns = ref<number>();
   const mate = ref<number>();
@@ -36,6 +38,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
 
   watch([fen, isEvaluationEnabled, options?.depth, options?.multipv], async (_newValues, _oldValues, onCleanup) => {
     if (isEvaluationEnabled.value === false) {
+      isEvaluating.value = false;
       currentDepth.value = 0;
       centipawns.value = 0;
       nodesPerSecond.value = 0;
@@ -61,6 +64,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     if (options && options.multipv) await child.write(`setoption name multipv value ${options.multipv.value}\n`);
     await child.write(`position fen ${fen.value}\n`);
     options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
+    isEvaluating.value = true;
 
     // cleanup is called, if there are running promises, when the watcher updates
     onCleanup(() => {
@@ -125,11 +129,14 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       mate.value = _mate;
       nodesPerSecond.value = _nodesPerSecond;
       principleVariations.value[_multipv] = turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
+    } else if (command instanceof BestMoveCommand) {
+      isEvaluating.value = false;
     }
   }
 
   return {
     isEvaluationEnabled,
+    isEvaluating,
     currentDepth,
     nodesPerSecond,
     evaluatedScore,
