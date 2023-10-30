@@ -34,7 +34,9 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   const command = Command.sidecar("bin/stockfish");
   const child = await command.spawn();
 
+  // wether evaluation is enabled
   const isEvaluationEnabled = ref(false);
+  // wether an evaluation is running. `false` when evaluation depth is reached
   const isEvaluating = ref(false);
   const currentDepth = ref(0);
   const nodesPerSecond = ref(0);

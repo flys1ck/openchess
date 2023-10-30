@@ -1,9 +1,9 @@
+import { useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { ref } from "vue";
 
 export const useSettings = defineStore("settings", () => {
-  const engineLines = ref<[number]>([1]);
-  const engineDepth = ref<[number]>([30]);
+  const engineLines = useLocalStorage<[number]>("engineLines", [1]);
+  const engineDepth = useLocalStorage<[number]>("engineDepth", [30]);
 
   return { engineLines, engineDepth };
 });

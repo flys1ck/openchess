@@ -19,7 +19,7 @@
       </div>
       <BaseSwitch v-model="isEvaluationEnabled" />
     </div>
-    <div class="flex h-1 flex-col bg-orange-100" :class="isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'">
+    <div class="flex h-1 flex-col" :class="isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'">
       <span
         v-show="isEvaluationEnabled"
         class="h-full origin-left bg-orange-300 transition-transform duration-500 ease-out"
@@ -28,7 +28,6 @@
       ></span>
     </div>
     <ul v-if="multiPvInfo.length" class="divide-y border-t">
-      <!-- TODO: probably not a good idea to take first move as key -->
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
         <span class="ml-2">{{ getMoveString(fen, info.principleVariation) }}</span>
