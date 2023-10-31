@@ -54,7 +54,6 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     child.write("uci\n");
   });
 
-  // TODO: check correct order of commands
   // TODO: get threads/hash size from system
   await Promise.all([
     sidecar.stderr.on("data", (line) => console.error(line)),
@@ -77,9 +76,9 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         return;
       }
 
-      const multiPv = (options && options.multipv && options.multipv.value) ?? 1;
+      const multiPvOption = (options && options.multipv && options.multipv.value[0]) ?? 1;
       await Promise.all([
-        child.write(`setoption name multipv value ${multiPv}\n`),
+        child.write(`setoption name multipv value ${multiPvOption}\n`),
         child.write(`position fen ${fen.value}\n`),
       ]);
 
@@ -150,16 +149,22 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         if (attribute instanceof NpsInfoAttr) _nodesPerSecond = attribute.nps;
         if (attribute instanceof PrincipalVariationInfoAttr) _principleVariation = attribute.moves;
       });
-      // skip update if selective depth is not present
-      if (!_selectiveDepth || !_multipv) return;
+      // skip update if
+      // * selective depth is not present
+      // * multipv is not present
+      // * multipv is greater than current multipv option
+      const multiPvOption = (options && options.multipv && options.multipv.value[0]) ?? 1;
+      if (!_selectiveDepth || !_multipv || _multipv > multiPvOption) return;
 
       currentDepth.value = _depth;
       nodesPerSecond.value = _nodesPerSecond;
+
       multiPvInfo.value[_multipv - 1] = {
         id: _multipv - 1,
         principleVariation: _principleVariation,
         evaluatedScore: getEvaluatedScore(_centipawns, _mate),
       };
+      multiPvInfo.value = multiPvInfo.value.filter((info) => info.id < multiPvOption);
     } else if (command instanceof BestMoveCommand) {
       isEvaluating.value = false;
     }
