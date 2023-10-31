@@ -1,20 +1,25 @@
-import { Chess } from "chess.js";
+import { Chess } from "chessops/chess";
+import { parseFen } from "chessops/fen";
+import { makeSanAndPlay } from "chessops/san";
+import { parseUci } from "chessops/util";
 import { UciMove } from "uci-parser-ts";
 import { MaybeRef, unref } from "vue";
 
 // generate moves string with SAN
 export function getMoveString(fen: MaybeRef<string>, uciMoves: UciMove[]) {
-  const chess = new Chess();
-
   const fen_ = unref(fen);
-  chess.load(fen_);
-  const initialMoveNumber = chess.moveNumber();
-  const turnColor = chess.turn();
-  const movesString = uciMoves.reduce((acc, uciMove) => {
-    const move = chess.move(uciMove);
-    const moveDescriptor = move.color === "w" ? `${chess.moveNumber()}. ${move.san}` : `${move.san}`;
+  const setup = parseFen(fen_).unwrap();
+  const position = Chess.fromSetup(setup).unwrap();
+
+  const initialMoveColor = position.turn;
+  const moves = uciMoves.reduce((acc, move) => {
+    const uciMove = parseUci(move);
+    if (!uciMove) return acc;
+    const san = makeSanAndPlay(position, uciMove);
+    // san is from previous move, while position is still on current move
+    const moveDescriptor = position.turn === "white" ? san : `${position.fullmoves}. ${san}`;
     return `${acc} ${moveDescriptor}`;
   }, "");
 
-  return turnColor === "w" ? movesString : `${initialMoveNumber} ... ${movesString}`;
+  return initialMoveColor === "white" ? moves : `... ${moves}`;
 }

@@ -10,10 +10,10 @@ import {
   ReadyOkCommand,
   ScoreInfoAttr,
   SelectiveDepthInfoAttr,
-  tryParseOne,
   UciMove,
+  tryParseOne,
 } from "uci-parser-ts";
-import { ref, Ref, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 
 interface UseEvaluationOptions {
   depth?: Ref<[number]>;
@@ -42,47 +42,53 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   const nodesPerSecond = ref(0);
   const multiPvInfo = ref<MultiPvInfo[]>([]);
 
-  watch([fen, isEvaluationEnabled, options?.depth, options?.multipv], async (_newValues, _oldValues, onCleanup) => {
-    if (isEvaluationEnabled.value === false) {
-      isEvaluating.value = false;
-      currentDepth.value = 0;
-      nodesPerSecond.value = 0;
-      multiPvInfo.value = [];
-      command.stdout.removeAllListeners();
-      child.write("stop\n");
-      return;
-    }
+  watch(
+    [fen, isEvaluationEnabled, options?.depth, options?.multipv],
+    async ([_newFen, _newIsEvaluationEnabled, _newDepth, _newMultiPv], _oldValues, onCleanup) => {
+      if (isEvaluationEnabled.value === false) {
+        isEvaluating.value = false;
+        currentDepth.value = 0;
+        nodesPerSecond.value = 0;
+        multiPvInfo.value = [];
+        command.stdout.removeAllListeners();
+        child.write("stop\n");
+        return;
+      }
 
-    // TODO: check correct order of commands
-    // TODO: get threads/hash size from system
-    await child.write(`setoption name Threads value 4\n`);
-    await child.write(`setoption name Hash value 2048\n`);
-    await child.write(`setoption name UCI_AnalyseMode value true\n`);
+      // TODO: check correct order of commands
+      // TODO: get threads/hash size from system
+      await child.write(`setoption name Threads value 4\n`);
+      await child.write(`setoption name Hash value 2048\n`);
+      await child.write(`setoption name UCI_AnalyseMode value true\n`);
 
-    // wait for engine to be ready
-    await new Promise((resolve) => {
-      command.stdout.on("data", (line) => {
-        const command = tryParseOne(line);
-        if (command instanceof ReadyOkCommand) resolve(true);
+      if (options && options.multipv) await child.write(`setoption name multipv value ${options.multipv.value}\n`);
+      await child.write(`position fen ${fen.value}\n`);
+
+      // wait for engine to be ready
+      await new Promise((resolve) => {
+        command.stdout.on("data", (line) => {
+          const command = tryParseOne(line);
+          if (command instanceof ReadyOkCommand) resolve(true);
+        });
+        child.write("isready\n");
       });
-      child.write("isready\n");
-    });
 
-    chess.load(fen.value);
-    currentTurnColor = chess.turn();
+      chess.load(fen.value);
+      currentTurnColor = chess.turn();
+      command.stdout.on("data", onEngineResponse);
 
-    command.stdout.on("data", onEngineResponse);
-    if (options && options.multipv) await child.write(`setoption name multipv value ${options.multipv.value}\n`);
-    await child.write(`position fen ${fen.value}\n`);
-    options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
-    isEvaluating.value = true;
+      await child.write(`position fen ${fen.value}\n`);
+      options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
+      isEvaluating.value = true;
 
-    // cleanup is called, if there are running promises, when the watcher updates
-    onCleanup(() => {
-      command.stdout.removeAllListeners();
-      child.write("stop\n");
-    });
-  });
+      // cleanup is called, if there are running promises, when the watcher updates
+      onCleanup(async () => {
+        isEvaluating.value = false;
+        command.stdout.removeAllListeners();
+        await child.write("stop\n");
+      });
+    }
+  );
 
   function getEvaluatedScore(centipawns: number | undefined, mate: number | undefined): string {
     if (mate !== undefined) return `#${mate}`;
@@ -100,6 +106,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   }
 
   function onEngineResponse(line: string) {
+    if (!isEvaluationEnabled.value) return;
     let _depth = 0;
     let _selectiveDepth = 0;
     let _multipv: number | undefined;
@@ -109,7 +116,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     let _principleVariation: UciMove[] = [];
 
     const command = tryParseOne(line);
-    if (!command || !isEvaluationEnabled.value) return;
+    if (!command) return;
     if (command instanceof InfoCommand) {
       command.attributes.forEach((attribute) => {
         if (attribute instanceof DepthInfoAttr) _depth = attribute.depth;
@@ -137,11 +144,17 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     }
   }
 
+  async function killProcess() {
+    isEvaluationEnabled.value = false;
+    await child.kill();
+  }
+
   return {
     isEvaluationEnabled,
     isEvaluating,
     currentDepth,
     nodesPerSecond,
     multiPvInfo,
+    killProcess,
   };
 }

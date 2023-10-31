@@ -20,12 +20,9 @@
       <BaseSwitch v-model="isEvaluationEnabled" />
     </div>
     <div class="flex h-1 flex-col" :class="isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'">
-      <span
-        v-show="isEvaluationEnabled"
+      <span v-show="isEvaluationEnabled"
         class="h-full origin-left bg-orange-300 transition-transform duration-500 ease-out"
-        :class="{ 'animate-pulse': isEvaluating }"
-        :style="`transform: scaleX(${depth / computedDepth})`"
-      ></span>
+        :class="{ 'animate-pulse': isEvaluating }" :style="`transform: scaleX(${depth / computedDepth})`"></span>
     </div>
     <ul v-if="multiPvInfo.length" class="divide-y border-t">
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
@@ -58,9 +55,8 @@ const {
   currentDepth: depth,
   multiPvInfo,
   nodesPerSecond,
+  killProcess
 } = await useEvaluation(props.fen, { depth: engineDepth, multipv: engineLines });
 
-onUnmounted(() => {
-  isEvaluationEnabled.value = false;
-});
+onUnmounted(async () => await killProcess())
 </script>
