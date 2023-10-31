@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-y-auto">
     <!-- Study Database -->
-    <BaseSidebarSectionHeading>Studies</BaseSidebarSectionHeading>
+    <BaseSidebarSectionHeading heading="Studies" />
     <template v-if="positions.length">
       <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Moves in Study</span>
@@ -35,7 +35,7 @@
     </template>
     <p v-else class="p-2 text-center text-sm italic text-gray-700">No lines with this position</p>
     <!-- Masters Database -->
-    <BaseSidebarSectionHeading>Master's Database</BaseSidebarSectionHeading>
+    <BaseSidebarSectionHeading heading="Master's Database" />
     <template v-if="masterMoves.length || masterGames.length">
       <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
         <span class="font-semibold">Moves</span>

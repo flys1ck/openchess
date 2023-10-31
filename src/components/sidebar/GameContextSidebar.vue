@@ -50,12 +50,12 @@
       </TabPanel>
       <!-- Settings Tab -->
       <TabPanel>
-        <BaseSidebarSectionHeading>Game & Board</BaseSidebarSectionHeading>
+        <BaseSidebarSectionHeading heading="Game & Board" />
         <div class="p-4 flex flex-col">
           <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
           <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
         </div>
-        <BaseSidebarSectionHeading class="mt-2">Engine</BaseSidebarSectionHeading>
+        <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
         <div class="p-4">
           <div class="flex items-center justify-between">
             <BaseInputLabel html-for="depth">Multiple Lines</BaseInputLabel>
