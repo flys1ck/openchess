@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <div ref="chessboardRef" class="aspect-square max-h-full mx-auto"></div>
+    <div ref="chessboardRef" class="aspect-square max-h-full"></div>
     <!-- promotion overlay -->
     <div v-if="game.isPromoting.value" :style="`width: ${overlayWidth}px`" @click="game.cancelPromotion"
       class="absolute left-0 top-0 z-10 aspect-square bg-black/70">
@@ -58,6 +58,6 @@ onMounted(async () => {
 </script>
 
 <style>
-/* TODO: import not resolving correctly, when using module name */
+/* TODO: import not resolving correctly, when using module name or alias */
 @import "./../assets/css/chessground.css";
 </style>

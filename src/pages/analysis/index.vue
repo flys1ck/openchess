@@ -1,7 +1,7 @@
 <template>
   <main class="flex flex-grow overflow-hidden">
-    <div class="flex flex-grow flex-col">
-      <GameChessboard class="flex-grow overflow-hidden p-4 bg-gray-100" :game="game" />
+    <div class="flex flex-grow flex-col bg-gray-100">
+      <GameChessboard class="flex-grow overflow-hidden mx-auto my-4 aspect-square" :game="game" />
       <!-- <div class="max-w-3xl"> -->
       <!-- <BaseInputGroup class="mt-8" v-model.trim="game.fen.value" label="FEN" :schema="z.string().refine(isFEN)" /> -->
       <!-- <BaseInputGroup
