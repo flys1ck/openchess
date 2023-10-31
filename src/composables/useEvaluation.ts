@@ -1,8 +1,9 @@
 import { Command } from "@tauri-apps/api/shell";
-import { Chess } from "chess.js";
+import { parseFen } from "chessops/fen";
 import {
   BestMoveCommand,
   DepthInfoAttr,
+  IdCommand,
   InfoCommand,
   MultiPrincipalVariationInfoAttr,
   NpsInfoAttr,
@@ -13,7 +14,7 @@ import {
   UciMove,
   tryParseOne,
 } from "uci-parser-ts";
-import { Ref, ref, watch } from "vue";
+import { Ref, computed, ref, watch } from "vue";
 
 interface UseEvaluationOptions {
   depth?: Ref<[number]>;
@@ -27,13 +28,6 @@ interface MultiPvInfo {
 }
 
 export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOptions) {
-  const chess = new Chess();
-  chess.load(fen.value);
-  let currentTurnColor = chess.turn();
-
-  const command = Command.sidecar("bin/stockfish");
-  const child = await command.spawn();
-
   // wether evaluation is enabled
   const isEvaluationEnabled = ref(false);
   // wether an evaluation is running. `false` when evaluation depth is reached
@@ -41,6 +35,35 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   const currentDepth = ref(0);
   const nodesPerSecond = ref(0);
   const multiPvInfo = ref<MultiPvInfo[]>([]);
+
+  const currentTurnColor = computed(() => parseFen(fen.value).unwrap().turn);
+
+  // engine process
+  const sidecar = Command.sidecar("bin/stockfish");
+  const child = await sidecar.spawn();
+  const engineName = await new Promise((resolve) => {
+    const resolveOnEngineName = (line: string) => {
+      const command = tryParseOne(line);
+      if (!(command instanceof IdCommand && command.kind === "name")) return;
+
+      sidecar.stdout.removeListener("data", resolveOnEngineName);
+      resolve(command.value);
+    };
+
+    sidecar.stdout.on("data", resolveOnEngineName);
+    child.write("uci\n");
+  });
+
+  // TODO: check correct order of commands
+  // TODO: get threads/hash size from system
+  await Promise.all([
+    sidecar.stderr.on("data", (line) => console.error(line)),
+    sidecar.stdout.on("data", onEngineResponse),
+    child.write(`setoption name Threads value 4\n`),
+    child.write(`setoption name Hash value 2048\n`),
+    child.write(`setoption name UCI_AnalyseMode value true\n`),
+    child.write(`setoption name UCI_Variant value chess\n`),
+  ]);
 
   watch(
     [fen, isEvaluationEnabled, options?.depth, options?.multipv],
@@ -50,32 +73,29 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         currentDepth.value = 0;
         nodesPerSecond.value = 0;
         multiPvInfo.value = [];
-        command.stdout.removeAllListeners();
         child.write("stop\n");
         return;
       }
 
-      // TODO: check correct order of commands
-      // TODO: get threads/hash size from system
-      await child.write(`setoption name Threads value 4\n`);
-      await child.write(`setoption name Hash value 2048\n`);
-      await child.write(`setoption name UCI_AnalyseMode value true\n`);
-
-      if (options && options.multipv) await child.write(`setoption name multipv value ${options.multipv.value}\n`);
-      await child.write(`position fen ${fen.value}\n`);
+      const multiPv = (options && options.multipv && options.multipv.value) ?? 1;
+      await Promise.all([
+        child.write(`setoption name multipv value ${multiPv}\n`),
+        child.write(`position fen ${fen.value}\n`),
+      ]);
 
       // wait for engine to be ready
       await new Promise((resolve) => {
-        command.stdout.on("data", (line) => {
+        const resolveOnReadyOk = (line: string) => {
           const command = tryParseOne(line);
-          if (command instanceof ReadyOkCommand) resolve(true);
-        });
+          if (!(command instanceof ReadyOkCommand)) return;
+
+          sidecar.stdout.removeListener("data", resolveOnReadyOk);
+          resolve(true);
+        };
+
+        sidecar.stdout.on("data", resolveOnReadyOk);
         child.write("isready\n");
       });
-
-      chess.load(fen.value);
-      currentTurnColor = chess.turn();
-      command.stdout.on("data", onEngineResponse);
 
       await child.write(`position fen ${fen.value}\n`);
       options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
@@ -84,7 +104,6 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       // cleanup is called, if there are running promises, when the watcher updates
       onCleanup(async () => {
         isEvaluating.value = false;
-        command.stdout.removeAllListeners();
         await child.write("stop\n");
       });
     }
@@ -94,7 +113,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     if (mate !== undefined) return `#${mate}`;
     if (centipawns === undefined) return "-";
     const pawnAdvantage = centipawns / 100;
-    const score = currentTurnColor === "w" ? pawnAdvantage : -pawnAdvantage;
+    const score = currentTurnColor.value === "white" ? pawnAdvantage : -pawnAdvantage;
     switch (Math.sign(score)) {
       case -1:
         return score.toFixed(2);
@@ -106,7 +125,9 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   }
 
   function onEngineResponse(line: string) {
+    // prevent updating commands whe evaluation is turned off
     if (!isEvaluationEnabled.value) return;
+
     let _depth = 0;
     let _selectiveDepth = 0;
     let _multipv: number | undefined;
@@ -147,9 +168,12 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   async function killProcess() {
     isEvaluationEnabled.value = false;
     await child.kill();
+    sidecar.stdout.removeAllListeners();
+    sidecar.stderr.removeAllListeners();
   }
 
   return {
+    engineName,
     isEvaluationEnabled,
     isEvaluating,
     currentDepth,

@@ -5,7 +5,7 @@
         {{ multiPvInfo.length > 0 ? multiPvInfo[0].evaluatedScore : "-" }}
       </span>
       <div class="flex flex-grow flex-col gap-1">
-        <span class="text-sm">Stockfish {{ STOCKFISH_VERSION }}</span>
+        <span class="text-sm">{{ engineName }}</span>
         <div class="flex gap-4">
           <div class="flex flex-col text-xs">
             <span class="font-thin uppercase tracking-widest text-gray-500">Depth</span>
@@ -41,7 +41,6 @@ import { useSettings } from "@/stores/useSettings";
 import { storeToRefs } from "pinia";
 import { getMoveString } from "@/utilities/uci";
 
-const STOCKFISH_VERSION = import.meta.env.STOCKFISH_VERSION;
 const props = defineProps<{
   fen: Ref<string>;
 }>();
@@ -50,6 +49,7 @@ const { engineDepth, engineLines } = storeToRefs(useSettings());
 const computedDepth = computed(() => engineDepth.value[0]);
 
 const {
+  engineName,
   isEvaluationEnabled,
   isEvaluating,
   currentDepth: depth,
