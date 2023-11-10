@@ -16,9 +16,7 @@
         </div>
       </div>
       <div class="mt-6 flex items-center justify-end gap-x-6">
-        <button type="button" class="text-sm font-semibold leading-6 text-gray-900" @click="$router.push('/studies')">
-          Cancel
-        </button>
+        <BaseButton variant="secondary" @click="$router.push('/studies')">Cancel</BaseButton>
         <BaseButton type="submit">Save</BaseButton>
       </div>
     </form>

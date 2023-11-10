@@ -50,6 +50,7 @@ declare module 'vue-router/auto/routes' {
     '/studies/[studyId]/chapters/[chapterId]/': RouteRecordInfo<'/studies/[studyId]/chapters/[chapterId]/', '/studies/:studyId/chapters/:chapterId', { studyId: ParamValue<true>, chapterId: ParamValue<true> }, { studyId: ParamValue<false>, chapterId: ParamValue<false> }>,
     '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]': RouteRecordInfo<'/studies/[studyId]/chapters/[chapterId]/lines/[lineId]', '/studies/:studyId/chapters/:chapterId/lines/:lineId', { studyId: ParamValue<true>, chapterId: ParamValue<true>, lineId: ParamValue<true> }, { studyId: ParamValue<false>, chapterId: ParamValue<false>, lineId: ParamValue<false> }>,
     '/studies/[studyId]/chapters/new': RouteRecordInfo<'/studies/[studyId]/chapters/new', '/studies/:studyId/chapters/new', { studyId: ParamValue<true> }, { studyId: ParamValue<false> }>,
+    '/studies/[studyId]/edit': RouteRecordInfo<'/studies/[studyId]/edit', '/studies/:studyId/edit', { studyId: ParamValue<true> }, { studyId: ParamValue<false> }>,
     '/studies/new': RouteRecordInfo<'/studies/new', '/studies/new', Record<never, never>, Record<never, never>>,
   }
 }

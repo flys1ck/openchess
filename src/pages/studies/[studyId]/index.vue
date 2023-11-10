@@ -1,5 +1,12 @@
 <template>
   <BaseContainer>
+    <BaseSectionHeading heading="Studies">
+      <template #actions>
+        <BaseButton as="RouterLink" :to="`/studies/${route.params.studyId}/edit`" variant="secondary"
+          >Edit study</BaseButton
+        >
+      </template>
+    </BaseSectionHeading>
     <BaseSectionHeading heading="Chapters">
       <template #actions>
         <BaseButton as="RouterLink" :to="`/studies/${route.params.studyId}/chapters/new`"
