@@ -9,8 +9,9 @@
             <h2 class="text-base font-semibold leading-7">Lichess</h2>
             <p class="mt-1 text-sm leading-6 text-gray-500">
               Integrate your Lichess account with a generated
-              <BaseLink as="a" href="https://lichess.org/account/oauth/token">Personal API Access Token</BaseLink>.
-              There are no permissions required.
+              <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token')"
+                >Personal API Access Token</BaseLink
+              >. There are no permissions required.
             </p>
           </div>
           <form class="space-y-2 md:col-span-2" @submit.prevent>
@@ -47,6 +48,7 @@ import { ref } from "vue";
 import { CheckBadgeIcon } from "@heroicons/vue/24/solid";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
+import { open } from "@tauri-apps/api/shell";
 
 const lichess = useLichess();
 const token = ref(lichess.personalAccessToken);

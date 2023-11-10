@@ -9,7 +9,7 @@ create table if not exists chapters (
     id integer primary key not null,
     created_at timestamp default current_timestamp not null,
     study integer not null,
-    name text not null unique,
+    name text not null,
     foreign key (study) references studies(id) on delete cascade
 );
 create unique index idx_chapters_study_name on chapters (study, name);
