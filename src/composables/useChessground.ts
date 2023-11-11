@@ -54,6 +54,8 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
   }
 
   function setAutoShapes(shapes: DrawShape[]) {
+    console.log(shapes);
+
     chessground.setAutoShapes(shapes);
   }
 

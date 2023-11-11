@@ -23,7 +23,7 @@
       >
         <!-- Engine evaluation -->
         <Suspense>
-          <GameEvaluation :fen="game.fen" />
+          <GameEvaluation :fen="game.fen" @update:bestmoves="setBestMoveArrows" />
         </Suspense>
         <!-- Move history -->
         <template v-if="game.tree.root.value">
@@ -121,6 +121,8 @@ import BaseSlider from "@/components/base/BaseSlider.vue";
 import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
 import BaseSidebarSectionHeading from "@/components/base/BaseSidebarSectionHeading.vue";
 import { useSettings } from "@/stores/useSettings";
+import { Key } from "chessground/types";
+import { DrawShape } from "chessground/draw";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
@@ -128,6 +130,18 @@ const props = defineProps<{
 
 const TABS = ["Game", "Positions", "Settings"];
 const settings = useSettings();
+
+function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
+  const shapes: DrawShape[] = bestMoves.map((bestMove, i) => ({
+    orig: bestMove.from,
+    dest: bestMove.to,
+    brush: i === 0 ? "paleBlue" : "paleGrey",
+    label: {
+      text: bestMove.score,
+    },
+  }));
+  props.game.setAutoShapes(shapes);
+}
 
 // TODO: revisit, might be broken when activeElement `null`
 // also might work unexpected, when tabs/buttons have focus
