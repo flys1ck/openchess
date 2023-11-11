@@ -2,7 +2,7 @@
   <div class="flex h-screen overflow-hidden bg-gray-50">
     <NavigationSidebar />
     <Suspense>
-      <div class="flex flex-grow flex-col">
+      <div class="flex flex-grow flex-col overflow-y-auto">
         <nav aria-label="Breadcrumb" class="flex-shrink-0">
           <ol role="list" class="flex items-center border-b p-2 text-sm">
             <li v-for="(breadcrumb, i) in breadcrumbsStore.breadcrumbs" :key="breadcrumb.to">
@@ -21,7 +21,6 @@
             </li>
           </ol>
         </nav>
-
         <RouterView />
       </div>
     </Suspense>

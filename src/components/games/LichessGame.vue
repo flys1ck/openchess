@@ -1,11 +1,10 @@
 <template>
-  <main class="flex flex-grow overflow-x-hidden">
-    <div class="flex flex-grow flex-col overflow-y-auto">
-      <!-- use name from settings -->
+  <main class="flex flex-grow overflow-hidden">
+    <div class="flex flex-grow flex-col bg-gray-100">
       <GameChessboard
+        class="mx-auto my-4 aspect-square flex-grow overflow-hidden"
         :game="game"
         :orientation="parsedGame.tags!['Black'] === lichess.username ? 'black' : 'white'"
-        class="max-w-4xl flex-grow p-4"
       />
     </div>
     <GameContextSidebar :game="game" />

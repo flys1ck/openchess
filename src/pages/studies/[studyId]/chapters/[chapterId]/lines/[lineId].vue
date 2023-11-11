@@ -1,7 +1,7 @@
 <template>
-  <main class="flex flex-grow overflow-y-auto overflow-x-hidden">
-    <div class="flex-grow">
-      <GameChessboard :game="game" class="max-w-4xl p-4" />
+  <main class="flex flex-grow overflow-hidden">
+    <div class="flex flex-grow flex-col bg-gray-100">
+      <GameChessboard class="mx-auto my-4 aspect-square flex-grow overflow-hidden" :game="game" />
     </div>
     <GameContextSidebar :game="game" />
   </main>
