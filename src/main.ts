@@ -10,7 +10,4 @@ import "./assets/css/main.css";
 // }
 
 const app = createApp(App);
-
-app.use(pinia);
-app.use(router);
-app.mount("#app");
+app.use(pinia).use(router).mount("#app");

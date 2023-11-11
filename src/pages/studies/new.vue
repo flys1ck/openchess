@@ -63,14 +63,14 @@ const studyFormData = reactive<Insertable<Studies>>({
   description: "",
 });
 
-const { addToast } = useToasts()
+const { addToast } = useToasts();
 async function onSubmit() {
   // TODO check all requests for constraint failure
   const query = db.insertInto("studies").values(studyFormData).compile();
   const result = await execute(query);
 
   if (!result) return;
-  addToast({ heading: `Study ${studyFormData.name} created` })
+  addToast({ heading: `Study ${studyFormData.name} created` });
   router.push(`/studies/${result.lastInsertId}`);
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
   <BaseContainer>
-    <form class="m-4 space-y-4" @submit.prevent="onSubmit">
+    <BaseSectionHeading heading="New Chapters" />
+    <form class="space-y-4" @submit.prevent="onSubmit">
       <div>
         <BaseInputLabel htmlFor="chapter-name" class="block text-sm font-medium leading-6 text-gray-900"
           >Chapter Header</BaseInputLabel
@@ -33,24 +34,24 @@
 
 <script setup lang="ts">
 import BaseContainer from "@/components/base/BaseContainer.vue";
-import { db, execute } from "@/services/database";
+import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
+import { db, execute, selectFirst } from "@/services/database";
+import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { Chess } from "chess.js";
 import { ref } from "vue";
 import { definePage, useRoute } from "vue-router/auto";
-
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
 
 const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
 const chapterHeader = ref("White");
 const lineHeader = ref("Black");
+
+const query = db.selectFrom("studies").select(["id", "name"]).where("id", "=", Number(route.params.studyId)).compile();
+const study = await selectFirst(query);
 
 function onSubmit() {
   const fileReader = new FileReader();
@@ -78,7 +79,6 @@ async function processPgn(pgn: string) {
     }, "")
     .trim();
 
-  // TODO: !!! enable RLS !!!
   const chapterQuery = db
     .insertInto("chapters")
     .values({
@@ -116,4 +116,26 @@ async function processPgn(pgn: string) {
     .compile();
   execute(positionsQuery);
 }
+
+definePage({
+  meta: {
+    layout: "breadcrumbs",
+  },
+});
+const { setBreadcrumbs } = useBreadcrumbs();
+setBreadcrumbs([
+  {
+    icon: AcademicCapIcon,
+    name: "Studies",
+    to: "/studies/",
+  },
+  {
+    name: study.name,
+    to: `/studies/${route.params.studyId}`,
+  },
+  {
+    name: "New Chapters",
+    to: `/studies/${route.params.studyId}/chapters/new`,
+  },
+]);
 </script>

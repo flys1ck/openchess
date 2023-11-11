@@ -1,11 +1,10 @@
 import { LichessClient } from "@services/lichess";
 import { useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { ref } from "vue";
 
 export const useLichess = defineStore("lichess", () => {
   const personalAccessToken = useLocalStorage("lichessToken", "");
-  const username = ref("");
+  const username = useLocalStorage("lichessUsername", "");
   const client = new LichessClient(personalAccessToken.value);
 
   async function validateAndSetPersonalAccessToken(token: string) {
