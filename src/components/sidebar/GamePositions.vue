@@ -34,7 +34,7 @@
             @pointermove="() => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }])"
             @pointerleave="() => game.setAutoShapes([])"
           >
-            <span class="text-xs text-gray-500"> {{ line.study_name }} - {{ line.chapter_name }} </span>
+            <span class="text-xs text-gray-500">{{ line.study_name }} - {{ line.chapter_name }}</span>
             <span class="text-sm font-medium">{{ line.line_name }}</span>
           </RouterLink>
         </li>
