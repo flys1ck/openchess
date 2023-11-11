@@ -140,6 +140,7 @@ function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
       text: bestMove.score,
     },
   }));
+  // TODO: shapes are overriden by hover
   props.game.setAutoShapes(shapes);
 }
 
