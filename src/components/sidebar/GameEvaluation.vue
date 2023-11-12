@@ -30,7 +30,7 @@
     <ol v-if="multiPvInfo.length" class="divide-y border-t">
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
-        <span class="ml-2">{{ getMoveString(fen, info.principleVariation) }}</span>
+        <span class="ml-2">{{ getMovesStringFromUci(info.principleVariation, fen) }}</span>
       </li>
     </ol>
   </div>
@@ -42,7 +42,7 @@ import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
 import { useSettings } from "@/stores/useSettings";
 import { storeToRefs } from "pinia";
-import { getMoveString } from "@/utilities/uci";
+import { getMovesStringFromUci } from "@/utilities/moves";
 import { Key } from "chessground/types";
 
 const props = defineProps<{
