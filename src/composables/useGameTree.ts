@@ -15,12 +15,8 @@ export interface ChessMove {
   piece: Piece;
   isCheck: boolean;
   isCapture: boolean;
-  annotations?: string[];
+  annotations?: number[];
 }
-
-// TODO rename turncolor to movecolor
-// TODO: consider evaluation and comments
-// TODO can also cache possible moves, to avoid recalculation
 
 // a node describes a position
 export interface PositionNode {
@@ -139,8 +135,9 @@ export function useGameTree() {
 
     for (const node of game.moves.mainline()) {
       const move = parseSan(pos, node.san) as NormalMove;
-      if (!move) break; // Illegal move
-
+      // TODO: main line null moves will be marked as illegal
+      if (!move) break; //illegal moves
+      pos.play(move);
       addNode(makeFen(pos.toSetup()), {
         move: {
           source: makeSquare(move.from),
@@ -150,15 +147,14 @@ export function useGameTree() {
           isCheck: node.san.includes("+"),
           piece: {
             role: pos.board.getRole(move.from)!,
-            color: pos.turn === "white" ? "black" : "white",
+            color: pos.turn,
             promoted: move.promotion !== undefined,
           },
           // TODO
-          // annotations:  node.nags[0],
+          annotations: node.nags,
         },
         comment: formatComment(node.comments?.join("") ?? ""),
       });
-      pos.play(move);
     }
 
     // reset active node to root position after import

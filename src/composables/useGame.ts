@@ -14,10 +14,10 @@ import { CSSProperties, ref, shallowRef } from "vue";
 export type PromotionPiece = "queen" | "rook" | "bishop" | "knight";
 
 export function useGame() {
-  let game = Chess.default();
+  let pos = Chess.default();
   let board: ReturnType<typeof useChessground> | undefined;
   const tree = useGameTree();
-  const fen = ref(makeFen(game.toSetup()));
+  const fen = ref(makeFen(pos.toSetup()));
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -35,20 +35,20 @@ export function useGame() {
   function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
     const position = {
       fen: fen.value,
-      turnColor: game.turn,
+      turnColor: pos.turn,
       possibleMoves: getPossibleMoves(fen.value),
-      isCheck: game.isCheck(),
+      isCheck: pos.isCheck(),
     };
     board = useChessground(element, { orientation: options?.orientation, position, onMove: processMove });
   }
 
   function createNewGame() {
-    game.reset();
-    fen.value = makeFen(game.toSetup());
+    pos.reset();
+    fen.value = makeFen(pos.toSetup());
     isPromoting.value = false;
 
     // reset board
-    board?.setPosition({ fen: fen.value, turnColor: game.turn });
+    board?.setPosition({ fen: fen.value, turnColor: pos.turn });
 
     // reset game tree to starting position
     // TODO: check if tree reset is really necessary here
@@ -64,7 +64,7 @@ export function useGame() {
     if (source === "a0" || destination === "a0") return;
 
     // fix lichess sending UCI for castling as `e1h1, `e1a1` (adheres to chess960 option for chess engines)
-    const sourcePieceRole = game.board.getRole(parseSquare(source));
+    const sourcePieceRole = pos.board.getRole(parseSquare(source));
     let fixedDestination = destination;
     const uci = `${source}${destination}`;
     if (sourcePieceRole === "king" && (uci === "e1a1" || uci === "e1h1" || uci === "e8a8" || uci === "e8h8")) {
@@ -83,25 +83,25 @@ export function useGame() {
           break;
       }
     }
-    const targetPieceRole = game.board.getRole(parseSquare(fixedDestination));
+    const targetPieceRole = pos.board.getRole(parseSquare(fixedDestination));
 
     const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
     if (isPromotion(fixedDestination, piece.role)) {
       const orientation = board?.getOrientation()!;
-      intentPromotion(fixedDestination, game.turn, orientation);
+      intentPromotion(fixedDestination, pos.turn, orientation);
       return;
     }
 
     // handle promotion
-    const san = makeSanAndPlay(game, {
+    const san = makeSanAndPlay(pos, {
       from: parseSquare(source),
       to: parseSquare(fixedDestination),
       promotion: options?.promotionPiece,
     });
     const isEnPassant = sourcePieceRole === "pawn" && targetPieceRole === undefined && source[0] !== destination[0];
     const isCapture = san.includes("x");
-    const isCheck = game.isCheck();
+    const isCheck = pos.isCheck();
 
     // remove en passanted pawn
     if (isEnPassant) board?.setPiece((fixedDestination[0] + source[1]) as Key, undefined);
@@ -114,8 +114,8 @@ export function useGame() {
       playAudio("move", 0.5);
     }
 
-    fen.value = makeFen(game.toSetup());
-    board?.setTurn(fen.value, game.turn);
+    fen.value = makeFen(pos.toSetup());
+    board?.setTurn(fen.value, pos.turn);
     // add recent move to game tree
     const nodeMove: ChessMove = {
       source: source,
@@ -145,7 +145,7 @@ export function useGame() {
   function cancelPromotion() {
     const lastPosition: Position = {
       fen: fen.value,
-      turnColor: game.turn,
+      turnColor: pos.turn,
       // TODO last move is wrong
       lastMove: board?.getLastMove(),
     };
@@ -156,7 +156,7 @@ export function useGame() {
   function promote(promotionPiece: PromotionPiece) {
     const piece: Piece = {
       role: promotionPiece,
-      color: game.turn,
+      color: pos.turn,
       promoted: true,
     };
     const lastMove = board?.getLastMove();
@@ -169,12 +169,12 @@ export function useGame() {
   }
 
   function setActivePosition(node: PositionNode) {
-    game = Chess.fromSetup(parseFen(node.fen).unwrap()).unwrap();
+    pos = Chess.fromSetup(parseFen(node.fen).unwrap()).unwrap();
 
     const lastMove = node.move && [node.move.source, node.move.destination];
     const position: Position = {
       fen: node.fen,
-      turnColor: game.turn,
+      turnColor: pos.turn,
       lastMove,
     };
 
