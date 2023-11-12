@@ -45,7 +45,7 @@ import { z } from "zod";
 import { useLichess } from "@stores/useLichess";
 import BaseLink from "@components/base/BaseLink.vue";
 import { ref } from "vue";
-import { AcademicCapIcon, CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
+import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
 import { open } from "@tauri-apps/api/shell";
