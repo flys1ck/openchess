@@ -20,29 +20,36 @@
       <BaseSwitch v-model="isEvaluationEnabled" />
     </div>
     <div class="flex h-1 flex-col" :class="isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'">
-      <span v-show="isEvaluationEnabled"
+      <span
+        v-show="isEvaluationEnabled"
         class="h-full origin-left bg-orange-300 transition-transform duration-500 ease-out"
-        :class="{ 'animate-pulse': isEvaluating }" :style="`transform: scaleX(${depth / computedDepth})`"></span>
+        :class="{ 'animate-pulse': isEvaluating }"
+        :style="`transform: scaleX(${depth / computedDepth})`"
+      ></span>
     </div>
-    <ul v-if="multiPvInfo.length" class="divide-y border-t">
+    <ol v-if="multiPvInfo.length" class="divide-y border-t">
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
         <span class="ml-2">{{ getMoveString(fen, info.principleVariation) }}</span>
       </li>
-    </ul>
+    </ol>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Ref, computed, onUnmounted } from "vue";
+import { Ref, computed, onUnmounted, watch } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
 import { useSettings } from "@/stores/useSettings";
 import { storeToRefs } from "pinia";
 import { getMoveString } from "@/utilities/uci";
+import { Key } from "chessground/types";
 
 const props = defineProps<{
   fen: Ref<string>;
+}>();
+const emit = defineEmits<{
+  (e: "update:bestmoves", move: { score: string; from: Key; to: Key }[]): void;
 }>();
 
 const { engineDepth, engineLines } = storeToRefs(useSettings());
@@ -55,8 +62,18 @@ const {
   currentDepth: depth,
   multiPvInfo,
   nodesPerSecond,
-  killProcess
+  killProcess,
 } = await useEvaluation(props.fen, { depth: engineDepth, multipv: engineLines });
 
-onUnmounted(async () => await killProcess())
+watch(multiPvInfo, () => {
+  const bestMoves = multiPvInfo.value.map((info) => ({
+    score: info.evaluatedScore,
+    from: info.principleVariation[0].slice(0, 2) as Key,
+    to: info.principleVariation[0].slice(2, 4) as Key,
+  }));
+
+  emit("update:bestmoves", bestMoves);
+});
+
+onUnmounted(async () => await killProcess());
 </script>

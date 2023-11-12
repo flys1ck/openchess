@@ -7,7 +7,7 @@
       <div class="mt-4 flex text-sm leading-6 text-gray-600">
         <label
           for="file-upload"
-          class="relative cursor-pointer rounded-md font-semibold text-orange-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-600 focus-within:ring-offset-2 hover:text-orange-500"
+          class="relative cursor-pointer rounded-md font-semibold text-orange-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-400 focus-within:ring-offset-2 hover:text-orange-500"
         >
           Upload files
           <input
@@ -29,7 +29,7 @@
       <div class="mt-2 space-x-2">
         <span>{{ files.length }} File(s)</span><span>{{ totalUploadSize }}</span>
       </div>
-      <ul class="mt-2 max-h-48 space-y-2 overflow-auto rounded-lg shadow-inner">
+      <ul class="mt-2 max-h-96 space-y-2 overflow-auto rounded-lg shadow-inner">
         <li v-for="file in files" :key="file.name" class="flex items-center justify-between rounded-lg bg-gray-100 p-4">
           <div class="flex items-center gap-2">
             <DocumentIcon class="h-8 w-8 text-orange-400" />
@@ -102,7 +102,6 @@ function formatFileSize(bytes: number) {
 
 const totalUploadSize = computed(() => {
   if (!files.value || !files.value.length) return "";
-
   const totalUploadSizeInBytes = [...files.value].reduce((acc, file) => {
     return acc + file.size;
   }, 0);
