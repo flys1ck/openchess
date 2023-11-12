@@ -1,5 +1,5 @@
 import { Chess } from "chessops/chess";
-import { parseFen } from "chessops/fen";
+import { INITIAL_BOARD_FEN, parseFen } from "chessops/fen";
 import { makeSanAndPlay } from "chessops/san";
 import { parseUci } from "chessops/util";
 import { UciMove } from "uci-parser-ts";
@@ -8,7 +8,7 @@ import { MaybeRef, unref } from "vue";
 /**
  * Generates SAN move string from a given starting fen and list of UCI moves.
  */
-export function getMoveString(fen: MaybeRef<string>, uciMoves: UciMove[]) {
+export function getMovesStringFromUci(uciMoves: UciMove[], fen: MaybeRef<string>) {
   const fen_ = unref(fen);
   const setup = parseFen(fen_).unwrap();
   const position = Chess.fromSetup(setup).unwrap();
@@ -30,4 +30,24 @@ export function getMoveString(fen: MaybeRef<string>, uciMoves: UciMove[]) {
   }, "");
 
   return initialMoveColor === "white" ? moves : `... ${moves}`;
+}
+
+/**
+ *  Generates SAN move string from a given starting fen and list of SAN moves.
+ */
+export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>) {
+  if (sanMoves.length === 0) return "";
+  const fen_ = unref(fen) ?? INITIAL_BOARD_FEN;
+  const parsedFen = parseFen(fen_).unwrap();
+
+  const turn = parsedFen.turn;
+  const moveCount = parsedFen.fullmoves;
+  const plyCount = parsedFen.halfmoves;
+  const moveString = sanMoves.reduce((acc, sanMove, i) => {
+    const currentPly = plyCount + i;
+    const currentMove = Math.floor(currentPly / 2) + 1;
+    return currentPly % 2 === 0 ? `${acc} ${currentMove}.${sanMove}` : `${acc} ${sanMove}`;
+  }, "");
+
+  return turn === "white" ? moveString : `${moveCount} ... ${moveString}`;
 }

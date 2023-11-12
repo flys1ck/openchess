@@ -54,11 +54,11 @@ const query = db.selectFrom("studies").select(["id", "name"]).where("id", "=", N
 const study = await selectFirst(query);
 
 function onSubmit() {
-  const fileReader = new FileReader();
-  fileReader.addEventListener("load", (e) => {
-    processPgn(e.target?.result as string);
-  });
   files.value.forEach((file) => {
+    const fileReader = new FileReader();
+    fileReader.addEventListener("load", (e) => {
+      processPgn(e.target?.result as string);
+    });
     fileReader.readAsText(file);
   });
 }

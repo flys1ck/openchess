@@ -46,25 +46,25 @@
       </button>
     </template>
   </template>
-  <template v-if="comment || node.previousPosition?.variations.length">
+  <template v-if="commentHtml || node.previousPosition?.variations.length">
     <span
-      v-if="(comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
+      v-if="(commentHtml || node.previousPosition?.variations.length) && node.ply % 2 === 1"
       class="col-span-7 pl-4 text-gray-500"
       >...</span
     >
-    <div class="relative col-span-full break-words border-y bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
+    <div class="relative col-span-full break-words bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
       <span
-        class="absolute inset-0"
+        class="absolute inset-y-0"
         :class="[
           {
-            'border-l-4': node.move?.piece.color === 'white',
-            'border-r-4': node.move?.piece.color === 'black',
+            'left-0 border-l-4': node.move?.piece.color === 'white',
+            'right-0 border-r-4': node.move?.piece.color === 'black',
           },
           node.id === activeNodeId ? 'border-orange-300' : 'border-gray-300',
         ]"
         aria-hidden
       />
-      <p>{{ comment }}</p>
+      <p v-html="commentHtml" />
       <!-- variations -->
       <div v-for="variation in node.previousPosition?.variations" :key="variation.id" class="space-x-0.5">
         <GameTreeVariationItem
@@ -102,9 +102,19 @@ const moveNumber = computed(() => {
   return Math.ceil(props.node.ply / 2);
 });
 
-const comment = computed(() => {
+const commentHtml = computed(() => {
   if (!props.node.comment) return;
-  return props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
+  // strip html tags including content assuming any html is malicious
+  const htmlPattern = /<([^</> ]+)[^<>]*?>[^<>]*?<\/\1>/g;
+  let comment = props.node.comment.replace(htmlPattern, "");
+  // unescape brackets
+  comment = props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
+  // remove fen information
+  const fenPattern = /@@StartFen@@[^@]+?@@EndFen@@/g;
+  comment = comment.replaceAll(fenPattern, "");
+  // highlight chess moves
+  const chessMovePattern = /(([\d]{0,3}\.)?(\.{2,3})?[KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?)|0-0(-0)?/g;
+  return comment.replace(chessMovePattern, "<b>$1</b>");
 });
 
 const nags: Record<string, string> = {

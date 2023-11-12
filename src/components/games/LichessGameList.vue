@@ -14,7 +14,9 @@
           <template v-if="game.opening">{{ game.opening.name }}</template>
           <template v-else-if="game.variant === 'fromPosition'">From position: {{ game.initialFen }}</template>
         </div>
-        <p class="line-clamp-3 text-xs text-gray-500">{{ game.moves }}</p>
+        <p class="line-clamp-3 text-xs text-gray-500">
+          {{ getMoveStringFromSan(game.moves?.split(" ") ?? [], game.initialFen) }}
+        </p>
       </div>
       <div class="flex items-center border-l p-4">
         <dl class="w-40 space-y-1 text-sm">
@@ -48,6 +50,7 @@ import { ref } from "vue";
 import BaseCard from "@components/base/BaseCard.vue";
 import { useLichess } from "@stores/useLichess";
 import LichessPlayer from "@components/games/LichessPlayer.vue";
+import { getMoveStringFromSan } from "@/utilities/moves";
 
 defineExpose({ refresh });
 
