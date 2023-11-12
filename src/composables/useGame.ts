@@ -27,7 +27,7 @@ export function useGame() {
   });
   const promotionColor = shallowRef<Color>("white");
   let promotionSquare: Key;
-  // auto shapes
+
   let temporaryShapes: DrawShape[] = [];
   let persistentShapes: DrawShape[] = [];
 
