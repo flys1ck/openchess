@@ -27,6 +27,9 @@ export function useGame() {
   });
   const promotionColor = shallowRef<Color>("white");
   let promotionSquare: Key;
+  // auto shapes
+  let temporaryShapes: DrawShape[] = [];
+  let persistentShapes: DrawShape[] = [];
 
   function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
     const move = chess.history({ verbose: true }).at(-1);
@@ -193,8 +196,19 @@ export function useGame() {
     board?.toggleOrientation();
   }
 
-  function setAutoShapes(shapes: DrawShape[]) {
-    board?.setAutoShapes(shapes);
+  function setAutoShapes(shapes: DrawShape[], type: "temporary" | "persistent" = "persistent") {
+    if (type === "temporary") {
+      if (shapes === temporaryShapes) return;
+      temporaryShapes = shapes;
+    } else {
+      if (shapes === persistentShapes) return;
+      persistentShapes = shapes;
+    }
+    if (temporaryShapes.length === 0) {
+      board?.setAutoShapes(persistentShapes);
+    } else {
+      board?.setAutoShapes(temporaryShapes);
+    }
   }
 
   return {

@@ -13,10 +13,14 @@
           <button
             class="flex w-full justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
             @click="() => game.playMove(position.source, position.destination)"
-            @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: position.source, dest: position.destination }])
+            @pointerover="
+              () =>
+                game.setAutoShapes(
+                  [{ brush: 'paleBlue', orig: position.source, dest: position.destination }],
+                  'temporary'
+                )
             "
-            @pointerleave="() => game.setAutoShapes([])"
+            @pointerleave="() => game.setAutoShapes([], 'temporary')"
           >
             <span class="font-medium">{{ position.san }}</span>
             <span>{{ position.study_count }}</span>
@@ -31,8 +35,10 @@
           <RouterLink
             :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
-            @pointermove="() => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }])"
-            @pointerleave="() => game.setAutoShapes([])"
+            @pointerover="
+              () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
+            "
+            @pointerleave="() => game.setAutoShapes([], 'temporary')"
           >
             <span class="text-xs text-gray-500">{{ line.study_name }} - {{ line.chapter_name }}</span>
             <span class="text-sm font-medium">{{ line.line_name }}</span>
@@ -52,13 +58,14 @@
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
             @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key)"
-            @pointermove="
+            @pointerover="
               () =>
-                game.setAutoShapes([
-                  { brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key },
-                ])
+                game.setAutoShapes(
+                  [{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key }],
+                  'temporary'
+                )
             "
-            @pointerleave="() => game.setAutoShapes([])"
+            @pointerleave="() => game.setAutoShapes([], 'temporary')"
           >
             <div class="inline-flex gap-2">
               <span class="w-12 text-left font-medium">{{ move.san }}</span>
