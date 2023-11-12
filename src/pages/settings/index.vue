@@ -45,10 +45,27 @@ import { z } from "zod";
 import { useLichess } from "@stores/useLichess";
 import BaseLink from "@components/base/BaseLink.vue";
 import { ref } from "vue";
-import { CheckBadgeIcon } from "@heroicons/vue/24/solid";
+import { AcademicCapIcon, CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
 import { open } from "@tauri-apps/api/shell";
+import { definePage } from "vue-router/auto";
+import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
+
+definePage({
+  meta: {
+    layout: "breadcrumbs",
+  },
+});
+
+const { setBreadcrumbs } = useBreadcrumbs();
+setBreadcrumbs([
+  {
+    icon: Cog8ToothIcon,
+    name: "Settings",
+    to: "/settings/",
+  },
+]);
 
 const lichess = useLichess();
 const token = ref(lichess.personalAccessToken);
