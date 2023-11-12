@@ -1,8 +1,11 @@
-import { ParseTree, parse } from "@mliebelt/pgn-parser";
+import { formatComment } from "@/utilities/comment";
 import { playAudio } from "@utilities/audio";
-import { toColor, toRole, toSAN } from "@utilities/move";
-import { Chess } from "chess.js";
+import { toSAN } from "@utilities/move";
 import { Key, Piece } from "chessground/types";
+import { NormalMove, makeSquare } from "chessops";
+import { makeFen } from "chessops/fen";
+import { parsePgn, startingPosition } from "chessops/pgn";
+import { parseSan } from "chessops/san";
 import { computed, ref } from "vue";
 
 export interface ChessMove {
@@ -126,44 +129,37 @@ export function useGameTree() {
   }
 
   function fromPgn(pgn: string) {
+    const games = parsePgn(pgn);
+    if (games.length === 0) return;
     reset();
 
-    const parsedPgn = parse(pgn, { startRule: "game" }) as ParseTree;
+    const game = games[0];
+    const pos = startingPosition(game.headers).unwrap();
+    addNode(makeFen(pos.toSetup()), { comment: formatComment(game.comments?.join("") ?? "") });
 
-    const chess = new Chess();
-    chess.loadPgn(pgn);
-    const history = chess.history({ verbose: true });
-    const parsedMoves = parsedPgn.moves;
+    for (const node of game.moves.mainline()) {
+      const move = parseSan(pos, node.san) as NormalMove;
+      if (!move) break; // Illegal move
 
-    if (history.length !== parsedMoves.length) throw new Error("Error while parsing PGN");
-
-    if (!history.length) return;
-    const firstMove = history[0];
-    chess.load(firstMove.before);
-
-    addNode(firstMove.before, {
-      comment: parsedPgn.gameComment?.comment,
-    });
-
-    history.forEach((move, i) => {
-      chess.load(move.after);
-      addNode(move.after, {
+      addNode(makeFen(pos.toSetup()), {
         move: {
-          source: move.from,
-          destination: move.to,
-          san: move.san,
-          isCapture: move.flags.includes("c"),
-          isCheck: chess.isCheck(),
+          source: makeSquare(move.from),
+          destination: makeSquare(move.to),
+          san: node.san,
+          isCapture: node.san.includes("x"),
+          isCheck: node.san.includes("+"),
           piece: {
-            role: toRole(move.piece),
-            color: toColor(move.color),
-            promoted: move.flags.includes("p"),
+            role: pos.board.getRole(move.from)!,
+            color: pos.turn === "white" ? "black" : "white",
+            promoted: move.promotion !== undefined,
           },
-          annotations: parsedMoves[i].nag,
+          // TODO
+          // annotations:  node.nags[0],
         },
-        comment: parsedMoves[i].commentAfter,
+        comment: formatComment(node.comments?.join("") ?? ""),
       });
-    });
+      pos.play(move);
+    }
 
     // reset active node to root position after import
     if (root.value) setActiveNode(root.value);

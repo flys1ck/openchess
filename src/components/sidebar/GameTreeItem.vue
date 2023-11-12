@@ -107,6 +107,9 @@ const commentHtml = computed(() => {
   // strip html tags including content assuming any html is malicious
   const htmlPattern = /<([^</> ]+)[^<>]*?>[^<>]*?<\/\1>/g;
   let comment = props.node.comment.replace(htmlPattern, "");
+  // strip custom pgn comments
+  const customCommentPattern = /\[[^\]]+?\]/g;
+  comment = comment.replace(customCommentPattern, "");
   // unescape brackets
   comment = props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
   // remove fen information
