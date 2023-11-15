@@ -169,7 +169,8 @@ export function useGame() {
   }
 
   function setActivePosition(node: PositionNode) {
-    pos = Chess.fromSetup(parseFen(node.fen).unwrap()).unwrap();
+    const fen_ = parseFen(node.fen).unwrap();
+    pos = Chess.fromSetup(fen_).unwrap();
 
     const lastMove = node.move && [node.move.source, node.move.destination];
     const position: Position = {
@@ -180,7 +181,7 @@ export function useGame() {
 
     board?.setPosition(position);
     if (node.move?.isCheck) board?.setCheck();
-
+    fen.value = node.fen;
     tree.setActiveNode(node);
   }
 
