@@ -22,6 +22,15 @@
         </select>
       </div>
       <div>
+        <BaseInputLabel htmlFor="line-orientation" class="block text-sm font-medium leading-6 text-gray-900"
+          >Line Orientation</BaseInputLabel
+        >
+        <select id="line-orientation" v-model="lineOrientation">
+          <option value="white">White</option>
+          <option value="black">Black</option>
+        </select>
+      </div>
+      <div>
         <BaseInputLabel htmlFor="cover-photo" class="block text-sm font-medium leading-6 text-gray-900"
           >PGNs</BaseInputLabel
         >
@@ -42,7 +51,7 @@ import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { NormalMove, makeSquare } from "chessops";
-import { makeBoardFen } from "chessops/fen";
+import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
 import { parseSan } from "chessops/san";
 import { ref } from "vue";
@@ -52,6 +61,7 @@ const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
 const chapterHeader = ref("White");
 const lineHeader = ref("Black");
+const lineOrientation = ref("white");
 
 const query = db.selectFrom("studies").select(["id", "name"]).where("id", "=", Number(route.params.studyId)).compile();
 const study = await selectFirst(query);
@@ -75,9 +85,8 @@ async function processPgn(pgn: string) {
     const chapterName = headers.get(chapterHeader.value) ?? "";
     const lineName = headers.get(lineHeader.value) ?? "";
 
-    const mainline = game.moves.mainline();
     let moves = "";
-    for (const node of mainline) {
+    for (const node of game.moves.mainline()) {
       moves = `${moves} ${node.san}`;
     }
 
@@ -89,26 +98,56 @@ async function processPgn(pgn: string) {
       })
       .onConflict((oc) => oc.columns(["study", "name"]).doNothing())
       .compile();
+    const chapterQueryResult = await execute(chapterQuery);
 
-    const chapterId = (await execute(chapterQuery)).lastInsertId;
+    let chapterId: number;
+    if (chapterQueryResult.rowsAffected === 0) {
+      const chapterQuery = db
+        .selectFrom("chapters")
+        .select("id")
+        .where("study", "=", Number(route.params.studyId))
+        .where("name", "=", chapterName)
+        .compile();
+      chapterId = (await selectFirst(chapterQuery)).id;
+    } else {
+      chapterId = chapterQueryResult.lastInsertId;
+    }
 
     const lineQuery = db
       .insertInto("lines")
-      .values({ study: Number(route.params.studyId), chapter: chapterId, name: lineName, pgn: makePgn(game), moves })
-      .onConflict((oc) => oc.columns(["chapter", "moves"]).doNothing())
+      .values({
+        study: Number(route.params.studyId),
+        chapter: chapterId,
+        name: lineName,
+        pgn: makePgn(game),
+        moves,
+        orientation: lineOrientation.value,
+      })
       .compile();
-    const lineId = (await execute(lineQuery)).lastInsertId;
+    const lineQueryResult = await execute(lineQuery);
+
+    let lineId: number;
+    if (lineQueryResult.rowsAffected === 0) {
+      const lineQuery = db
+        .selectFrom("lines")
+        .select("id")
+        .where("chapter", "=", chapterId)
+        .where("name", "=", lineName)
+        .compile();
+      lineId = (await selectFirst(lineQuery)).id;
+    } else {
+      lineId = lineQueryResult.lastInsertId;
+    }
 
     let positions = [];
-    for (const node of mainline) {
+    for (const node of game.moves.mainline()) {
       const move = parseSan(pos, node.san) as NormalMove;
       if (!move) {
         console.error("mainline includes illegal moves");
         break;
       }
-      pos.play(move);
       positions.push({
-        fen: makeBoardFen(pos.board),
+        fen: makeFen(pos.toSetup()),
         source: makeSquare(move.from),
         destination: makeSquare(move.to),
         san: node.san,
@@ -116,8 +155,10 @@ async function processPgn(pgn: string) {
         chapter: chapterId,
         line: lineId,
       });
+      pos.play(move);
     }
 
+    if (positions.length === 0) return;
     const positionsQuery = db
       .insertInto("positions")
       .values(positions)
