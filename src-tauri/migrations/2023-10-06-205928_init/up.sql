@@ -26,7 +26,6 @@ create table if not exists lines (
     foreign key (chapter) references chapters(id) on delete cascade,
     foreign key (study) references studies(id) on delete cascade
 );
-create unique index idx_lines_chapter_moves on lines (chapter, moves);
 
 create table if not exists positions (
     id integer primary key not null,

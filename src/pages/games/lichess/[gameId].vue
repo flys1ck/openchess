@@ -4,7 +4,7 @@
       <GameChessboard
         class="mx-auto my-4 aspect-square flex-grow overflow-hidden"
         :game="game"
-        :orientation="parsedGame.tags!['Black'] === lichess.username ? 'black' : 'white'"
+        :orientation="parsedGame[0].headers.get('White') === lichess.username ? 'white' : 'black'"
       />
     </div>
     <GameContextSidebar :game="game" />
@@ -16,10 +16,10 @@ import { useRoute, definePage } from "vue-router/auto";
 import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";
-import { ParseTree, parse } from "@mliebelt/pgn-parser";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
+import { parsePgn } from "chessops/pgn";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();
@@ -30,7 +30,7 @@ game.createNewGame();
 game.tree.fromPgn(lichessGamePgn);
 if (game.tree.root.value) game.setActivePosition(game.tree.root.value);
 
-const parsedGame = parse(lichessGamePgn, { startRule: "game" }) as ParseTree;
+const parsedGame = parsePgn(lichessGamePgn);
 
 definePage({
   meta: {
@@ -49,7 +49,7 @@ setBreadcrumbs([
     to: "/games/lichess/",
   },
   {
-    name: `${parsedGame.tags!["White"]} vs. ${parsedGame.tags!["Black"]}`,
+    name: `${parsedGame[0].headers.get("White")} vs. ${parsedGame[0].headers.get("Black")}`,
     to: `/games/lichess/${route.params.gameId}`,
   },
 ]);

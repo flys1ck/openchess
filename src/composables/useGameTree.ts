@@ -1,8 +1,11 @@
-import { ParseTree, parse } from "@mliebelt/pgn-parser";
+import { formatComment } from "@/utilities/comment";
 import { playAudio } from "@utilities/audio";
-import { toColor, toRole, toSAN } from "@utilities/move";
-import { Chess } from "chess.js";
+import { toSAN } from "@utilities/move";
 import { Key, Piece } from "chessground/types";
+import { NormalMove, makeSquare } from "chessops";
+import { makeFen } from "chessops/fen";
+import { parsePgn, startingPosition } from "chessops/pgn";
+import { parseSan } from "chessops/san";
 import { computed, ref } from "vue";
 
 export interface ChessMove {
@@ -12,12 +15,8 @@ export interface ChessMove {
   piece: Piece;
   isCheck: boolean;
   isCapture: boolean;
-  annotations?: string[];
+  annotations?: number[];
 }
-
-// TODO rename turncolor to movecolor
-// TODO: consider evaluation and comments
-// TODO can also cache possible moves, to avoid recalculation
 
 // a node describes a position
 export interface PositionNode {
@@ -126,44 +125,37 @@ export function useGameTree() {
   }
 
   function fromPgn(pgn: string) {
+    const games = parsePgn(pgn);
+    if (games.length === 0) return;
     reset();
 
-    const parsedPgn = parse(pgn, { startRule: "game" }) as ParseTree;
+    const game = games[0];
+    const pos = startingPosition(game.headers).unwrap();
+    addNode(makeFen(pos.toSetup()), { comment: formatComment(game.comments?.join("") ?? "") });
 
-    const chess = new Chess();
-    chess.loadPgn(pgn);
-    const history = chess.history({ verbose: true });
-    const parsedMoves = parsedPgn.moves;
-
-    if (history.length !== parsedMoves.length) throw new Error("Error while parsing PGN");
-
-    if (!history.length) return;
-    const firstMove = history[0];
-    chess.load(firstMove.before);
-
-    addNode(firstMove.before, {
-      comment: parsedPgn.gameComment?.comment,
-    });
-
-    history.forEach((move, i) => {
-      chess.load(move.after);
-      addNode(move.after, {
+    for (const node of game.moves.mainline()) {
+      const move = parseSan(pos, node.san) as NormalMove;
+      // TODO: main line null moves will be marked as illegal
+      if (!move) break; //illegal moves
+      pos.play(move);
+      addNode(makeFen(pos.toSetup()), {
         move: {
-          source: move.from,
-          destination: move.to,
-          san: move.san,
-          isCapture: move.flags.includes("c"),
-          isCheck: chess.isCheck(),
+          source: makeSquare(move.from),
+          destination: makeSquare(move.to),
+          san: node.san,
+          isCapture: node.san.includes("x"),
+          isCheck: node.san.includes("+"),
           piece: {
-            role: toRole(move.piece),
-            color: toColor(move.color),
-            promoted: move.flags.includes("p"),
+            role: pos.board.getRole(move.from)!,
+            color: pos.turn,
+            promoted: move.promotion !== undefined,
           },
-          annotations: parsedMoves[i].nag,
+          // TODO
+          annotations: node.nags,
         },
-        comment: parsedMoves[i].commentAfter,
+        comment: formatComment(node.comments?.join("") ?? ""),
       });
-    });
+    }
 
     // reset active node to root position after import
     if (root.value) setActiveNode(root.value);

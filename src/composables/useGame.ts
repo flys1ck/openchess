@@ -1,22 +1,23 @@
+import { getPossibleMoves, isPromotion } from "@/utilities/move";
 import { Position, useChessground } from "@composables/useChessground";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
-import { isPromotion, toColor, toPiece, toPossibleMoves } from "@utilities/move";
-import { Chess } from "chess.js";
 import { DrawShape } from "chessground/draw";
 import { Color, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
+import { Chess } from "chessops/chess";
+import { makeFen, parseFen } from "chessops/fen";
+import { makeSanAndPlay } from "chessops/san";
+import { parseSquare } from "chessops/util";
 import { CSSProperties, ref, shallowRef } from "vue";
 
 export type PromotionPiece = "queen" | "rook" | "bishop" | "knight";
 
 export function useGame() {
-  const chess = new Chess();
+  let pos = Chess.default();
   let board: ReturnType<typeof useChessground> | undefined;
   const tree = useGameTree();
-  const turnColor = ref<Color>("white");
-
-  const fen = ref(chess.fen());
+  const fen = ref(makeFen(pos.toSetup()));
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -32,26 +33,22 @@ export function useGame() {
   let persistentShapes: DrawShape[] = [];
 
   function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
-    const move = chess.history({ verbose: true }).at(-1);
-
     const position = {
-      fen: chess.fen(),
-      turnColor: toColor(chess.turn()),
-      possibleMoves: toPossibleMoves(chess.moves({ verbose: true })),
-      isCheck: chess.isCheck(),
-      lastMove: move && [move.from, move.to],
+      fen: fen.value,
+      turnColor: pos.turn,
+      possibleMoves: getPossibleMoves(fen.value),
+      isCheck: pos.isCheck(),
     };
     board = useChessground(element, { orientation: options?.orientation, position, onMove: processMove });
   }
 
   function createNewGame() {
-    chess.reset();
-    fen.value = chess.fen();
-    turnColor.value = toColor(chess.turn());
+    pos.reset();
+    fen.value = makeFen(pos.toSetup());
     isPromoting.value = false;
 
     // reset board
-    board?.setPosition({ fen: fen.value, turnColor: turnColor.value });
+    board?.setPosition({ fen: fen.value, turnColor: pos.turn });
 
     // reset game tree to starting position
     // TODO: check if tree reset is really necessary here
@@ -64,12 +61,13 @@ export function useGame() {
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
-    // fix lichess sending UCI for castling as `e1h1, `e1a1`
     if (source === "a0" || destination === "a0") return;
-    const sourcePiece = chess.get(source);
+
+    // fix lichess sending UCI for castling as `e1h1, `e1a1` (adheres to chess960 option for chess engines)
+    const sourcePieceRole = pos.board.getRole(parseSquare(source));
     let fixedDestination = destination;
     const uci = `${source}${destination}`;
-    if (sourcePiece.type === "k" && (uci === "e1a1" || uci === "e1h1" || uci === "e8a8" || uci === "e8h8")) {
+    if (sourcePieceRole === "king" && (uci === "e1a1" || uci === "e1h1" || uci === "e8a8" || uci === "e8h8")) {
       switch (uci) {
         case "e1a1":
           fixedDestination = "c1";
@@ -85,28 +83,28 @@ export function useGame() {
           break;
       }
     }
+    const targetPieceRole = pos.board.getRole(parseSquare(fixedDestination));
 
     const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
     if (isPromotion(fixedDestination, piece.role)) {
       const orientation = board?.getOrientation()!;
-      intentPromotion(fixedDestination, turnColor.value, orientation);
+      intentPromotion(fixedDestination, pos.turn, orientation);
       return;
     }
 
     // handle promotion
-    const move = chess.move({
-      from: source,
-      to: fixedDestination,
-      promotion: options?.promotionPiece && toPiece(options.promotionPiece),
+    const san = makeSanAndPlay(pos, {
+      from: parseSquare(source),
+      to: parseSquare(fixedDestination),
+      promotion: options?.promotionPiece,
     });
-    const isCapture = move.flags.includes("c") || move.flags.includes("e");
-    const isEnPassant = move.flags.includes("e");
-    const isCheck = chess.inCheck();
+    const isEnPassant = sourcePieceRole === "pawn" && targetPieceRole === undefined && source[0] !== destination[0];
+    const isCapture = san.includes("x");
+    const isCheck = pos.isCheck();
 
     // remove en passanted pawn
     if (isEnPassant) board?.setPiece((fixedDestination[0] + source[1]) as Key, undefined);
-
     if (isCheck) board?.setCheck();
 
     // play move audio
@@ -116,20 +114,16 @@ export function useGame() {
       playAudio("move", 0.5);
     }
 
-    // set up board for next move
-    fen.value = chess.fen();
-    turnColor.value = toColor(chess.turn());
-
-    board?.setTurn(fen.value, turnColor.value);
-
+    fen.value = makeFen(pos.toSetup());
+    board?.setTurn(fen.value, pos.turn);
     // add recent move to game tree
     const nodeMove: ChessMove = {
-      source: move.from,
-      destination: move.to,
-      san: move.san,
+      source: source,
+      destination: fixedDestination,
+      san: san,
       isCapture,
       isCheck,
-      piece,
+      piece: piece,
     };
     tree.addNode(fen.value, { move: nodeMove });
   }
@@ -151,7 +145,7 @@ export function useGame() {
   function cancelPromotion() {
     const lastPosition: Position = {
       fen: fen.value,
-      turnColor: turnColor.value,
+      turnColor: pos.turn,
       // TODO last move is wrong
       lastMove: board?.getLastMove(),
     };
@@ -162,7 +156,7 @@ export function useGame() {
   function promote(promotionPiece: PromotionPiece) {
     const piece: Piece = {
       role: promotionPiece,
-      color: turnColor.value,
+      color: pos.turn,
       promoted: true,
     };
     const lastMove = board?.getLastMove();
@@ -175,20 +169,19 @@ export function useGame() {
   }
 
   function setActivePosition(node: PositionNode) {
-    chess.load(node.fen);
-    fen.value = node.fen;
-    turnColor.value = node.move?.piece.color === "white" ? "black" : "white";
+    const fen_ = parseFen(node.fen).unwrap();
+    pos = Chess.fromSetup(fen_).unwrap();
 
     const lastMove = node.move && [node.move.source, node.move.destination];
     const position: Position = {
       fen: node.fen,
-      turnColor: turnColor.value,
+      turnColor: pos.turn,
       lastMove,
     };
 
     board?.setPosition(position);
     if (node.move?.isCheck) board?.setCheck();
-
+    fen.value = node.fen;
     tree.setActiveNode(node);
   }
 
@@ -212,12 +205,11 @@ export function useGame() {
   }
 
   return {
+    fen,
     tree,
     isPromoting,
     promotionColor,
     promotionStyles,
-    fen,
-    turnColor,
     initializeBoard,
     createNewGame,
     cancelPromotion,

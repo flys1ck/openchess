@@ -1,6 +1,8 @@
 import { ChessMove } from "@composables/useGameTree";
-import { Chess, Color, Move, PieceSymbol } from "chess.js";
-import { Color as CgColor, Dests, Key, Role } from "chessground/types";
+import { Key, Role } from "chessground/types";
+import { Chess } from "chessops/chess";
+import { chessgroundDests } from "chessops/compat";
+import { parseFen } from "chessops/fen";
 
 export function isEnPassant(source: Key, destination: Key, pieceOnDestination: Role | undefined) {
   return source[0] !== destination[0] && pieceOnDestination === "pawn";
@@ -15,52 +17,43 @@ export function toSAN(move: ChessMove) {
 }
 
 export function getPossibleMoves(fen: string) {
-  const chess = new Chess();
-  chess.load(fen);
+  const setup = parseFen(fen).unwrap();
+  const position = Chess.fromSetup(setup).unwrap();
 
-  return toPossibleMoves(chess.moves({ verbose: true }));
+  return chessgroundDests(position);
 }
 
-export function toPossibleMoves(moves: Move[]): Dests {
-  return moves.reduce((acc, move) => {
-    if (!acc.has(move.from)) return acc.set(move.from, [move.to]);
-    const dests = acc.get(move.from);
-    dests?.push(move.to);
-    return acc.set(move.from, dests!);
-  }, new Map<Key, Key[]>());
-}
+// export function toRole(piece: PieceSymbol): Role {
+//   const roles: Record<PieceSymbol, Role> = {
+//     q: "queen",
+//     r: "rook",
+//     b: "bishop",
+//     n: "knight",
+//     p: "pawn",
+//     k: "king",
+//   };
 
-export function toRole(piece: PieceSymbol): Role {
-  const roles: Record<PieceSymbol, Role> = {
-    q: "queen",
-    r: "rook",
-    b: "bishop",
-    n: "knight",
-    p: "pawn",
-    k: "king",
-  };
+//   return roles[piece];
+// }
 
-  return roles[piece];
-}
+// export function toPiece(role: Role): PieceSymbol {
+//   const pieces: Record<Role, PieceSymbol> = {
+//     queen: "q",
+//     rook: "r",
+//     bishop: "b",
+//     knight: "n",
+//     pawn: "p",
+//     king: "k",
+//   };
 
-export function toPiece(role: Role): PieceSymbol {
-  const pieces: Record<Role, PieceSymbol> = {
-    queen: "q",
-    rook: "r",
-    bishop: "b",
-    knight: "n",
-    pawn: "p",
-    king: "k",
-  };
+//   return pieces[role];
+// }
 
-  return pieces[role];
-}
+// export function toColor(color: Color): CgColor {
+//   const colors: Record<Color, "white" | "black"> = {
+//     w: "white",
+//     b: "black",
+//   };
 
-export function toColor(color: Color): CgColor {
-  const colors: Record<Color, "white" | "black"> = {
-    w: "white",
-    b: "black",
-  };
-
-  return colors[color];
-}
+//   return colors[color];
+// }

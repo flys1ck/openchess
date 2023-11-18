@@ -22,6 +22,15 @@
         </select>
       </div>
       <div>
+        <BaseInputLabel htmlFor="line-orientation" class="block text-sm font-medium leading-6 text-gray-900"
+          >Line Orientation</BaseInputLabel
+        >
+        <select id="line-orientation" v-model="lineOrientation">
+          <option value="white">White</option>
+          <option value="black">Black</option>
+        </select>
+      </div>
+      <div>
         <BaseInputLabel htmlFor="cover-photo" class="block text-sm font-medium leading-6 text-gray-900"
           >PGNs</BaseInputLabel
         >
@@ -41,7 +50,10 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
-import { Chess } from "chess.js";
+import { NormalMove, makeSquare } from "chessops";
+import { makeFen } from "chessops/fen";
+import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
+import { parseSan } from "chessops/san";
 import { ref } from "vue";
 import { definePage, useRoute } from "vue-router/auto";
 
@@ -49,6 +61,7 @@ const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
 const chapterHeader = ref("White");
 const lineHeader = ref("Black");
+const lineOrientation = ref("white");
 
 const query = db.selectFrom("studies").select(["id", "name"]).where("id", "=", Number(route.params.studyId)).compile();
 const study = await selectFirst(query);
@@ -63,58 +76,96 @@ function onSubmit() {
   });
 }
 
+// TODO: will currently only work with mainline
 async function processPgn(pgn: string) {
-  const game = new Chess();
-  game.loadPgn(pgn);
+  const games = parsePgn(pgn);
+  games.forEach(async (game) => {
+    const pos = startingPosition(game.headers).unwrap();
+    const headers = game.headers;
+    const chapterName = headers.get(chapterHeader.value) ?? "";
+    const lineName = headers.get(lineHeader.value) ?? "";
 
-  const headers = game.header();
-  const chapterName = headers[chapterHeader.value];
-  const lineName = lineHeader.value ? headers[lineHeader.value] : "";
+    let moves = "";
+    for (const node of game.moves.mainline()) {
+      moves = `${moves} ${node.san}`;
+    }
 
-  // TODO same function in game index
-  const history = game.history({ verbose: true });
-  const moves = history
-    .reduce((acc, move) => {
-      return `${acc} ${move.san}`;
-    }, "")
-    .trim();
+    const chapterQuery = db
+      .insertInto("chapters")
+      .values({
+        name: chapterName,
+        study: Number(route.params.studyId),
+      })
+      .onConflict((oc) => oc.columns(["study", "name"]).doNothing())
+      .compile();
+    const chapterQueryResult = await execute(chapterQuery);
 
-  const chapterQuery = db
-    .insertInto("chapters")
-    .values({
-      name: chapterName,
-      study: Number(route.params.studyId),
-    })
-    .onConflict((oc) => oc.columns(["study", "name"]).doNothing())
-    .compile();
+    let chapterId: number;
+    if (chapterQueryResult.rowsAffected === 0) {
+      const chapterQuery = db
+        .selectFrom("chapters")
+        .select("id")
+        .where("study", "=", Number(route.params.studyId))
+        .where("name", "=", chapterName)
+        .compile();
+      chapterId = (await selectFirst(chapterQuery)).id;
+    } else {
+      chapterId = chapterQueryResult.lastInsertId;
+    }
 
-  const chapterId = (await execute(chapterQuery)).lastInsertId;
+    const lineQuery = db
+      .insertInto("lines")
+      .values({
+        study: Number(route.params.studyId),
+        chapter: chapterId,
+        name: lineName,
+        pgn: makePgn(game),
+        moves,
+        orientation: lineOrientation.value,
+      })
+      .compile();
+    const lineQueryResult = await execute(lineQuery);
 
-  const lineQuery = db
-    .insertInto("lines")
-    .values({ study: Number(route.params.studyId), chapter: chapterId, name: lineName, pgn, moves })
-    .onConflict((oc) => oc.columns(["chapter", "moves"]).doNothing())
-    .compile();
-  const lineId = (await execute(lineQuery)).lastInsertId;
+    let lineId: number;
+    if (lineQueryResult.rowsAffected === 0) {
+      const lineQuery = db
+        .selectFrom("lines")
+        .select("id")
+        .where("chapter", "=", chapterId)
+        .where("name", "=", lineName)
+        .compile();
+      lineId = (await selectFirst(lineQuery)).id;
+    } else {
+      lineId = lineQueryResult.lastInsertId;
+    }
 
-  const positions = history.map((move) => {
-    return {
-      fen: move.before,
-      source: move.from,
-      destination: move.to,
-      san: move.san,
-      study: Number(route.params.studyId),
-      chapter: chapterId,
-      line: lineId,
-    };
+    let positions = [];
+    for (const node of game.moves.mainline()) {
+      const move = parseSan(pos, node.san) as NormalMove;
+      if (!move) {
+        console.error("mainline includes illegal moves");
+        break;
+      }
+      positions.push({
+        fen: makeFen(pos.toSetup()),
+        source: makeSquare(move.from),
+        destination: makeSquare(move.to),
+        san: node.san,
+        study: Number(route.params.studyId),
+        chapter: chapterId,
+        line: lineId,
+      });
+      pos.play(move);
+    }
+
+    if (positions.length === 0) return;
+    const positionsQuery = db
+      .insertInto("positions")
+      .values(positions)
+      .onConflict((oc) => oc.columns(["line", "fen"]).doNothing())
+      .compile();
+    execute(positionsQuery);
   });
-
-  const positionsQuery = db
-    .insertInto("positions")
-    .values(positions)
-    .onConflict((oc) => oc.columns(["line", "fen"]).doNothing())
-    .compile();
-  execute(positionsQuery);
 }
 
 definePage({
