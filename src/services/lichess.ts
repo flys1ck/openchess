@@ -72,27 +72,21 @@ interface ExportGameByIdQueryParameters {
 export type LichessGame = z.infer<typeof GameSchema>;
 export type MasterGameCollection = z.infer<typeof MasterGamesSchema>;
 
-export class LichessClient {
-  personalAccessToken = "";
-
-  constructor(personalAccessToken: string) {
-    this.personalAccessToken = personalAccessToken;
-  }
-
+export function LichessClient(personalAccessToken: string) {
   /**
    * @see https://lichess.org/api#tag/Games/operation/apiGamesUser
    */
-  async exportGamesByUser(
+  async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
     headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
-  async exportGamesByUser(
+  async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
     headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame[]>;
-  async exportGamesByUser(
+  async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
     headers: LichessHeaders = { accept: "application/x-chess-pgn" }
@@ -102,7 +96,7 @@ export class LichessClient {
 
     const response = await fetch(`https://lichess.org/api/games/user/${username}?${params}`, {
       headers: {
-        Authorization: `Bearer ${this.personalAccessToken}`,
+        Authorization: `Bearer ${personalAccessToken}`,
         accept: headers.accept,
       },
     });
@@ -119,17 +113,17 @@ export class LichessClient {
     return await response.text();
   }
 
-  async exportGameById(
+  async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
     headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
-  async exportGameById(
+  async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
     headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame>;
-  async exportGameById(
+  async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
     headers: LichessHeaders = { accept: "application/x-chess-pgn" }
@@ -155,17 +149,17 @@ export class LichessClient {
     return await fetchResponse.text();
   }
 
-  async getCurrentAccount() {
+  async function getCurrentAccount() {
     const response = await fetch("https://lichess.org/api/account", {
       headers: {
-        Authorization: `Bearer ${this.personalAccessToken}`,
+        Authorization: `Bearer ${personalAccessToken}`,
       },
     });
 
     return await response.json();
   }
 
-  async getMasterGames(queryParameters?: GetMasterGamesQueryParameters) {
+  async function getMasterGames(queryParameters?: GetMasterGamesQueryParameters) {
     // @ts-ignore URLSearchParams can handle numbers in Records
     const params = new URLSearchParams(queryParameters).toString();
     let url = `https://explorer.lichess.ovh/masters`;
@@ -176,4 +170,12 @@ export class LichessClient {
 
     return MasterGamesSchema.parse(response);
   }
+
+  return {
+    personalAccessToken,
+    exportGamesByUser,
+    exportGameById,
+    getCurrentAccount,
+    getMasterGames,
+  };
 }
