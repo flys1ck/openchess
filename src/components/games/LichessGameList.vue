@@ -1,12 +1,18 @@
 <template>
   <ul class="space-y-4">
-    <BaseCard v-for="game in games" :key="game.id" as="li" class="relative flex gap-8">
+    <GameCard
+      v-for="game in games"
+      :key="game.id"
+      :to="`/games/lichess/${game.id}`"
+      :game="game"
+      class="relative flex gap-8"
+    >
       <div class="flex-grow p-4">
         <RouterLink :to="`/games/lichess/${game.id}`">
           <div class="flex items-center gap-2">
-            <LichessPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
+            <GameCardPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
             <span class="text-3xl font-thin tracking-tighter text-gray-300">VS</span>
-            <LichessPlayer :player="game.players.black" class="flex flex-1 flex-col" />
+            <GameCardPlayer :player="game.players.black" class="flex flex-1 flex-col" />
           </div>
           <span class="absolute inset-0" aria-hidden="true" />
         </RouterLink>
@@ -38,7 +44,7 @@
           </div>
         </dl>
       </div>
-    </BaseCard>
+    </GameCard>
   </ul>
 </template>
 
@@ -46,16 +52,16 @@
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
 import { LichessGame } from "@services/lichess";
 import BaseTime from "@components/base/BaseTime.vue";
-import { ref } from "vue";
-import BaseCard from "@components/base/BaseCard.vue";
+import { shallowRef } from "vue";
 import { useLichess } from "@stores/useLichess";
-import LichessPlayer from "@components/games/LichessPlayer.vue";
-import { getMoveStringFromSan } from "@/utilities/moves";
+import GameCardPlayer from "@components/games/GameCardPlayer.vue";
+import { getMoveStringFromSan } from "@utilities/moves";
+import GameCard from "@/components/games/GameCard.vue";
 
 defineExpose({ refresh });
 
 const lichess = useLichess();
-const games = ref<LichessGame[]>(
+const games = shallowRef<LichessGame[]>(
   await lichess.client.exportGamesByUser(
     lichess.username,
     { max: 5, opening: true },

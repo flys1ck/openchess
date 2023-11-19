@@ -7,7 +7,7 @@
     <span class="font-medium">{{ player.user.name }}</span>
     <span class="text-sm text-gray-600" aria-hidden="true">
       {{ player.rating }}
-      <RatingDifference :difference="player.ratingDiff" />
+      <RatingDifference v-if="player.ratingDiff" :difference="player.ratingDiff" />
     </span>
   </div>
 </template>

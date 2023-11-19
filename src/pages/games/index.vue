@@ -25,7 +25,7 @@
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { definePage } from "vue-router/auto";
-import OTBClockThumbnail from "@assets/images/otb_clock.png";
+// import OTBClockThumbnail from "@assets/images/otb_clock.png";
 import OTBThumbnail from "@assets/images/otb.png";
 import BaseCard from "@components/base/BaseCard.vue";
 
@@ -49,13 +49,19 @@ const platforms = [
     title: "Lichess",
     to: "/games/lichess",
     imgSrc: OTBThumbnail,
-    imgAlt: "Woman and man sitting at  table in cafe palying chess.",
+    imgAlt: "Woman and man sitting at table in cafe palying chess.",
   },
   {
-    title: "Over the board (Coming soon!)",
-    to: "#",
-    imgSrc: OTBClockThumbnail,
-    imgAlt: "Chess clock in front of three chess pieces, two queens and one king.",
+    title: "Chess.com",
+    to: "/games/chessdotcom",
+    imgSrc: OTBThumbnail,
+    imgAlt: "Woman and man sitting at table in cafe palying chess.",
   },
+  // {
+  //   title: "Over the board (Coming soon!)",
+  //   to: "#",
+  //   imgSrc: OTBClockThumbnail,
+  //   imgAlt: "Chess clock in front of three chess pieces, two queens and one king.",
+  // },
 ];
 </script>
