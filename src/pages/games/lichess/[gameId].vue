@@ -1,5 +1,5 @@
 <template>
-  <GameMain :game="game" :orientation="lichess.username === 'white' ? 'white' : 'black'" />
+  <GameMain :game="game" :orientation="lichess.username === parsedGame[0].headers.get('White') ? 'white' : 'black'" />
 </template>
 
 <script setup lang="ts">
