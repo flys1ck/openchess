@@ -1,11 +1,7 @@
 <template>
-  <div v-if="'aiLevel' in player">
-    <span class="font-medium">Stockfish</span>
-    <span class="text-sm text-gray-600" aria-hidden="true">Level {{ player.aiLevel }}</span>
-  </div>
-  <div v-else>
-    <span class="font-medium">{{ player.user.name }}</span>
-    <span class="text-sm text-gray-600" aria-hidden="true">
+  <div>
+    <span class="font-medium">{{ player.name }}</span>
+    <span v.if="player.rating" class="text-sm text-gray-600" aria-hidden="true">
       {{ player.rating }}
       <RatingDifference v-if="player.ratingDiff" :difference="player.ratingDiff" />
     </span>
@@ -13,11 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import { z } from "zod";
-import { PlayerSchema } from "@schemas/lichess/ExportGameByIdSchema";
 import RatingDifference from "@components/games/RatingDifference.vue";
+import { ChessGame } from "@/types/ChessGame";
 
 defineProps<{
-  player: z.infer<typeof PlayerSchema>;
+  player: ChessGame["players"]["white"] | ChessGame["players"]["black"];
 }>();
 </script>

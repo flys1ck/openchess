@@ -1,7 +1,7 @@
 <template>
   <ul class="space-y-4">
     <GameCard
-      v-for="game in games"
+      v-for="game in computedGames"
       :key="game.id"
       :to="`/games/lichess/${game.id}`"
       :game="game"
@@ -52,11 +52,12 @@
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
 import { LichessGame } from "@services/lichess";
 import BaseTime from "@components/base/BaseTime.vue";
-import { shallowRef } from "vue";
+import { computed, shallowRef } from "vue";
 import { useLichess } from "@stores/useLichess";
 import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { getMoveStringFromSan } from "@utilities/moves";
 import GameCard from "@/components/games/GameCard.vue";
+import { normalizeLichessGame } from "@/utilities/proxies";
 
 defineExpose({ refresh });
 
@@ -68,6 +69,12 @@ const games = shallowRef<LichessGame[]>(
     { accept: "application/x-ndjson" }
   )
 );
+
+const computedGames = computed(() => {
+  return games.value.map((game) => {
+    return normalizeLichessGame(game);
+  });
+});
 
 async function refresh() {
   games.value = await lichess.client.exportGamesByUser(

@@ -2,13 +2,13 @@ export interface ChessGame {
   id: string;
   players: {
     white: {
-      user: { id: string; name: string };
-      rating: number;
+      name: string;
+      rating?: number;
       ratingDiff?: number;
     };
     black: {
-      user: { id: string; name: string };
-      rating: number;
+      name: string;
+      rating?: number;
       ratingDiff?: number;
     };
   };
