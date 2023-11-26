@@ -1,11 +1,37 @@
 import { ChessDotComGame } from "@/services/chessdotcom";
 import { LichessGame } from "@/services/lichess";
-import { ChessGame } from "@/types/ChessGame";
 import { getMoveStringFromSan } from "@/utilities/moves";
 import { parsePgn } from "chessops/pgn";
 
+export interface ChessGame {
+  id: string;
+  players: {
+    white: {
+      name: string;
+      rating?: number;
+      ratingDiff?: number;
+    };
+    black: {
+      name: string;
+      rating?: number;
+      ratingDiff?: number;
+    };
+  };
+  opening?: {
+    name: string;
+  };
+  variant: string;
+  moves: string;
+  initialFen?: string;
+  clock?: {
+    initial: number;
+    increment: number;
+  };
+  createdAt: number;
+}
+
 export function normalizeLichessGame(lichessGame: LichessGame): ChessGame {
-  const { id, players, opening, variant, moves, initialFen, clock, createdAt } = lichessGame;
+  const { id, players, opening, variant, moves, clock, createdAt, initialFen } = lichessGame;
   const white = normalizeLichessPlayer(players.white);
   const black = normalizeLichessPlayer(players.black);
   const game: ChessGame = {
@@ -13,7 +39,7 @@ export function normalizeLichessGame(lichessGame: LichessGame): ChessGame {
     players: { white, black },
     opening: opening ? { name: opening.name } : undefined,
     variant,
-    moves: moves ?? "",
+    moves: getMoveStringFromSan(moves?.split(" ") ?? [], initialFen),
     initialFen,
     clock: clock ? { initial: clock.initial, increment: clock.increment } : undefined,
     createdAt,

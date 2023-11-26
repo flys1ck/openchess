@@ -1,7 +1,7 @@
 <template>
   <ul class="space-y-4">
     <GameCard
-      v-for="game in computedGames"
+      v-for="game in normalizedGames"
       :key="game.id"
       :to="`/games/lichess/${game.id}`"
       :game="game"
@@ -57,7 +57,7 @@ import { useLichess } from "@stores/useLichess";
 import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { getMoveStringFromSan } from "@utilities/moves";
 import GameCard from "@/components/games/GameCard.vue";
-import { normalizeLichessGame } from "@/utilities/proxies";
+import { normalizeLichessGame } from "@/utilities/normalizer";
 
 defineExpose({ refresh });
 
@@ -70,7 +70,7 @@ const games = shallowRef<LichessGame[]>(
   )
 );
 
-const computedGames = computed(() => {
+const normalizedGames = computed(() => {
   return games.value.map((game) => {
     return normalizeLichessGame(game);
   });

@@ -9,8 +9,8 @@
 </template>
 
 <script setup lang="ts">
+import { ChessGame } from "@/utilities/normalizer";
 import RatingDifference from "@components/games/RatingDifference.vue";
-import { ChessGame } from "@/types/ChessGame";
 
 defineProps<{
   player: ChessGame["players"]["white"] | ChessGame["players"]["black"];

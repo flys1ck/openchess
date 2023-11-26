@@ -14,7 +14,7 @@
         <template v-else-if="game.variant === 'fromPosition'">From position: {{ game.initialFen }}</template>
       </div>
       <p v-if="game.moves" class="line-clamp-3 text-xs text-gray-500">
-        {{ getMoveStringFromSan(game.moves?.split(" ") ?? [], game.initialFen) }}
+        {{ game.moves }}
       </p>
     </div>
     <div class="flex items-center border-l p-4">
@@ -42,11 +42,10 @@
 
 <script setup lang="ts">
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
-import { getMoveStringFromSan } from "@/utilities/moves";
-import { ChessGame } from "@/types/ChessGame";
 import BaseTime from "@/components/base/BaseTime.vue";
 import GameCardPlayer from "@/components/games/GameCardPlayer.vue";
 import BaseCard from "@/components/base/BaseCard.vue";
+import { ChessGame } from "@/utilities/normalizer";
 
 defineProps<{
   to: string;

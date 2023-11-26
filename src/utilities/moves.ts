@@ -43,11 +43,13 @@ export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>)
   const turn = parsedFen.turn;
   const moveCount = parsedFen.fullmoves;
   const plyCount = parsedFen.halfmoves;
-  const moveString = sanMoves.reduce((acc, sanMove, i) => {
-    const currentPly = plyCount + i;
-    const currentMove = Math.floor(currentPly / 2) + 1;
-    return currentPly % 2 === 0 ? `${acc} ${currentMove}.${sanMove}` : `${acc} ${sanMove}`;
-  }, "");
+  const moveString = sanMoves
+    .reduce((acc, sanMove, i) => {
+      const currentPly = plyCount + i;
+      const currentMove = Math.floor(currentPly / 2) + 1;
+      return currentPly % 2 === 0 ? `${acc} ${currentMove}.${sanMove}` : `${acc} ${sanMove}`;
+    }, "")
+    .trim();
 
   return turn === "white" ? moveString : `${moveCount} ... ${moveString}`;
 }
