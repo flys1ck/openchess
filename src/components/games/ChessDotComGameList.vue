@@ -14,7 +14,7 @@ import { ChessGame, normalizeChessDotComGame } from "@/utilities/normalizer";
 defineExpose({ refresh });
 
 const chessDotCom = useChessDotCom();
-const games = shallowRef<ChessDotComGame[]>(await chessDotCom.client.getRecentGamesByUser("flys1ck"));
+const games = shallowRef<ChessDotComGame[]>(await chessDotCom.client.getRecentGamesByPlayer(chessDotCom.username));
 
 const normalizedGames = computed<ChessGame[]>(() => {
   return games.value.map((game) => {
@@ -23,6 +23,6 @@ const normalizedGames = computed<ChessGame[]>(() => {
 });
 
 async function refresh() {
-  games.value = await chessDotCom.client.getRecentGamesByUser("flys1ck");
+  games.value = await chessDotCom.client.getRecentGamesByPlayer(chessDotCom.username);
 }
 </script>

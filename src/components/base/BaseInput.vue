@@ -9,6 +9,7 @@
         :name="name"
         class="block w-full rounded-md py-1.5 text-sm focus:outline-none"
         :class="inputClasses"
+        spellcheck="false"
       />
       <div
         v-if="errors.length || isEvaluating"

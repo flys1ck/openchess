@@ -9,12 +9,22 @@
     </BaseSectionHeading>
     <Suspense>
       <ChessDotComGameList ref="chessDotComGameList" class="my-4" />
+      <template #fallback>
+        <div class="space-y-4">
+          <StudyCardSkeleton />
+          <StudyCardSkeleton />
+          <StudyCardSkeleton />
+          <StudyCardSkeleton />
+          <StudyCardSkeleton />
+        </div>
+      </template>
     </Suspense>
   </BaseContainer>
 </template>
 
 <script setup lang="ts">
 import ChessDotComGameList from "@/components/games/ChessDotComGameList.vue";
+import StudyCardSkeleton from "@/components/studies/StudyCardSkeleton.vue";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";

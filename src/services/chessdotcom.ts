@@ -31,7 +31,13 @@ export function ChessDotComClient() {
   let recentGames: ChessDotComGame[] = [];
   let recentGamesEtag: string | null = null;
 
-  async function getRecentGamesByUser(username: string) {
+  async function getPlayer(username: string) {
+    const url = `https://api.chess.com/pub/player/${username}`;
+    const response = await fetch(url);
+    return await response.json();
+  }
+
+  async function getRecentGamesByPlayer(username: string) {
     const today = new Date();
     const url = `https://api.chess.com/pub/player/${username}/games/${today.getFullYear()}/${today.getMonth() + 1}`;
     const headers = recentGamesEtag ? new Headers({ "If-None-Match": recentGamesEtag }) : new Headers({});
@@ -52,5 +58,5 @@ export function ChessDotComClient() {
     return game;
   }
 
-  return { getRecentGamesByUser, getGameByUuid };
+  return { getPlayer, getRecentGamesByPlayer, getGameByUuid };
 }
