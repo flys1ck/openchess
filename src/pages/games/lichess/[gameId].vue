@@ -9,7 +9,7 @@ import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
 import { parsePgn } from "chessops/pgn";
-import GameMain from "@/components/GameMain.vue";
+import GameMain from "@components/GameMain.vue";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();

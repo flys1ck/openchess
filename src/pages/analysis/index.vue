@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import GameMain from "@/components/GameMain.vue";
-import { useGame } from "@/composables/useGame";
+import GameMain from "@components/GameMain.vue";
+import { useGame } from "@composables/useGame";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { definePage } from "vue-router/auto";

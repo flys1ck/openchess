@@ -1,6 +1,6 @@
-import { ChessDotComGame } from "@/services/chessdotcom";
-import { LichessGame } from "@/services/lichess";
-import { getMoveStringFromSan } from "@/utilities/moves";
+import { ChessDotComGame } from "@services/chessdotcom";
+import { LichessGame } from "@services/lichess";
+import { getMoveStringFromSan } from "@utilities/moves";
 import { parsePgn } from "chessops/pgn";
 
 export interface ChessGame {

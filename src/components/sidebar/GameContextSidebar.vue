@@ -117,10 +117,10 @@ import {
   ChevronRightIcon,
 } from "@heroicons/vue/20/solid";
 import { onKeyStroke } from "@vueuse/core";
-import BaseSlider from "@/components/base/BaseSlider.vue";
-import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
-import BaseSidebarSectionHeading from "@/components/base/BaseSidebarSectionHeading.vue";
-import { useSettings } from "@/stores/useSettings";
+import BaseSlider from "@components/base/BaseSlider.vue";
+import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
+import { useSettings } from "@stores/useSettings";
 import { Key } from "chessground/types";
 import { DrawShape } from "chessground/draw";
 

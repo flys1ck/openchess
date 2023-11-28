@@ -40,9 +40,9 @@
 import { Ref, computed, onUnmounted, watch } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
 import { useEvaluation } from "@composables/useEvaluation";
-import { useSettings } from "@/stores/useSettings";
+import { useSettings } from "@stores/useSettings";
 import { storeToRefs } from "pinia";
-import { getMovesStringFromUci } from "@/utilities/moves";
+import { getMovesStringFromUci } from "@utilities/moves";
 import { Key } from "chessground/types";
 
 const props = defineProps<{

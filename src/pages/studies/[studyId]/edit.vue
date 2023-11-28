@@ -37,17 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@/components/base/BaseButton.vue";
-import BaseContainer from "@/components/base/BaseContainer.vue";
-import BaseInputGroup from "@/components/base/BaseInputGroup.vue";
-import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
-import BaseSettingsSection from "@/components/base/BaseSettingsSection.vue";
-import BaseTextarea from "@/components/base/BaseTextarea.vue";
+import BaseButton from "@components/base/BaseButton.vue";
+import BaseContainer from "@components/base/BaseContainer.vue";
+import BaseInputGroup from "@components/base/BaseInputGroup.vue";
+import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import BaseTextarea from "@components/base/BaseTextarea.vue";
 import { Studies } from "@/database";
-import { db, execute, selectFirst } from "@/services/database";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
-import { useToasts } from "@/stores/useToasts";
+import { db, execute, selectFirst } from "@services/database";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { useToasts } from "@stores/useToasts";
+import { EditableStudy } from "@/types";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { Insertable } from "kysely";
 import { reactive, ref } from "vue";
@@ -58,9 +59,9 @@ const route = useRoute("/studies/[studyId]/edit");
 
 const query = db.selectFrom("studies").selectAll().where("id", "=", Number(route.params.studyId)).compile();
 const study = ref<Insertable<Studies>>(await selectFirst(query));
-const studyFormData = reactive<Insertable<Studies>>({
+const studyFormData = reactive<EditableStudy>({
   name: study.value.name,
-  description: study.value.description,
+  description: study.value.description ?? "",
 });
 
 const { addToast } = useToasts();

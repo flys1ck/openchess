@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { db, selectFirst } from "@/services/database";
+import { db, selectFirst } from "@services/database";
 import GameChessboard from "@components/GameChessboard.vue";
 import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
 import { useGame } from "@composables/useGame";

@@ -30,13 +30,12 @@ import BaseTextarea from "@components/base/BaseTextarea.vue";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, execute } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { Insertable } from "kysely";
-import { Studies } from "@/database";
 import { reactive } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
-import { useToasts } from "@/stores/useToasts";
-import BaseContainer from "@/components/base/BaseContainer.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
+import { useToasts } from "@stores/useToasts";
+import BaseContainer from "@components/base/BaseContainer.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import { EditableStudy } from "@/types";
 
 definePage({
   meta: {
@@ -58,7 +57,7 @@ setBreadcrumbs([
 ]);
 
 const router = useRouter();
-const studyFormData = reactive<Insertable<Studies>>({
+const studyFormData = reactive<EditableStudy>({
   name: "",
   description: "",
 });

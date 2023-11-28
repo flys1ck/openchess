@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import GameMain from "@/components/GameMain.vue";
-import { useGame } from "@/composables/useGame";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
-import { useChessDotCom } from "@/stores/useChessDotCom";
+import GameMain from "@components/GameMain.vue";
+import { useGame } from "@composables/useGame";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { useChessDotCom } from "@stores/useChessDotCom";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { parsePgn } from "chessops/pgn";
 import { definePage, useRoute } from "vue-router/auto";

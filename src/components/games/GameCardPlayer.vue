@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChessGame } from "@/utilities/normalizer";
+import { ChessGame } from "@utilities/normalizer";
 import RatingDifference from "@components/games/RatingDifference.vue";
 
 defineProps<{

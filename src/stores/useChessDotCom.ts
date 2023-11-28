@@ -1,4 +1,4 @@
-import { ChessDotComClient } from "@/services/chessdotcom";
+import { ChessDotComClient } from "@services/chessdotcom";
 import { useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 

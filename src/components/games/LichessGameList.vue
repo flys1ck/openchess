@@ -56,8 +56,8 @@ import { computed, shallowRef } from "vue";
 import { useLichess } from "@stores/useLichess";
 import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { getMoveStringFromSan } from "@utilities/moves";
-import GameCard from "@/components/games/GameCard.vue";
-import { normalizeLichessGame } from "@/utilities/normalizer";
+import GameCard from "@components/games/GameCard.vue";
+import { normalizeLichessGame } from "@utilities/normalizer";
 
 defineExpose({ refresh });
 

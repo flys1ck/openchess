@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import GameChessboard from "@/components/GameChessboard.vue";
-import GameContextSidebar from "@/components/sidebar/GameContextSidebar.vue";
-import { useGame } from "@/composables/useGame";
+import GameChessboard from "@components/GameChessboard.vue";
+import GameContextSidebar from "@components/sidebar/GameContextSidebar.vue";
+import { useGame } from "@composables/useGame";
 
 withDefaults(
   defineProps<{

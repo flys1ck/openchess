@@ -42,10 +42,10 @@
 
 <script setup lang="ts">
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
-import BaseTime from "@/components/base/BaseTime.vue";
-import GameCardPlayer from "@/components/games/GameCardPlayer.vue";
-import BaseCard from "@/components/base/BaseCard.vue";
-import { ChessGame } from "@/utilities/normalizer";
+import BaseTime from "@components/base/BaseTime.vue";
+import GameCardPlayer from "@components/games/GameCardPlayer.vue";
+import BaseCard from "@components/base/BaseCard.vue";
+import { ChessGame } from "@utilities/normalizer";
 
 defineProps<{
   to: string;

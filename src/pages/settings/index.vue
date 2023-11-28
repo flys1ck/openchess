@@ -67,10 +67,10 @@ import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
 import { open } from "@tauri-apps/api/shell";
 import { definePage } from "vue-router/auto";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
-import BaseSettingsSection from "@/components/base/BaseSettingsSection.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
-import { useChessDotCom } from "@/stores/useChessDotCom";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import { useChessDotCom } from "@stores/useChessDotCom";
 
 definePage({
   meta: {

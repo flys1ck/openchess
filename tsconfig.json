@@ -14,7 +14,6 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@composables/*": ["src/composables/*"],
@@ -23,7 +22,8 @@
       "@schemas/*": ["src/schemas/*"],
       "@services/*": ["src/services/*"],
       "@stores/*": ["src/stores/*"],
-      "@utilities/*": ["src/utilities/*"]
+      "@utilities/*": ["src/utilities/*"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

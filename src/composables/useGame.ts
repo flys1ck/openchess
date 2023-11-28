@@ -1,7 +1,7 @@
-import { getPossibleMoves, isPromotion } from "@/utilities/move";
 import { Position, useChessground } from "@composables/useChessground";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
+import { getPossibleMoves, isPromotion } from "@utilities/move";
 import { DrawShape } from "chessground/draw";
 import { Color, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";

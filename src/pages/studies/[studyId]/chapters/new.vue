@@ -42,10 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import BaseContainer from "@/components/base/BaseContainer.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
-import { db, execute, selectFirst } from "@/services/database";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
+import BaseContainer from "@components/base/BaseContainer.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import { db, execute, selectFirst } from "@services/database";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
