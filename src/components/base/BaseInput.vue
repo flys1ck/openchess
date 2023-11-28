@@ -9,6 +9,7 @@
         :name="name"
         class="block w-full rounded-md py-1.5 text-sm focus:outline-none"
         :class="inputClasses"
+        spellcheck="false"
       />
       <div
         v-if="errors.length || isEvaluating"
@@ -28,11 +29,11 @@
 
 <script setup lang="ts">
 import { ExclamationCircleIcon } from "@heroicons/vue/20/solid";
+import { MinusIcon } from "@heroicons/vue/24/solid";
 import { useEventListener } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
 import { ZodFirstPartySchemaTypes } from "zod";
 import BaseInputFeedbackError from "./BaseInputFeedbackError.vue";
-import { MinusIcon } from "@heroicons/vue/24/solid";
 
 const props = withDefaults(
   defineProps<{

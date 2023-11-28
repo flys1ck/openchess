@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import BaseTooltip from "@components/base/BaseTooltip.vue";
-import { formatDistance, format } from "date-fns";
+import { format, formatDistance } from "date-fns";
 import { computed } from "vue";
 
 defineOptions({

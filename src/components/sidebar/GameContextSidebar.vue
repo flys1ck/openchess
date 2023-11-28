@@ -104,25 +104,25 @@
 </template>
 
 <script setup lang="ts">
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import BaseButton from "@components/base/BaseButton.vue";
-import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
-import GamePositions from "@components/sidebar/GamePositions.vue";
+import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
+import BaseSlider from "@components/base/BaseSlider.vue";
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
+import GamePositions from "@components/sidebar/GamePositions.vue";
+import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
 import { useGame } from "@composables/useGame";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/vue/20/solid";
+import { useSettings } from "@stores/useSettings";
 import { onKeyStroke } from "@vueuse/core";
-import BaseSlider from "@/components/base/BaseSlider.vue";
-import BaseInputLabel from "@/components/base/BaseInputLabel.vue";
-import BaseSidebarSectionHeading from "@/components/base/BaseSidebarSectionHeading.vue";
-import { useSettings } from "@/stores/useSettings";
-import { Key } from "chessground/types";
 import { DrawShape } from "chessground/draw";
+import { Key } from "chessground/types";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;

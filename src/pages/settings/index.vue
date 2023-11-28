@@ -1,56 +1,76 @@
 <template>
-  <main class="flex-1 overflow-auto">
-    <!-- Settings forms -->
-    <BaseContainer>
-      <div class="divide-y">
-        <!-- Lichess Token -->
-        <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
-          <div>
-            <h2 class="text-base font-semibold leading-7">Lichess</h2>
-            <p class="mt-1 text-sm leading-6 text-gray-500">
-              Integrate your Lichess account with a generated
-              <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token')"
-                >Personal API Access Token</BaseLink
-              >. There are no permissions required.
-            </p>
+  <BaseContainer class="space-y-8">
+    <BaseSectionHeading heading="Settings" />
+    <!-- Lichess Token -->
+    <BaseSettingsSection heading="Lichess Token">
+      <template #description>
+        Integrate your Lichess account with a generated
+        <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token')"
+          >Personal API Access Token</BaseLink
+        >. There are no extra permissions required.
+      </template>
+      <template #form>
+        <form class="space-y-1" @submit.prevent>
+          <BaseInputLabel html-for="token">Personal API Access Token</BaseInputLabel>
+          <div class="flex items-start gap-2">
+            <BaseInput
+              id="token"
+              name="token"
+              class="flex-grow"
+              label="Personal API Access Token"
+              v-model.trim="lichessToken"
+              :schema="lichessTokenSchema"
+              :async-schema="lichessTokenAsyncSchema"
+            />
+            <BaseButton variant="primary" type="submit">Save</BaseButton>
           </div>
-          <form class="space-y-2 md:col-span-2" @submit.prevent>
-            <BaseInputLabel html-for="token">Personal API Access Token</BaseInputLabel>
-            <div class="flex items-start gap-2">
-              <BaseInput
-                id="token"
-                name="token"
-                class="flex-grow"
-                label="Personal API Access Token"
-                v-model.trim="token"
-                :schema="lichessTokenSchema"
-                :async-schema="asyncLichessTokenSchema"
-              />
-              <BaseButton variant="primary" type="submit">Save</BaseButton>
-            </div>
-            <p v-if="lichess.username" class="flex items-center gap-1 text-sm text-gray-500">
-              <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Token connected to {{ lichess.username }}
-            </p>
-          </form>
-        </div>
-      </div>
-    </BaseContainer>
-  </main>
+          <p v-if="lichess.username" class="flex items-center gap-1 text-sm text-gray-500">
+            <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Token connected to {{ lichess.username }}
+          </p>
+        </form>
+      </template>
+    </BaseSettingsSection>
+    <BaseSettingsSection heading="Chess.com Username">
+      <template #description> Integrate your Chess.com account with your username. </template>
+      <template #form>
+        <form class="space-y-1" @submit.prevent>
+          <BaseInputLabel html-for="chessdotcom-username">Chess.com Username</BaseInputLabel>
+          <div class="flex items-start gap-2">
+            <BaseInput
+              id="chessdotcom-username"
+              name="chessdotcom-username"
+              class="flex-grow"
+              v-model.trim="chessdotcomUsername"
+              :schema="chessdotcomUsernameSchema"
+              :async-schema="chessdotcomUsernameAsyncSchema"
+            />
+            <BaseButton variant="primary" type="submit">Save</BaseButton>
+          </div>
+          <p v-if="chessdotcom.username" class="flex items-center gap-1 text-sm text-gray-500">
+            <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Connected to {{ chessdotcom.username }}
+          </p>
+        </form>
+      </template>
+    </BaseSettingsSection>
+  </BaseContainer>
 </template>
 
 <script setup lang="ts">
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
-import { z } from "zod";
-import { useLichess } from "@stores/useLichess";
-import BaseLink from "@components/base/BaseLink.vue";
-import { ref } from "vue";
-import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
-import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
+import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseLink from "@components/base/BaseLink.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { useChessDotCom } from "@stores/useChessDotCom";
+import { useLichess } from "@stores/useLichess";
 import { open } from "@tauri-apps/api/shell";
+import { ref } from "vue";
 import { definePage } from "vue-router/auto";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
+import { z } from "zod";
 
 definePage({
   meta: {
@@ -68,15 +88,28 @@ setBreadcrumbs([
 ]);
 
 const lichess = useLichess();
-const token = ref(lichess.personalAccessToken);
+const lichessToken = ref(lichess.personalAccessToken);
 const lichessTokenSchema = z
   .string()
   .min(1)
-  .regex(/^[A-Za-z0-9_]+$/, "Token must contain only alphanumeric characters, - and _");
-const asyncLichessTokenSchema = z.string().refine(
+  .regex(/^[A-Za-z0-9_]+$/, "Token must contain only alphanumeric characters, - and _.");
+const lichessTokenAsyncSchema = z.string().refine(
   async (token) => {
     return await lichess.validateAndSetPersonalAccessToken(token);
   },
-  { message: "Token not valid" }
+  { message: "Token not valid." }
+);
+
+const chessdotcom = useChessDotCom();
+const chessdotcomUsername = ref(chessdotcom.username);
+const chessdotcomUsernameSchema = z
+  .string()
+  .min(1)
+  .regex(/^[A-Za-z0-9]+$/, "Username must contain only alphanumeric characters.");
+const chessdotcomUsernameAsyncSchema = z.string().refine(
+  async (username) => {
+    return await chessdotcom.validateAndSetUsername(username);
+  },
+  { message: "Username not valid." }
 );
 </script>

@@ -1,5 +1,5 @@
-import { formatComment } from "@/utilities/comment";
 import { playAudio } from "@utilities/audio";
+import { formatComment } from "@utilities/comment";
 import { toSAN } from "@utilities/move";
 import { Key, Piece } from "chessground/types";
 import { NormalMove, makeSquare } from "chessops";

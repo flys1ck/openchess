@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import BaseToast from "@/components/base/BaseToast.vue";
-import { useToasts } from "@/stores/useToasts";
+import BaseToast from "@components/base/BaseToast.vue";
+import { useToasts } from "@stores/useToasts";
 import { ToastProvider, ToastViewport } from "radix-vue";
 
 const { toasts } = useToasts();

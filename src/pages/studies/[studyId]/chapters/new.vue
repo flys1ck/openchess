@@ -42,14 +42,14 @@
 </template>
 
 <script setup lang="ts">
-import BaseContainer from "@/components/base/BaseContainer.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
-import { db, execute, selectFirst } from "@/services/database";
-import { useBreadcrumbs } from "@/stores/useBreadcrumbs";
 import BaseButton from "@components/base/BaseButton.vue";
+import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { db, execute, selectFirst } from "@services/database";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { NormalMove, makeSquare } from "chessops";
 import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";

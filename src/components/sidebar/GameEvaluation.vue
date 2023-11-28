@@ -37,13 +37,13 @@
 </template>
 
 <script setup lang="ts">
+import { useEvaluation } from "@composables/useEvaluation";
+import { useSettings } from "@stores/useSettings";
+import { getMovesStringFromUci } from "@utilities/moves";
+import { Key } from "chessground/types";
+import { storeToRefs } from "pinia";
 import { Ref, computed, onUnmounted, watch } from "vue";
 import BaseSwitch from "../base/BaseSwitch.vue";
-import { useEvaluation } from "@composables/useEvaluation";
-import { useSettings } from "@/stores/useSettings";
-import { storeToRefs } from "pinia";
-import { getMovesStringFromUci } from "@/utilities/moves";
-import { Key } from "chessground/types";
 
 const props = defineProps<{
   fen: Ref<string>;

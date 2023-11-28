@@ -136,10 +136,10 @@
 </template>
 
 <script setup lang="ts">
-import BaseSidebarSectionHeading from "@/components/base/BaseSidebarSectionHeading.vue";
-import { db, select } from "@/services/database";
+import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import GameResultTag from "@components/sidebar/GameResultTag.vue";
 import { useGame } from "@composables/useGame";
+import { db, select } from "@services/database";
 import { MasterGameCollection } from "@services/lichess";
 import { useLichess } from "@stores/useLichess";
 import { roundToFixed } from "@utilities/math";

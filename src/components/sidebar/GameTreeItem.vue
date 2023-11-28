@@ -116,7 +116,8 @@ const commentHtml = computed(() => {
   const fenPattern = /@@StartFen@@[^@]+?@@EndFen@@/g;
   comment = comment.replaceAll(fenPattern, "");
   // highlight chess moves
-  const chessMovePattern = /(([\d]{0,3}\.)?(\.{2,3})?[KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?)|0-0(-0)?/g;
+  const chessMovePattern =
+    /((([\d]{0,3}\.)?(\.{2,3})?)?([KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?|[0O]-[0O](-[0O])?))/g;
   return comment.replace(chessMovePattern, "<b>$1</b>");
 });
 

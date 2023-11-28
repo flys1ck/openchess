@@ -1,12 +1,18 @@
 <template>
   <ul class="space-y-4">
-    <BaseCard v-for="game in games" :key="game.id" as="li" class="relative flex gap-8">
+    <GameCard
+      v-for="game in normalizedGames"
+      :key="game.id"
+      :to="`/games/lichess/${game.id}`"
+      :game="game"
+      class="relative flex gap-8"
+    >
       <div class="flex-grow p-4">
         <RouterLink :to="`/games/lichess/${game.id}`">
           <div class="flex items-center gap-2">
-            <LichessPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
+            <GameCardPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
             <span class="text-3xl font-thin tracking-tighter text-gray-300">VS</span>
-            <LichessPlayer :player="game.players.black" class="flex flex-1 flex-col" />
+            <GameCardPlayer :player="game.players.black" class="flex flex-1 flex-col" />
           </div>
           <span class="absolute inset-0" aria-hidden="true" />
         </RouterLink>
@@ -38,30 +44,37 @@
           </div>
         </dl>
       </div>
-    </BaseCard>
+    </GameCard>
   </ul>
 </template>
 
 <script setup lang="ts">
+import BaseTime from "@components/base/BaseTime.vue";
+import GameCard from "@components/games/GameCard.vue";
+import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
 import { LichessGame } from "@services/lichess";
-import BaseTime from "@components/base/BaseTime.vue";
-import { ref } from "vue";
-import BaseCard from "@components/base/BaseCard.vue";
 import { useLichess } from "@stores/useLichess";
-import LichessPlayer from "@components/games/LichessPlayer.vue";
-import { getMoveStringFromSan } from "@/utilities/moves";
+import { getMoveStringFromSan } from "@utilities/moves";
+import { normalizeLichessGame } from "@utilities/normalizer";
+import { computed, shallowRef } from "vue";
 
 defineExpose({ refresh });
 
 const lichess = useLichess();
-const games = ref<LichessGame[]>(
+const games = shallowRef<LichessGame[]>(
   await lichess.client.exportGamesByUser(
     lichess.username,
     { max: 5, opening: true },
     { accept: "application/x-ndjson" }
   )
 );
+
+const normalizedGames = computed(() => {
+  return games.value.map((game) => {
+    return normalizeLichessGame(game);
+  });
+});
 
 async function refresh() {
   games.value = await lichess.client.exportGamesByUser(

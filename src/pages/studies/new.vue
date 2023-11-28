@@ -24,19 +24,18 @@
 </template>
 
 <script setup lang="ts">
+import { EditableStudy } from "@/types";
 import BaseButton from "@components/base/BaseButton.vue";
+import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
+import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseTextarea from "@components/base/BaseTextarea.vue";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, execute } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { Insertable } from "kysely";
-import { Studies } from "@/database";
+import { useToasts } from "@stores/useToasts";
 import { reactive } from "vue";
 import { definePage, useRouter } from "vue-router/auto";
-import { useToasts } from "@/stores/useToasts";
-import BaseContainer from "@/components/base/BaseContainer.vue";
-import BaseSectionHeading from "@/components/base/BaseSectionHeading.vue";
 
 definePage({
   meta: {
@@ -58,7 +57,7 @@ setBreadcrumbs([
 ]);
 
 const router = useRouter();
-const studyFormData = reactive<Insertable<Studies>>({
+const studyFormData = reactive<EditableStudy>({
   name: "",
   description: "",
 });

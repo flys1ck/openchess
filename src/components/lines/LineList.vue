@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router/auto";
 import BaseCard from "../base/BaseCard.vue";
-import { db, select, selectFirst } from "@/services/database";
 
 // TODO: move route param to chapter (props)
 const route = useRoute("/studies/[studyId]/chapters/[chapterId]/");

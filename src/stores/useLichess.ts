@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 export const useLichess = defineStore("lichess", () => {
   const personalAccessToken = useLocalStorage("lichessToken", "");
   const username = useLocalStorage("lichessUsername", "");
-  const client = new LichessClient(personalAccessToken.value);
+  const client = LichessClient(personalAccessToken.value);
 
   async function validateAndSetPersonalAccessToken(token: string) {
     client.personalAccessToken = token;

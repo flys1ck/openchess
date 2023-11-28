@@ -24,5 +24,5 @@ defineProps<{
   label?: string;
 }>();
 
-const modelValue = defineModel();
+const modelValue = defineModel<boolean>();
 </script>

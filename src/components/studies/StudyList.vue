@@ -23,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import StudiesEmptyState from "./StudiesEmptyState.vue";
 import BaseCard from "@components/base/BaseCard.vue";
 import BaseTime from "@components/base/BaseTime.vue";
 import { db, select } from "@services/database";
 import { ref } from "vue";
+import StudiesEmptyState from "./StudiesEmptyState.vue";
 
 const query = db.selectFrom("studies").selectAll().compile();
 const studies = ref(await select(query));
