@@ -23,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import ChessDotComGameList from "@components/games/ChessDotComGameList.vue";
-import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import ChessDotComGameList from "@components/games/ChessDotComGameList.vue";
+import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";

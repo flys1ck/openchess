@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computePosition, flip, offset, shift, arrow, Side } from "@floating-ui/dom";
+import { Side, arrow, computePosition, flip, offset, shift } from "@floating-ui/dom";
 import { useElementHover } from "@vueuse/core";
 import { ref, watch } from "vue";
 

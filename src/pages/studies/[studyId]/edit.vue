@@ -37,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { Studies } from "@/database";
+import { EditableStudy } from "@/types";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
@@ -44,15 +46,13 @@ import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import BaseTextarea from "@components/base/BaseTextarea.vue";
-import { Studies } from "@/database";
+import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useToasts } from "@stores/useToasts";
-import { EditableStudy } from "@/types";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { Insertable } from "kysely";
 import { reactive, ref } from "vue";
-import { useRoute, useRouter, definePage } from "vue-router/auto";
+import { definePage, useRoute, useRouter } from "vue-router/auto";
 
 const router = useRouter();
 const route = useRoute("/studies/[studyId]/edit");

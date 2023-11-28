@@ -49,15 +49,15 @@
 </template>
 
 <script setup lang="ts">
+import BaseTime from "@components/base/BaseTime.vue";
+import GameCard from "@components/games/GameCard.vue";
+import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
 import { LichessGame } from "@services/lichess";
-import BaseTime from "@components/base/BaseTime.vue";
-import { computed, shallowRef } from "vue";
 import { useLichess } from "@stores/useLichess";
-import GameCardPlayer from "@components/games/GameCardPlayer.vue";
 import { getMoveStringFromSan } from "@utilities/moves";
-import GameCard from "@components/games/GameCard.vue";
 import { normalizeLichessGame } from "@utilities/normalizer";
+import { computed, shallowRef } from "vue";
 
 defineExpose({ refresh });
 

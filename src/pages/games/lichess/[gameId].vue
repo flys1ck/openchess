@@ -3,13 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, definePage } from "vue-router/auto";
+import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
 import { parsePgn } from "chessops/pgn";
-import GameMain from "@components/GameMain.vue";
+import { definePage, useRoute } from "vue-router/auto";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();

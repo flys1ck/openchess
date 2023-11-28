@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 import BaseButton from "@components/base/BaseButton.vue";
-import { ToastClose, ToastDescription, ToastRoot, ToastTitle } from "radix-vue";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
+import { ToastClose, ToastDescription, ToastRoot, ToastTitle } from "radix-vue";
 import { ref } from "vue";
 
 defineProps<{

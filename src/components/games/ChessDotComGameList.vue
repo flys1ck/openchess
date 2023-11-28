@@ -5,11 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef } from "vue";
-import { useChessDotCom } from "@stores/useChessDotCom";
-import { ChessDotComGame } from "@services/chessdotcom";
 import GameCard from "@components/games/GameCard.vue";
+import { ChessDotComGame } from "@services/chessdotcom";
+import { useChessDotCom } from "@stores/useChessDotCom";
 import { ChessGame, normalizeChessDotComGame } from "@utilities/normalizer";
+import { computed, shallowRef } from "vue";
 
 defineExpose({ refresh });
 

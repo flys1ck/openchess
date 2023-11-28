@@ -58,19 +58,19 @@
 <script setup lang="ts">
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
-import { z } from "zod";
-import { useLichess } from "@stores/useLichess";
-import BaseLink from "@components/base/BaseLink.vue";
-import { ref } from "vue";
-import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
-import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseInput from "@components/base/BaseInput.vue";
-import { open } from "@tauri-apps/api/shell";
-import { definePage } from "vue-router/auto";
-import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseLink from "@components/base/BaseLink.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
+import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
+import { useLichess } from "@stores/useLichess";
+import { open } from "@tauri-apps/api/shell";
+import { ref } from "vue";
+import { definePage } from "vue-router/auto";
+import { z } from "zod";
 
 definePage({
   meta: {
