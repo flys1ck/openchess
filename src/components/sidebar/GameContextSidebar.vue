@@ -27,7 +27,7 @@
         </Suspense>
         <!-- Move history -->
         <template v-if="game.tree.root.value">
-          <div class="flex-grow overflow-y-auto">
+          <div class="flex-grow overflow-y-auto scroll-smooth">
             <div class="grid grid-cols-16 items-stretch">
               <GameTreeItem
                 :node="game.tree.root.value"

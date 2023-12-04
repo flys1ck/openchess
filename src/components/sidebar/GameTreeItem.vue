@@ -46,11 +46,11 @@
       </button>
     </template>
   </template>
-  <template v-if="commentHtml || node.previousPosition?.variations.length">
+  <template v-if="node.comment || node.previousPosition?.variations.length">
     <span
-      v-if="(commentHtml || node.previousPosition?.variations.length) && node.ply % 2 === 1"
+      v-if="(node.comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
       class="col-span-7 pl-4 text-gray-500"
-      >...</span
+      >{{ node.nextPosition && "..." }}</span
     >
     <div class="relative col-span-full break-words bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
       <span
@@ -64,7 +64,7 @@
         ]"
         aria-hidden
       />
-      <p v-html="commentHtml" />
+      <p v-html="node.comment" />
       <!-- variations -->
       <div v-for="variation in node.previousPosition?.variations" :key="variation.id" class="space-x-0.5">
         <GameTreeVariationItem
@@ -100,25 +100,6 @@ defineEmits<{
 
 const moveNumber = computed(() => {
   return Math.ceil(props.node.ply / 2);
-});
-
-const commentHtml = computed(() => {
-  if (!props.node.comment) return;
-  // strip html tags including content assuming any html is malicious
-  const htmlPattern = /<([^</> ]+)[^<>]*?>[^<>]*?<\/\1>/g;
-  let comment = props.node.comment.replace(htmlPattern, "");
-  // strip custom pgn comments
-  const customCommentPattern = /\[[^\]]+?\]/g;
-  comment = comment.replace(customCommentPattern, "");
-  // unescape brackets
-  comment = props.node.comment.replaceAll("@@StartBracket@@", "(").replaceAll("@@EndBracket@@", ")");
-  // remove fen information
-  const fenPattern = /@@StartFen@@[^@]+?@@EndFen@@/g;
-  comment = comment.replaceAll(fenPattern, "");
-  // highlight chess moves
-  const chessMovePattern =
-    /((([\d]{0,3}\.)?(\.{2,3})?)?([KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?|[0O]-[0O](-[0O])?))/g;
-  return comment.replace(chessMovePattern, "<b>$1</b>");
 });
 
 const nags: Record<number, string> = {
