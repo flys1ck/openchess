@@ -1,14 +1,17 @@
 <template>
+  <p v-if="node.startingComment" class="inline" v-html="node.startingComment" />
   <button
     v-if="node.move"
-    class="relative inline-flex gap-0.5 rounded border px-px"
-    :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-200' : 'border-transparent hover:bg-gray-200'"
+    :data-node-id="node.id"
+    class="relative inline-flex gap-0.5 rounded border px-px font-bold text-orange-400"
+    :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-50' : 'border-transparent hover:bg-gray-200'"
     @click="$emit('nodeselect', node)"
   >
     <span v-if="node.previousPosition?.variations.length || node.ply % 2 === 1">{{ moveNumber }}. </span>
     <span v-if="node.previousPosition?.variations.length && node.ply % 2 === 0">...</span>
     <span>{{ node.move.san }}</span>
   </button>
+  <p v-if="node.comment" class="inline" v-html="node.comment" />
   <GameTreeVariationItem
     v-if="node.nextPosition && !node.variations.length"
     :node="node.nextPosition"
