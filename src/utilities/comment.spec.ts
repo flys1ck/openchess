@@ -29,7 +29,7 @@ describe("formatComment", () => {
     expect(formatComment("b7-b5")).toBe("<b>b7</b>-<b>b5</b>");
     expect(formatComment("0-0")).toBe("<b>0-0</b>");
     expect(formatComment("0-0-0")).toBe("<b>0-0-0</b>");
-    // expect(formatComment("O-O")).toBe("<b>O-O</b>");
-    // expect(formatComment("O-O-O")).toBe("<b>O-O-O</b>");
+    expect(formatComment("O-O")).toBe("<b>O-O</b>");
+    expect(formatComment("O-O-O")).toBe("<b>O-O-O</b>");
   });
 });

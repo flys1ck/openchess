@@ -47,7 +47,15 @@ export function useGameTree() {
   const root = ref<PositionNode>();
   const activeNode = ref<PositionNode>();
 
-  function addNode(fen: string, options?: AddMoveOptions): PositionNode {
+  /**
+   * Add a new node to the tree
+   *
+   * @param fen FEN string of the position
+   * @param options Options for the move
+   * @param force force move to be added, even if it already exists on current node
+   * @returns newly added node
+   */
+  function addNode(fen: string, options?: AddMoveOptions, force: boolean = false): PositionNode {
     const nodeId = window.crypto.randomUUID();
     const newNode: PositionNode = {
       id: nodeId,
@@ -63,7 +71,7 @@ export function useGameTree() {
     if (!root.value) root.value = newNode;
     if (activeNode.value) {
       // check if move node exists in tree
-      if (activeNode.value.nextPosition && activeNode.value.nextPosition.move?.san === newNode.move?.san) {
+      if (activeNode.value.nextPosition && activeNode.value.nextPosition.move?.san === newNode.move?.san && !force) {
         setActiveNode(activeNode.value.nextPosition);
         return newNode;
       } else if (activeNode.value.variations.length) {
@@ -145,25 +153,29 @@ export function useGameTree() {
       const isNullMove = child.data.san === "--";
       const move = parseSan(position, child.data.san) as NormalMove | undefined;
       if ((!isNullMove && !move) || (isNullMove && !previousMove)) return; //illegal move
-      if (!isNullMove) position.play(move);
+      if (!isNullMove) position.play(move!);
       const fen = makeFen(position.toSetup());
-      const node = addNode(fen, {
-        move: {
-          source: isNullMove ? makeSquare(previousMove!.from) : makeSquare(move!.from),
-          destination: isNullMove ? makeSquare(previousMove!.to) : makeSquare(move!.to),
-          san: child.data.san,
-          isCapture: child.data.san.includes("x"),
-          isCheck: child.data.san.includes("+"),
-          piece: {
-            role: isNullMove ? pos.board.getRole(previousMove!.from)! : pos.board.getRole(move!.from)!,
-            color: pos.turn,
-            promoted: isNullMove ? !!previousMove!.promotion : !!move!.promotion,
+      const node = addNode(
+        fen,
+        {
+          move: {
+            source: isNullMove ? makeSquare(previousMove!.from) : makeSquare(move!.from),
+            destination: isNullMove ? makeSquare(previousMove!.to) : makeSquare(move!.to),
+            san: child.data.san,
+            isCapture: child.data.san.includes("x"),
+            isCheck: child.data.san.includes("+"),
+            piece: {
+              role: isNullMove ? pos.board.getRole(previousMove!.from)! : pos.board.getRole(move!.from)!,
+              color: pos.turn,
+              promoted: isNullMove ? !!previousMove!.promotion : !!move!.promotion,
+            },
+            annotations: child.data.nags,
           },
-          annotations: child.data.nags,
+          comment: child.data.comments && formatComment(child.data.comments.join("")),
+          startingComment: child.data.startingComments && formatComment(child.data.startingComments.join("")),
         },
-        comment: child.data.comments && formatComment(child.data.comments.join("")),
-        startingComment: child.data.startingComments && formatComment(child.data.startingComments.join("")),
-      });
+        true
+      );
 
       setActiveNode(node!);
       if (child.children.length === 0) return;
