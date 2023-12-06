@@ -1,10 +1,10 @@
+import { useSetting } from "@composables/useSetting";
 import { ChessDotComClient } from "@services/chessdotcom";
-import { useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 
 export const useChessDotCom = defineStore("chessDotCom", () => {
   const client = ChessDotComClient();
-  const username = useLocalStorage("chessdotcomUsername", "");
+  const username = useSetting("chessdotcomUsername", "");
 
   async function validateAndSetUsername(player: string) {
     const response = await client.getPlayer(player);
