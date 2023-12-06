@@ -72,7 +72,12 @@ interface ExportGameByIdQueryParameters {
 export type LichessGame = z.infer<typeof GameSchema>;
 export type MasterGameCollection = z.infer<typeof MasterGamesSchema>;
 
-export function LichessClient(personalAccessToken: string) {
+export function LichessClient(token: string) {
+  let personalAccessToken = token;
+  function setPersonalAccessToken(newToken: string) {
+    personalAccessToken = newToken;
+  }
+
   /**
    * @see https://lichess.org/api#tag/Games/operation/apiGamesUser
    */
@@ -172,7 +177,7 @@ export function LichessClient(personalAccessToken: string) {
   }
 
   return {
-    personalAccessToken,
+    setPersonalAccessToken,
     exportGamesByUser,
     exportGameById,
     getCurrentAccount,

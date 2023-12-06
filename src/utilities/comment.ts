@@ -11,7 +11,8 @@ export function formatComment(comment: string) {
   const fenPattern = /@@StartFEN@@[^@]+?@@EndFEN@@/g;
   comment_ = comment_.replaceAll(fenPattern, "");
   // highlight chess moves
-  const chessMovePattern = /(([\d]{0,3}\.)?(\.{2,3})?[KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?)|0-0(-0)?/g;
+  const chessMovePattern =
+    /(([\d]{0,3}\.)?(\.{2,3})?[KQBNRP]?[a-h]?[1-8]?[x]?[a-h][1-8](=[NBRQK])?[+#]?|[0O]-[0O](-[0O])?)/g;
   comment_ = comment_.replace(chessMovePattern, "<b>$1</b>");
   comment_ = comment_.trim();
 

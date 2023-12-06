@@ -1,24 +1,24 @@
+import { useSetting } from "@composables/useSetting";
 import { LichessClient } from "@services/lichess";
-import { useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 
 export const useLichess = defineStore("lichess", () => {
-  const personalAccessToken = useLocalStorage("lichessToken", "");
-  const username = useLocalStorage("lichessUsername", "");
+  const personalAccessToken = useSetting("lichessToken", "");
+  const username = useSetting("lichessUsername", "");
   const client = LichessClient(personalAccessToken.value);
 
   async function validateAndSetPersonalAccessToken(token: string) {
-    client.personalAccessToken = token;
+    client.setPersonalAccessToken(token);
     const response = await client.getCurrentAccount();
     if (response.error) {
       // reset token to previous one
       username.value = response.username;
-      client.personalAccessToken = personalAccessToken.value;
+      client.setPersonalAccessToken(personalAccessToken.value);
       return false;
     }
 
     username.value = response.username;
-    client.personalAccessToken = token;
+    client.setPersonalAccessToken(token);
     personalAccessToken.value = token;
     return true;
   }

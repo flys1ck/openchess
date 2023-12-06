@@ -5,45 +5,45 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   : ColumnType<T, T | undefined, T>;
 
 export interface Chapters {
-  id: Generated<number>;
   created_at: Generated<string>;
-  study: number;
+  id: number;
   name: string;
+  study: number;
 }
 
 export interface Lines {
-  id: Generated<number>;
-  created_at: Generated<string>;
-  name: string;
-  pgn: string;
   chapter: number;
+  created_at: Generated<string>;
+  id: number;
   moves: string;
-  study: number;
+  name: string;
   orientation: Generated<string>;
+  pgn: string;
+  study: number;
 }
 
 export interface Positions {
-  id: Generated<number>;
-  created_at: Generated<string>;
-  fen: string;
-  study: number | null;
   chapter: number | null;
+  created_at: Generated<string>;
+  destination: Generated<string>;
+  fen: string;
+  id: number;
   line: number | null;
   san: string;
   source: Generated<string>;
-  destination: Generated<string>;
+  study: number | null;
 }
 
 export interface Settings {
-  setting_key: string;
-  setting_value: string;
+  key: string;
+  value: string;
 }
 
 export interface Studies {
-  id: Generated<number>;
   created_at: Generated<string>;
-  name: string;
   description: string | null;
+  id: number;
+  name: string;
 }
 
 export interface DB {

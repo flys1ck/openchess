@@ -18,7 +18,7 @@
               name="token"
               class="flex-grow"
               label="Personal API Access Token"
-              v-model.trim="lichessToken"
+              v-model.trim="lichess.personalAccessToken"
               :schema="lichessTokenSchema"
               :async-schema="lichessTokenAsyncSchema"
             />
@@ -40,7 +40,7 @@
               id="chessdotcom-username"
               name="chessdotcom-username"
               class="flex-grow"
-              v-model.trim="chessdotcomUsername"
+              v-model.trim="chessdotcom.username"
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
             />
@@ -68,7 +68,6 @@ import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
 import { open } from "@tauri-apps/api/shell";
-import { ref } from "vue";
 import { definePage } from "vue-router/auto";
 import { z } from "zod";
 
@@ -88,7 +87,6 @@ setBreadcrumbs([
 ]);
 
 const lichess = useLichess();
-const lichessToken = ref(lichess.personalAccessToken);
 const lichessTokenSchema = z
   .string()
   .min(1)
@@ -101,7 +99,6 @@ const lichessTokenAsyncSchema = z.string().refine(
 );
 
 const chessdotcom = useChessDotCom();
-const chessdotcomUsername = ref(chessdotcom.username);
 const chessdotcomUsernameSchema = z
   .string()
   .min(1)
