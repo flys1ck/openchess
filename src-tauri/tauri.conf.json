@@ -82,7 +82,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "openchess",
+        "title": "OpenChess",
         "width": 800
       }
     ]
