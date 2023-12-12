@@ -58,8 +58,8 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   await Promise.all([
     sidecar.stderr.on("data", (line) => console.error(line)),
     sidecar.stdout.on("data", onEngineResponse),
-    child.write(`setoption name Threads value 4\n`),
-    child.write(`setoption name Hash value 2048\n`),
+    child.write(`setoption name Threads value 1\n`),
+    child.write(`setoption name Hash value 32\n`),
     child.write(`setoption name UCI_AnalyseMode value true\n`),
     child.write(`setoption name UCI_Variant value chess\n`),
   ]);
