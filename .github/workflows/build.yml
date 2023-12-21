@@ -2,6 +2,7 @@ name: Build
 
 on:
   workflow_dispatch:
+  workflow_call:
   pull_request:
     branches: main
 
@@ -91,12 +92,12 @@ jobs:
       - name: Build application
         run: pnpm tauri build --ci
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: release-ubuntu-deb
-          path: src-tauri/target/release/bundle/deb/openchess_0.0.0_amd64.deb
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: release-ubuntu-deb
+      #     path: src-tauri/target/release/bundle/deb/openchess_0.0.0_amd64.deb
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: release-ubuntu-appimage
-          path: src-tauri/target/release/bundle/appimage/openchess_0.0.0_amd64.AppImage
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: release-ubuntu-appimage
+      #     path: src-tauri/target/release/bundle/appimage/openchess_0.0.0_amd64.AppImage
