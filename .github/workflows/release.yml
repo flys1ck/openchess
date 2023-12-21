@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [ubuntu-20.04, macos-latest, windows-latest]
+        platform: [ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -44,11 +44,11 @@ jobs:
 
       - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
       - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
-        if: matrix.platform == 'ubuntu-20.04'
-      - run: echo "STOCKFISH_PLATFORM=windows" >> $GITHUB_ENV
-        if: matrix.platform == 'windows-latest'
+        if: startsWith(matrix.platform, 'ubuntu')
+      - run: echo "STOCKFISH_PLATFORM=windows" >> $env:GITHUB_ENV
+        if: startsWith(matrix.platform, 'windows')
       - run: echo "STOCKFISH_PLATFORM=macos" >> $GITHUB_ENV
-        if: matrix.platform == 'macos-latest'
+        if: startsWith(matrix.platform, 'macos')
 
       - name: Install Stockfish
         run: make stockfish
