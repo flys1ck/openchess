@@ -2,13 +2,15 @@ name: Release
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: main
 
 jobs:
   release:
     permissions:
       contents: write
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         platform: [ubuntu-20.04]
     runs-on: ${{ matrix.platform }}
