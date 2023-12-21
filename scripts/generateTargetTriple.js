@@ -14,7 +14,7 @@ async function main() {
     console.error("Failed to determine platform target triple");
   }
   copyFileSync(`external/stockfish${extension}`, `src-tauri/bin/stockfish-${targetTriple}${extension}`);
-  copyFileSync(`external/pgn-extract${extension}`, `src-tauri/bin/pgn-extract-${targetTriple}${extension}`);
+  // copyFileSync(`external/pgn-extract${extension}`, `src-tauri/bin/pgn-extract-${targetTriple}${extension}`);
 }
 
 main().catch((e) => {
