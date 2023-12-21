@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "openchess",
-    "version": "0.0.0"
+    "productName": "OpenChess",
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
