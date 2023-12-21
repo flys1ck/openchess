@@ -13,12 +13,7 @@ concurrency:
 jobs:
   build:
     name: Build
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -34,11 +29,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install Rust toolchain
-        run: |
-          rustup update --no-self-update 1.72.0
-          rustup component add --toolchain 1.72.0 rustfmt rust-src
-          rustup default 1.72.0
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
 
       - run: pnpm install
 
@@ -47,24 +39,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
-      # - run: echo "PGN_EXTRACT_VERSION=22-11" >> $GITHUB_ENV
-
-      # - uses: actions/cache@v3
-      #   id: pgn-extract-cache
-      #   with:
-      #     path: |
-      #       external/pgn-extract
-      #     key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}
-      # - name: Install pgn-extract
-      #   run: make pgn-extract
-      #   if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
-      #   env:
-      #     PGN_EXTRACT_VERSION: ${{ env.PGN_EXTRACT_VERSION }}
-
       - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
-
       - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
-        # if: "{{matrix.platform == ubuntu-22.04}}"
 
       - uses: actions/cache@v3
         id: stockfish-cache
@@ -89,15 +65,6 @@ jobs:
         with:
           workspaces: src-tauri -> target
 
-      - name: Build application
-        run: pnpm tauri build --ci
-
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: release-ubuntu-deb
-      #     path: src-tauri/target/release/bundle/deb/openchess_0.0.0_amd64.deb
-
-      # - uses: actions/upload-artifact@v3
-      #   with:
-      #     name: release-ubuntu-appimage
-      #     path: src-tauri/target/release/bundle/appimage/openchess_0.0.0_amd64.AppImage
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

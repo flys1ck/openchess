@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [ubuntu-20.04]
+        platform: [ubuntu-20.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install OS dependencies (ubuntu only)
+      - name: Install OS dependencies
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
