@@ -94,6 +94,7 @@ async function main() {
     fs.unlinkSync(STOCKFISH_BINARY_PATH);
   }
 
+  console.log("Creating write stream");
   const writeStream = fs.createWriteStream(STOCKFISH_DOWNLOAD_PATH);
   const request = fd.https.get(STOCKFISH_DOWNLOAD_URL, (response) => {
     console.log(`Downloading from ${STOCKFISH_DOWNLOAD_URL}`);
@@ -113,6 +114,6 @@ async function main() {
   });
 }
 
-main().catch((e) => {
-  throw e;
+main().catch((error) => {
+  console.error(error);
 });
