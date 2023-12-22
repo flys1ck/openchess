@@ -43,7 +43,7 @@ const stockfishBinaryFilter = (path) => path.includes(`${STOCKFISH_FILENAME}${ST
 
 function renameAndCleanup() {
   console.log("Cleaning up");
-  if (fs.existsSync(STOCKFISH_BINARY_PATH)) {
+  if (fs.existsSync("external/stockfish")) {
     const stockfishBinary = fs.readdirSync("external/stockfish")[0];
     fs.copyFileSync(`external/stockfish/${stockfishBinary}`, `external/${stockfishBinary}`);
     fs.rmSync(STOCKFISH_BINARY_PATH, { recursive: true, force: true });
