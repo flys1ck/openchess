@@ -42,20 +42,18 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - run: echo "STOCKFISH_VERSION=16" >> $GITHUB_ENV
-      - run: echo "STOCKFISH_PLATFORM=ubuntu" >> $GITHUB_ENV
-        if: startsWith(matrix.platform, 'ubuntu')
-      - run: echo "STOCKFISH_PLATFORM=windows" >> $env:GITHUB_ENV
-        if: startsWith(matrix.platform, 'windows')
-      - run: echo "STOCKFISH_PLATFORM=macos" >> $GITHUB_ENV
-        if: startsWith(matrix.platform, 'macos')
+      - uses: actions/cache@v3
+        id: stockfish-cache
+        with:
+          path: |
+            external/stockfish
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}
+        env:
+          STOCKFISH_VERSION: 16
 
       - name: Install Stockfish
-        run: make stockfish
+        run: node scripts/downloadStockfish.js
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
-        env:
-          STOCKFISH_VERSION: ${{ env.STOCKFISH_VERSION }}
-          STOCKFISH_PLATFORM: ${{ env.STOCKFISH_PLATFORM }}
 
       - name: Generate Target Triples
         run: |
