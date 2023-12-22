@@ -2,7 +2,6 @@
 import cpuFeatures from "cpu-features";
 import fd from "follow-redirects";
 import fs from "fs";
-import path from "path";
 import tar from "tar";
 import unzipper from "unzipper";
 
@@ -37,8 +36,8 @@ const STOCKFISH_FILE_EXTENSION = STOCKFISH_PLATFORM === "windows" ? ".exe" : "";
 const STOCKFISH_FILENAME = `stockfish-${STOCKFISH_PLATFORM}-x86-64-${STOCKFISH_CPU_ARCHITECTURE}`;
 const STOCKFISH_DOWNLOAD_BASE_URL = `https://github.com/official-stockfish/Stockfish/releases/download/sf_${STOCKFISH_VERSION}`;
 const STOCKFISH_DOWNLOAD_URL = `${STOCKFISH_DOWNLOAD_BASE_URL}/${STOCKFISH_FILENAME}${STOCKFISH_ARCHIVE_EXTENSION}`;
-const STOCKFISH_DOWNLOAD_PATH = path.join("external", `stockfish${STOCKFISH_ARCHIVE_EXTENSION}`);
-const STOCKFISH_BINARY_PATH = path.join("external", `stockfish${STOCKFISH_FILE_EXTENSION}`);
+const STOCKFISH_DOWNLOAD_PATH = `external/stockfish${STOCKFISH_ARCHIVE_EXTENSION}`;
+const STOCKFISH_BINARY_PATH = `external/stockfish${STOCKFISH_FILE_EXTENSION}`;
 
 const stockfishBinaryFilter = (path) => path.includes(`${STOCKFISH_FILENAME}${STOCKFISH_FILE_EXTENSION}`);
 
@@ -89,6 +88,9 @@ function parseArchive(readStream) {
 }
 
 async function main() {
+  if (!fs.existsSync("external")) {
+    fs.mkdirSync("external");
+  }
   if (fs.existsSync(STOCKFISH_BINARY_PATH)) {
     console.log("Deleting old stockfish binary");
     fs.unlinkSync(STOCKFISH_BINARY_PATH);
