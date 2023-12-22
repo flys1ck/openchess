@@ -85,7 +85,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       // wait for engine to be ready
       await new Promise((resolve) => {
         const resolveOnReadyOk = (line: string) => {
-          const command = tryParseOne(line);
+          const command = tryParseOne(line.trim());
           if (!(command instanceof ReadyOkCommand)) return;
 
           sidecar.stdout.removeListener("data", resolveOnReadyOk);
@@ -135,7 +135,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     let _nodesPerSecond = 0;
     let _principleVariation: UciMove[] = [];
 
-    const command = tryParseOne(line);
+    const command = tryParseOne(line.trim());
     if (!command) return;
     if (command instanceof InfoCommand) {
       command.attributes.forEach((attribute) => {
