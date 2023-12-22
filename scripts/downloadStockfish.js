@@ -41,6 +41,7 @@ const STOCKFISH_DOWNLOAD_PATH = `external/stockfish${STOCKFISH_ARCHIVE_EXTENSION
 const stockfishBinaryFilter = (path) => path.includes(`${STOCKFISH_FILENAME}${STOCKFISH_FILE_EXTENSION}`);
 
 function renameAndCleanup() {
+  console.log("Cleaning up");
   if (fs.existsSync("external/stockfish")) {
     const stockfishBinary = fs.readdirSync("external/stockfish")[0];
     fs.copyFileSync(`external/stockfish/${stockfishBinary}`, `external/${stockfishBinary}`);
@@ -54,6 +55,7 @@ function renameAndCleanup() {
 
 function parseArchive(readStream) {
   if (STOCKFISH_ARCHIVE_EXTENSION === ".zip") {
+    console.log("Extracting zip archive");
     readStream.pipe(unzipper.Parse()).on("entry", (entry) => {
       if (stockfishBinaryFilter(entry.path)) {
         entry.pipe(
@@ -64,6 +66,7 @@ function parseArchive(readStream) {
       }
     });
   } else if (STOCKFISH_ARCHIVE_EXTENSION === ".tar") {
+    console.log("Extracting tar archive");
     readStream
       .pipe(
         tar.x({
@@ -75,6 +78,7 @@ function parseArchive(readStream) {
         if (error) throw error;
       })
       .on("finish", () => {
+        console.log("Finished extracting tar archive");
         renameAndCleanup();
       });
   } else {
@@ -84,10 +88,13 @@ function parseArchive(readStream) {
 
 async function main() {
   if (fs.existsSync("external/stockfish")) {
+    console.log("Deleting old stockfish binary");
     fs.unlinkSync("external/stockfish");
   }
+
   const writeStream = fs.createWriteStream(STOCKFISH_DOWNLOAD_PATH);
   const request = fd.https.get(STOCKFISH_DOWNLOAD_URL, (response) => {
+    console.log(`Downloading from ${STOCKFISH_DOWNLOAD_URL}`);
     response.pipe(writeStream);
   });
 
@@ -96,6 +103,7 @@ async function main() {
     if (error) throw error;
   });
   writeStream.on("finish", function () {
+    console.log("Finished downloading");
     writeStream.close();
 
     const readStream = fs.createReadStream(STOCKFISH_DOWNLOAD_PATH);
