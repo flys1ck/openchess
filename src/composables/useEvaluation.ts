@@ -58,8 +58,8 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   await Promise.all([
     sidecar.stderr.on("data", (line) => console.error(line)),
     sidecar.stdout.on("data", onEngineResponse),
-    child.write(`setoption name Threads value 4\n`),
-    child.write(`setoption name Hash value 2048\n`),
+    child.write(`setoption name Threads value 1\n`),
+    child.write(`setoption name Hash value 32\n`),
     child.write(`setoption name UCI_AnalyseMode value true\n`),
     child.write(`setoption name UCI_Variant value chess\n`),
   ]);
@@ -85,7 +85,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       // wait for engine to be ready
       await new Promise((resolve) => {
         const resolveOnReadyOk = (line: string) => {
-          const command = tryParseOne(line);
+          const command = tryParseOne(line.trim());
           if (!(command instanceof ReadyOkCommand)) return;
 
           sidecar.stdout.removeListener("data", resolveOnReadyOk);
@@ -135,7 +135,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     let _nodesPerSecond = 0;
     let _principleVariation: UciMove[] = [];
 
-    const command = tryParseOne(line);
+    const command = tryParseOne(line.trim());
     if (!command) return;
     if (command instanceof InfoCommand) {
       command.attributes.forEach((attribute) => {

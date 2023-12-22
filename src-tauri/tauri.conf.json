@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "openchess",
-    "version": "0.0.0"
+    "productName": "OpenChess",
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
@@ -43,8 +43,7 @@
         "depends": []
       },
       "externalBin": [
-        "bin/stockfish",
-        "bin/pgn-extract"
+        "bin/stockfish"
       ],
       "icon": [
         "icons/32x32.png",
@@ -82,7 +81,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "openchess",
+        "title": "OpenChess",
         "width": 800
       }
     ]

@@ -1,19 +1,19 @@
-name: Build
+name: Release
 
 on:
   workflow_dispatch:
-  workflow_call:
   pull_request:
     branches: main
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: [ubuntu-20.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,7 +23,8 @@ jobs:
           version: 8
           run_install: false
 
-      - uses: actions/setup-node@v3
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
           node-version: 21
           cache: pnpm
@@ -32,19 +33,21 @@ jobs:
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - run: pnpm install
-
       - name: Install OS dependencies
+        if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install frontend dependencies
+        run: pnpm install
 
       - uses: actions/cache@v3
         id: stockfish-cache
         with:
           path: |
             external/stockfish
-          key: stockfish-${{ env.STOCKFISH_VERSION }}-ubuntu-latest
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}
         env:
           STOCKFISH_VERSION: 16
 
@@ -52,15 +55,16 @@ jobs:
         run: node scripts/downloadStockfish.js
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
 
-      - name: Generate Target Triple
+      - name: Generate Target Triples
         run: |
           mkdir src-tauri/bin
           node scripts/generateTargetTriple.js
 
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: OpenChess v__VERSION__
+          releaseDraft: true
+          prerelease: false
