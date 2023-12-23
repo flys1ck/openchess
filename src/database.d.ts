@@ -6,7 +6,7 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export interface Chapters {
   created_at: Generated<string>;
-  id: number;
+  id: Generated<number>;
   name: string;
   study: number;
 }
@@ -14,7 +14,7 @@ export interface Chapters {
 export interface Lines {
   chapter: number;
   created_at: Generated<string>;
-  id: number;
+  id: Generated<number>;
   moves: string;
   name: string;
   orientation: Generated<string>;
@@ -27,7 +27,7 @@ export interface Positions {
   created_at: Generated<string>;
   destination: Generated<string>;
   fen: string;
-  id: number;
+  id: Generated<number>;
   line: number | null;
   san: string;
   source: Generated<string>;
@@ -42,7 +42,7 @@ export interface Settings {
 export interface Studies {
   created_at: Generated<string>;
   description: string | null;
-  id: number;
+  id: Generated<number>;
   name: string;
 }
 
