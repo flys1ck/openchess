@@ -39,8 +39,7 @@ const LightUserSchema = z
     name: z.string(),
     title: z.enum(PLAYER_TITLES).optional(),
     patron: z.boolean().optional(),
-  })
-  .strict();
+  });
 
 const PlayerAnalysisSchema = z
   .object({
@@ -48,8 +47,7 @@ const PlayerAnalysisSchema = z
     mistake: z.number(),
     blunder: z.number(),
     acpl: z.number(),
-  })
-  .strict();
+  });
 
 export const PlayerSchema = z.union([
   z.strictObject({
@@ -77,8 +75,7 @@ const AnalysisJudgementSchema = z
   .object({
     name: z.enum(["Inaccuracy", "Mistake", "Blunder"]),
     comment: z.string(),
-  })
-  .strict();
+  });
 
 const AnalysisObjectSchema = z
   .object({
@@ -86,16 +83,14 @@ const AnalysisObjectSchema = z
     best: z.string().optional(),
     variation: z.string().optional(),
     judgment: AnalysisJudgementSchema.optional(),
-  })
-  .strict();
+  });
 
 const GameClockSchema = z
   .object({
     initial: z.number(),
     increment: z.number(),
     totalTime: z.number(),
-  })
-  .strict();
+  });
 
 const GameSchema = z
   .object({
@@ -111,11 +106,10 @@ const GameSchema = z
       .object({
         white: PlayerSchema,
         black: PlayerSchema,
-      })
-      .strict(),
+      }),
     initialFen: z.string().optional(),
     winner: z.enum(["white", "black"]).optional(),
-    opening: OpeningSchema.strict().optional(),
+    opening: OpeningSchema.optional(),
     moves: z.string().optional(),
     pgn: z.string().optional(),
     daysPerTurn: z.number().optional(),
@@ -123,7 +117,6 @@ const GameSchema = z
     tournament: z.string().optional(),
     swiss: z.string().optional(),
     clock: GameClockSchema.optional(),
-  })
-  .strict();
+  });
 
 export default GameSchema;
