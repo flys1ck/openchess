@@ -69,4 +69,4 @@ jobs:
           tagName: v__VERSION__
           releaseName: OpenChess v__VERSION__
           releaseDraft: true
-          prerelease: true
+          prerelease: false

@@ -76,7 +76,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}}"
+        "https://github.com/flys1ck/openchess/releases/latest/download/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIxQTgxNjE2RDUzOTUzMTEKUldRUlV6blZGaGFvc1JBek5saEtUcGhZMVo3ZDN5VHhBV2NwMUd0NVk0bkJxSzZRWTVObmVYc0MK"
