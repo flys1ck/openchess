@@ -23,7 +23,7 @@ function getPlatform() {
 function getCpuArchitecture() {
   const platform = process.platform;
   const features = cpuFeatures();
-  if (features.flags.avx2 && platform !== "macos") {
+  if (features.flags.avx2 && platform !== "darwin") {
     return "avx2";
   }
   return "modern";
