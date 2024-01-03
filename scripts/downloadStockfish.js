@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-env node */
 import cpuFeatures from "cpu-features";
 import fd from "follow-redirects";
@@ -20,8 +21,9 @@ function getPlatform() {
 }
 
 function getCpuArchitecture() {
+  const platform = process.platform;
   const features = cpuFeatures();
-  if (features.flags.avx2) {
+  if (features.flags.avx2 && platform !== "macos") {
     return "avx2";
   }
   return "modern";
