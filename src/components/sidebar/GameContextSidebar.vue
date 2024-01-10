@@ -1,5 +1,11 @@
 <template>
-  <TabGroup as="aside" class="flex w-96 shrink-0 flex-col border-l border-gray-200" manual>
+  <TabGroup
+    as="aside"
+    class="flex w-96 shrink-0 flex-col border-l border-gray-200"
+    manual
+    :selected-index="selectedTab"
+    @change="changeTab"
+  >
     <TabList class="flex justify-around border-b border-gray-200">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
@@ -76,7 +82,7 @@
       </TabPanel>
       <!-- Positions Tab -->
       <TabPanel :unmount="false" class="flex flex-grow flex-col overflow-hidden focus:outline-none">
-        <GamePositions :game="game" />
+        <GamePositions :game="game" @line-click="selectedTab = 0" />
       </TabPanel>
       <!-- Settings Tab -->
       <TabPanel>
@@ -123,13 +129,19 @@ import { useSettings } from "@stores/useSettings";
 import { onKeyStroke } from "@vueuse/core";
 import { DrawShape } from "chessground/draw";
 import { Key } from "chessground/types";
+import { ref } from "vue";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
 }>();
 
-const TABS = ["Game", "Positions", "Settings"];
 const settings = useSettings();
+
+const selectedTab = ref(0);
+const TABS = ["Game", "Positions", "Settings"];
+function changeTab(index: number) {
+  selectedTab.value = index;
+}
 
 function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
   const shapes: DrawShape[] = bestMoves.map((bestMove, i) => ({
@@ -175,5 +187,8 @@ onKeyStroke("ArrowDown", (e) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
+});
+onKeyStroke("f", () => {
+  props.game.toggleOrientation();
 });
 </script>
