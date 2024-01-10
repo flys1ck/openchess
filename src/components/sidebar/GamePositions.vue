@@ -39,6 +39,7 @@
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
             "
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
+            @click="() => $emit('lineClick')"
           >
             <span class="text-xs text-gray-500">{{ line.study_name }} - {{ line.chapter_name }}</span>
             <span class="text-sm font-medium">{{ line.line_name }}</span>
@@ -156,6 +157,9 @@ type MoveStatistics = {
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
+}>();
+defineEmits<{
+  lineClick: [];
 }>();
 
 const lichess = useLichess();

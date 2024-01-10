@@ -21,7 +21,7 @@ export async function useSetting(key: string, initialValue: string) {
   //   await execute(query);
   // };
 
-  const setting = ref<string>("")
+  const setting = ref<string>("");
   watch(setting, async () => setItem(key, setting.value));
   const settingValue = await getItem(key);
   if (settingValue === null) {
