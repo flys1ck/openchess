@@ -22,7 +22,7 @@ const studyQuery = db
   .select(["id", "name"])
   .where("id", "=", Number(route.params.studyId))
   .compile();
-const chapterQuery = db.selectFrom("chapters").selectAll().where("study", "=", Number(route.params.studyId)).orderBy("id").compile();
+const chapterQuery = db.selectFrom("chapters").selectAll().where("study", "=", Number(route.params.studyId)).orderBy("created_at").compile();
 
 const [study, chapters] = await Promise.all([selectFirst(studyQuery), select(chapterQuery)]);
 
