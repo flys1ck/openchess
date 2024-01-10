@@ -189,6 +189,10 @@ export function useGame() {
     board?.toggleOrientation();
   }
 
+  function setOrientation(orientation: Color) {
+    board?.getOrientation() !== orientation && board?.toggleOrientation();
+  }
+
   function setAutoShapes(shapes: DrawShape[], type: "temporary" | "persistent" = "persistent") {
     if (type === "temporary") {
       if (shapes === temporaryShapes) return;
@@ -216,6 +220,7 @@ export function useGame() {
     promote,
     setActivePosition,
     toggleOrientation,
+    setOrientation,
     playMove,
     setAutoShapes,
   };
