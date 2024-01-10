@@ -11,7 +11,7 @@ import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router/auto";
-import BaseLink from "../base/BaseLink.vue";
+import BaseLink from "@components/base/BaseLink.vue";
 
 // TODO: move route param to chapter
 const route = useRoute("/studies/[studyId]/");
@@ -22,7 +22,8 @@ const studyQuery = db
   .select(["id", "name"])
   .where("id", "=", Number(route.params.studyId))
   .compile();
-const chapterQuery = db.selectFrom("chapters").selectAll().where("study", "=", Number(route.params.studyId)).compile();
+const chapterQuery = db.selectFrom("chapters").selectAll().where("study", "=", Number(route.params.studyId)).orderBy("id").compile();
+
 const [study, chapters] = await Promise.all([selectFirst(studyQuery), select(chapterQuery)]);
 
 const { setBreadcrumbs } = useBreadcrumbs();
