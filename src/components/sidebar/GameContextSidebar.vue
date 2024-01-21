@@ -6,15 +6,11 @@
     :selected-index="selectedTab"
     @change="changeTab"
   >
-    <TabList class="flex justify-around border-b border-gray-200">
+    <TabList class="mx-1 mt-1 flex rounded bg-gray-200 p-1">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
-          :class="
-            selected
-              ? 'border-orange-400 text-orange-400'
-              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-          "
-          class="w-1/2 whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium focus:outline-none"
+          :class="selected ? 'bg-orange-50 font-medium text-orange-400' : ' text-gray-500 hover:text-gray-700'"
+          class="flex-grow whitespace-nowrap rounded px-2 py-1 text-sm focus:outline-none"
         >
           {{ tab }}
         </button>
