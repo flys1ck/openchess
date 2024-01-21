@@ -187,9 +187,6 @@ export function useGameTree() {
       });
     };
     game.moves.children.forEach((child) => parseChild(child, pos.clone()));
-
-    // reset active node to root position after import
-    if (root.value) setActiveNode(root.value);
   }
 
   const pgn = computed(() => {

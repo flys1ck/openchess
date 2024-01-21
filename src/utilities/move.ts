@@ -23,6 +23,13 @@ export function getPossibleMoves(fen: string) {
   return chessgroundDests(position);
 }
 
+export function getPlyCount(fen: string) {
+  const parsedFen = parseFen(fen).unwrap();
+  const currentMove = parsedFen.fullmoves - 1;
+  const turnOffset = parsedFen.turn === "white" ? 0 : 1;
+  return currentMove * 2 + turnOffset;
+}
+
 // export function toRole(piece: PieceSymbol): Role {
 //   const roles: Record<PieceSymbol, Role> = {
 //     q: "queen",

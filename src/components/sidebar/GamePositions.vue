@@ -33,7 +33,9 @@
       <ul class="divide-y">
         <li v-for="line in lines" :key="line.line_id">
           <RouterLink
-            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}`"
+            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${getPlyCount(
+              line.fen
+            )}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
             @pointerover="
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
@@ -144,6 +146,7 @@ import { db, select } from "@services/database";
 import { MasterGameCollection } from "@services/lichess";
 import { useLichess } from "@stores/useLichess";
 import { roundToFixed } from "@utilities/math";
+import { getPlyCount } from "@utilities/move";
 import { Key } from "chessground/types";
 import { shallowRef, watchEffect } from "vue";
 
@@ -190,6 +193,7 @@ watchEffect(async () => {
     .select([
       "positions.source",
       "positions.destination",
+      "positions.fen",
       "studies.id as study_id",
       "studies.name as study_name",
       "chapters.id as chapter_id",
