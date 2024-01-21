@@ -44,38 +44,58 @@
           </div>
           <div class="flex flex-col gap-2 border-t p-4">
             <div class="flex justify-center gap-4">
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronDoubleLeftIcon"
-                :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
-                aria-label="Skip to first move"
-                @click="game.tree.toFirstMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronLeftIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
-                aria-label="Previous move"
-                @click="game.tree.toPreviousMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronRightIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                aria-label="Next move"
-                @click="game.tree.toNextMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronDoubleRightIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                aria-label="Skip to last move"
-                @click="game.tree.toLastMove"
-              />
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronDoubleLeftIcon"
+                    :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
+                    aria-label="Skip to initial position"
+                    @click="toFirstMove"
+                  />
+                </template>
+                Skip to initial position
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronLeftIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
+                    aria-label="Previous move"
+                    @click="toPreviousMove"
+                  />
+                </template>
+                Previous move
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronRightIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                    aria-label="Next move"
+                    @click="toNextMove"
+                  />
+                </template>
+                Next move
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronDoubleRightIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                    aria-label="Skip to last move"
+                    @click="toLastMove"
+                  />
+                </template>
+                Skip to last move
+              </BaseTooltip>
             </div>
           </div>
         </template>
@@ -114,6 +134,7 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import BaseSlider from "@components/base/BaseSlider.vue";
+import BaseTooltip from "@components/base/BaseTooltip.vue";
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import GamePositions from "@components/sidebar/GamePositions.vue";
 import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
@@ -156,39 +177,43 @@ function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
   props.game.setAutoShapes(shapes);
 }
 
-// TODO: revisit, might be broken when activeElement `null`
-// also might work unexpected, when tabs/buttons have focus
-onKeyStroke("ArrowLeft", () => {
-  // if (document.activeElement?.tagName !== "BODY") return;
+function toPreviousMove() {
   props.game.tree.toPreviousMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowRight", () => {
-  // if (document.activeElement?.tagName !== "BODY") return;
+}
+
+function toNextMove() {
   props.game.tree.toNextMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowUp", (e) => {
-  e.preventDefault();
-  // if (document.activeElement?.tagName !== "BODY") return;
+}
+
+function toFirstMove() {
   props.game.tree.toFirstMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowDown", (e) => {
-  e.preventDefault();
-  // if (document.activeElement?.tagName !== "BODY") return;
+}
+
+function toLastMove() {
   props.game.tree.toLastMove((node) => {
     props.game.setActivePosition(node);
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
+}
+
+onKeyStroke("ArrowLeft", toPreviousMove);
+onKeyStroke("ArrowRight", toNextMove);
+onKeyStroke("ArrowUp", (e) => {
+  e.preventDefault();
+  toFirstMove();
 });
-onKeyStroke("f", () => {
-  props.game.toggleOrientation();
+onKeyStroke("ArrowDown", (e) => {
+  e.preventDefault();
+  toLastMove();
 });
+onKeyStroke("f", props.game.toggleOrientation);
 </script>
