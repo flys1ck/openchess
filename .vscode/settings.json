@@ -1,4 +1,5 @@
 {
   "typescript.preferences.autoImportFileExcludePatterns": ["vue-router"],
-  "typescript.preferences.importModuleSpecifier": "non-relative"
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
