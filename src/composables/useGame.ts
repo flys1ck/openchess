@@ -185,6 +185,18 @@ export function useGame() {
     tree.setActiveNode(node);
   }
 
+  function setActivePositionByPlyCount(plyCount: number) {
+    if (!tree.root.value) return;
+    let currentNode = tree.root.value;
+    while (currentNode.nextPosition !== undefined) {
+      if (currentNode.ply === plyCount) {
+        setActivePosition(currentNode);
+        return;
+      }
+      currentNode = currentNode.nextPosition;
+    }
+  }
+
   function toggleOrientation() {
     board?.toggleOrientation();
   }
@@ -219,6 +231,7 @@ export function useGame() {
     cancelPromotion,
     promote,
     setActivePosition,
+    setActivePositionByPlyCount,
     toggleOrientation,
     setOrientation,
     playMove,
