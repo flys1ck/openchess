@@ -9,7 +9,7 @@
     <TabList class="mx-1 mt-1 flex rounded bg-gray-200 p-1">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
-          :class="selected ? 'bg-orange-50 font-medium text-orange-400' : ' text-gray-500 hover:text-gray-700'"
+          :class="selected ? 'bg-orange-50 font-medium text-orange-400' : 'text-gray-500 hover:text-gray-700'"
           class="flex-grow whitespace-nowrap rounded px-2 py-1 text-sm focus:outline-none"
         >
           {{ tab }}
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div class="flex flex-col gap-2 border-t p-4">
-            <div class="flex justify-center gap-4">
+            <div class="flex items-center justify-center gap-4">
               <BaseTooltip>
                 <template #trigger>
                   <BaseButton
@@ -52,6 +52,7 @@
                   />
                 </template>
                 Skip to initial position
+                <BaseKbd class="ml-2" :icon="ArrowUpIcon" />
               </BaseTooltip>
               <BaseTooltip>
                 <template #trigger>
@@ -65,6 +66,7 @@
                   />
                 </template>
                 Previous move
+                <BaseKbd class="ml-2" :icon="ArrowLeftIcon" />
               </BaseTooltip>
               <BaseTooltip>
                 <template #trigger>
@@ -78,6 +80,7 @@
                   />
                 </template>
                 Next move
+                <BaseKbd :icon="ArrowRightIcon" class="ml-2" />
               </BaseTooltip>
               <BaseTooltip>
                 <template #trigger>
@@ -91,6 +94,7 @@
                   />
                 </template>
                 Skip to last move
+                <BaseKbd class="ml-2" :icon="ArrowDownIcon" />
               </BaseTooltip>
             </div>
           </div>
@@ -105,7 +109,10 @@
         <BaseSidebarSectionHeading heading="Game & Board" />
         <div class="flex flex-col p-4">
           <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
-          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
+          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation"
+            >Toggle Orientation
+            <BaseKbd class="ml-2">f</BaseKbd>
+          </BaseButton>
         </div>
         <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
         <div class="p-4">
@@ -128,6 +135,7 @@
 <script setup lang="ts">
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseKbd from "@components/base/BaseKbd.vue";
 import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import BaseSlider from "@components/base/BaseSlider.vue";
 import BaseTooltip from "@components/base/BaseTooltip.vue";
@@ -142,6 +150,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/vue/20/solid";
+import { ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon } from "@heroicons/vue/24/solid";
 import { useSettings } from "@stores/useSettings";
 import { onKeyStroke } from "@vueuse/core";
 import { DrawShape } from "chessground/draw";

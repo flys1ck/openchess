@@ -3,13 +3,19 @@
     <!-- Navigation -->
     <div class="mt-10 flex flex-grow flex-col justify-between">
       <nav class="flex flex-1 flex-col gap-2 p-2">
-        <RouterLink v-for="{ icon, text, to } in navigationItems" :to="to" :key="to">
+        <RouterLink v-for="{ icon, text, to } in navigationItems" :to="to" :key="to" v-slot="{ isActive }">
           <div
-            class="transition-color flex flex-col items-center gap-1 overflow-hidden rounded-lg p-2 font-medium"
-            :class="route.path.startsWith(to) ? 'bg-gray-700 text-gray-50' : 'text-gray-500 hover:bg-gray-300'"
+            class="flex flex-col items-center gap-1 overflow-hidden rounded-lg p-2 transition-colors"
+            :class="
+              isRouteActive(to, isActive) ? 'bg-gray-300 text-gray-800 shadow-inner' : 'text-gray-600 hover:bg-gray-300'
+            "
           >
-            <Component :is="icon" class="h-6 w-6" :class="{ 'text-orange-400': route.path.startsWith(to) }" />
-            <span class="text-xs lowercase">{{ text }}</span>
+            <Component
+              :is="icon"
+              class="h-6 w-6"
+              :class="isRouteActive(to, isActive) ? 'text-orange-400' : 'text-gray-400'"
+            />
+            <span class="text-xs">{{ text }}</span>
           </div>
         </RouterLink>
       </nav>
@@ -25,6 +31,9 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router/auto";
 
 const route = useRoute();
+function isRouteActive(to: string, isActive: boolean) {
+  return route.path.startsWith(to) || isActive;
+}
 
 const appVersion = ref("");
 onMounted(async () => {

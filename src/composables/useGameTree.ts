@@ -177,7 +177,7 @@ export function useGameTree() {
         true
       );
 
-      setActiveNode(node!);
+      setActiveNode(node);
       if (child.children.length === 0) return;
 
       parseChild(child.children[0], position.clone(), move);
@@ -187,6 +187,8 @@ export function useGameTree() {
       });
     };
     game.moves.children.forEach((child) => parseChild(child, pos.clone()));
+
+    if (root.value) setActiveNode(root.value);
   }
 
   const pgn = computed(() => {

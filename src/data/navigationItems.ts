@@ -1,4 +1,5 @@
-import { AcademicCapIcon, BeakerIcon, Cog8ToothIcon, TrophyIcon } from "@heroicons/vue/24/solid";
+import { AcademicCapIcon, BeakerIcon, Cog8ToothIcon, TrophyIcon } from "@heroicons/vue/24/outline";
+
 import { FunctionalComponent } from "vue";
 import { RouteNamedMap } from "vue-router/auto/routes";
 

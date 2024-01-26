@@ -6,8 +6,8 @@
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent
-          :side-offset="5"
-          class="TooltipContent select-none rounded bg-gray-800 px-2 py-0.5 text-sm font-light text-gray-50"
+          :side-offset="4"
+          class="TooltipContent flex select-none rounded bg-gray-200 px-2 py-0.5 text-sm font-light text-gray-800 shadow-md"
         >
           <slot />
         </TooltipContent>
