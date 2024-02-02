@@ -1,20 +1,16 @@
 <template>
   <TabGroup
     as="aside"
-    class="flex w-96 shrink-0 flex-col border-l border-gray-200"
+    class="flex w-96 shrink-0 flex-col border-l border-gray-200 2xl:w-[30rem]"
     manual
     :selected-index="selectedTab"
     @change="changeTab"
   >
-    <TabList class="flex justify-around border-b border-gray-200">
+    <TabList class="mx-1 mt-1 flex rounded bg-gray-200 p-1">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
-          :class="
-            selected
-              ? 'border-orange-400 text-orange-400'
-              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-          "
-          class="w-1/2 whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium focus:outline-none"
+          :class="selected ? 'bg-orange-50 font-medium text-orange-400' : 'text-gray-500 hover:text-gray-700'"
+          class="flex-grow whitespace-nowrap rounded px-2 py-1 text-sm focus:outline-none"
         >
           {{ tab }}
         </button>
@@ -43,39 +39,63 @@
             </div>
           </div>
           <div class="flex flex-col gap-2 border-t p-4">
-            <div class="flex justify-center gap-4">
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronDoubleLeftIcon"
-                :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
-                aria-label="Skip to first move"
-                @click="game.tree.toFirstMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronLeftIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
-                aria-label="Previous move"
-                @click="game.tree.toPreviousMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronRightIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                aria-label="Next move"
-                @click="game.tree.toNextMove"
-              />
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :prefix-icon="ChevronDoubleRightIcon"
-                :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                aria-label="Skip to last move"
-                @click="game.tree.toLastMove"
-              />
+            <div class="flex items-center justify-center gap-4">
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronDoubleLeftIcon"
+                    :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
+                    aria-label="Skip to initial position"
+                    @click="toFirstMove"
+                  />
+                </template>
+                Skip to initial position
+                <BaseKbd class="ml-2" :icon="ArrowUpIcon" />
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronLeftIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
+                    aria-label="Previous move"
+                    @click="toPreviousMove"
+                  />
+                </template>
+                Previous move
+                <BaseKbd class="ml-2" :icon="ArrowLeftIcon" />
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronRightIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                    aria-label="Next move"
+                    @click="toNextMove"
+                  />
+                </template>
+                Next move
+                <BaseKbd :icon="ArrowRightIcon" class="ml-2" />
+              </BaseTooltip>
+              <BaseTooltip>
+                <template #trigger>
+                  <BaseButton
+                    variant="secondary"
+                    size="sm"
+                    :prefix-icon="ChevronDoubleRightIcon"
+                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                    aria-label="Skip to last move"
+                    @click="toLastMove"
+                  />
+                </template>
+                Skip to last move
+                <BaseKbd class="ml-2" :icon="ArrowDownIcon" />
+              </BaseTooltip>
             </div>
           </div>
         </template>
@@ -89,7 +109,10 @@
         <BaseSidebarSectionHeading heading="Game & Board" />
         <div class="flex flex-col p-4">
           <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
-          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation">Toggle Orientation</BaseButton>
+          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation"
+            >Toggle Orientation
+            <BaseKbd class="ml-2">f</BaseKbd>
+          </BaseButton>
         </div>
         <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
         <div class="p-4">
@@ -112,8 +135,10 @@
 <script setup lang="ts">
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
+import BaseKbd from "@components/base/BaseKbd.vue";
 import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import BaseSlider from "@components/base/BaseSlider.vue";
+import BaseTooltip from "@components/base/BaseTooltip.vue";
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import GamePositions from "@components/sidebar/GamePositions.vue";
 import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
@@ -125,8 +150,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/vue/20/solid";
+import { ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon } from "@heroicons/vue/24/solid";
 import { useSettings } from "@stores/useSettings";
-import { onKeyStroke } from "@vueuse/core";
 import { DrawShape } from "chessground/draw";
 import { Key } from "chessground/types";
 import { ref } from "vue";
@@ -156,39 +181,27 @@ function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
   props.game.setAutoShapes(shapes);
 }
 
-// TODO: revisit, might be broken when activeElement `null`
-// also might work unexpected, when tabs/buttons have focus
-onKeyStroke("ArrowLeft", () => {
-  // if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toPreviousMove((node) => {
-    props.game.setActivePosition(node);
+function toPreviousMove() {
+  props.game.toPreviousMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowRight", () => {
-  // if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toNextMove((node) => {
-    props.game.setActivePosition(node);
+}
+
+function toNextMove() {
+  props.game.toNextMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowUp", (e) => {
-  e.preventDefault();
-  // if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toFirstMove((node) => {
-    props.game.setActivePosition(node);
+}
+
+function toFirstMove() {
+  props.game.toFirstMove(() => {
     document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("ArrowDown", (e) => {
-  e.preventDefault();
-  // if (document.activeElement?.tagName !== "BODY") return;
-  props.game.tree.toLastMove((node) => {
-    props.game.setActivePosition(node);
+}
+
+function toLastMove() {
+  props.game.toLastMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
-});
-onKeyStroke("f", () => {
-  props.game.toggleOrientation();
-});
+}
 </script>

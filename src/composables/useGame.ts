@@ -60,6 +60,51 @@ export function useGame() {
     board?.move(source, destination);
   }
 
+  function toPreviousMove(cb?: (node: PositionNode) => void) {
+    const previousPosition = tree.activeNode.value?.previousPosition;
+    if (!previousPosition) return;
+
+    setActivePosition(previousPosition);
+    cb && cb(previousPosition);
+  }
+
+  function toNextMove(cb?: (node: PositionNode) => void) {
+    const nextPosition = tree.activeNode.value?.nextPosition;
+    if (!nextPosition) return;
+    if (nextPosition.move?.san !== "--") {
+      if (nextPosition.move?.isCapture) {
+        playAudio("capture", 0.5);
+      } else if (nextPosition.move?.isCheck) {
+        // TODO add proper sound
+        playAudio("move", 0.5);
+      } else {
+        playAudio("move", 0.5);
+      }
+    }
+
+    setActivePosition(nextPosition);
+    cb && cb(nextPosition);
+  }
+
+  function toFirstMove(cb?: (node: PositionNode) => void) {
+    const root = tree.root.value;
+    if (!root) return;
+
+    setActivePosition(root);
+    cb && cb(root);
+  }
+
+  function toLastMove(cb?: (node: PositionNode) => void) {
+    let node = tree.activeNode.value?.nextPosition;
+    while (node?.nextPosition) {
+      node = node.nextPosition;
+    }
+    if (!node) return;
+
+    setActivePosition(node);
+    cb && cb(node);
+  }
+
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
     if (source === "a0" || destination === "a0") return;
 
@@ -236,5 +281,9 @@ export function useGame() {
     setOrientation,
     playMove,
     setAutoShapes,
+    toPreviousMove,
+    toNextMove,
+    toFirstMove,
+    toLastMove,
   };
 }

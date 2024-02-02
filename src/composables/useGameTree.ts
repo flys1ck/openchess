@@ -1,4 +1,3 @@
-import { playAudio } from "@utilities/audio";
 import { formatComment } from "@utilities/comment";
 import { toSAN } from "@utilities/move";
 import { Key, Piece } from "chessground/types";
@@ -98,42 +97,6 @@ export function useGameTree() {
     activeNode.value = node;
   }
 
-  function toPreviousMove(cb: (node: PositionNode) => void) {
-    if (!activeNode.value || !activeNode.value.previousPosition) return;
-    cb(activeNode.value.previousPosition);
-  }
-
-  function toNextMove(cb: (node: PositionNode) => void) {
-    if (!activeNode.value || !activeNode.value.nextPosition) return;
-    if (activeNode.value.nextPosition.move?.san !== "--") {
-      if (activeNode.value.nextPosition.move?.isCapture) {
-        playAudio("capture", 0.5);
-      } else if (activeNode.value.nextPosition.move?.isCheck) {
-        // TODO add proper sound
-        playAudio("move", 0.5);
-      } else {
-        playAudio("move", 0.5);
-      }
-    }
-    // TODO check these callbacks
-    cb(activeNode.value.nextPosition);
-  }
-
-  function toFirstMove(cb: (node: PositionNode) => void) {
-    if (!root.value) return;
-    cb(root.value);
-  }
-
-  function toLastMove(cb: (node: PositionNode) => void) {
-    if (!activeNode.value || !activeNode.value.nextPosition) return;
-
-    let node = activeNode.value.nextPosition;
-    while (node.nextPosition) {
-      node = node.nextPosition;
-    }
-    cb(node);
-  }
-
   function reset() {
     root.value = undefined;
     activeNode.value = undefined;
@@ -177,7 +140,7 @@ export function useGameTree() {
         true
       );
 
-      setActiveNode(node!);
+      setActiveNode(node);
       if (child.children.length === 0) return;
 
       parseChild(child.children[0], position.clone(), move);
@@ -187,6 +150,8 @@ export function useGameTree() {
       });
     };
     game.moves.children.forEach((child) => parseChild(child, pos.clone()));
+
+    if (root.value) setActiveNode(root.value);
   }
 
   const pgn = computed(() => {
@@ -215,10 +180,6 @@ export function useGameTree() {
     activeNode,
     pgn,
     setActiveNode,
-    toFirstMove,
-    toLastMove,
-    toNextMove,
-    toPreviousMove,
     addNode,
     reset,
     fromPgn,
