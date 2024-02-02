@@ -152,7 +152,6 @@ import {
 } from "@heroicons/vue/20/solid";
 import { ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon } from "@heroicons/vue/24/solid";
 import { useSettings } from "@stores/useSettings";
-import { onKeyStroke } from "@vueuse/core";
 import { DrawShape } from "chessground/draw";
 import { Key } from "chessground/types";
 import { ref } from "vue";
@@ -183,42 +182,26 @@ function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
 }
 
 function toPreviousMove() {
-  props.game.tree.toPreviousMove((node) => {
-    props.game.setActivePosition(node);
+  props.game.toPreviousMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 }
 
 function toNextMove() {
-  props.game.tree.toNextMove((node) => {
-    props.game.setActivePosition(node);
+  props.game.toNextMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 }
 
 function toFirstMove() {
-  props.game.tree.toFirstMove((node) => {
-    props.game.setActivePosition(node);
+  props.game.toFirstMove(() => {
     document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
   });
 }
 
 function toLastMove() {
-  props.game.tree.toLastMove((node) => {
-    props.game.setActivePosition(node);
+  props.game.toLastMove((node) => {
     document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
   });
 }
-
-onKeyStroke("ArrowLeft", toPreviousMove);
-onKeyStroke("ArrowRight", toNextMove);
-onKeyStroke("ArrowUp", (e) => {
-  e.preventDefault();
-  toFirstMove();
-});
-onKeyStroke("ArrowDown", (e) => {
-  e.preventDefault();
-  toLastMove();
-});
-onKeyStroke("f", props.game.toggleOrientation);
 </script>

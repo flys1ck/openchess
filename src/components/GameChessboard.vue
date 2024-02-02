@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { PromotionPiece, useGame } from "@composables/useGame";
-import { useElementBounding } from "@vueuse/core";
+import { onKeyStroke, useElementBounding, useEventListener } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
 
 const props = withDefaults(
@@ -59,6 +59,50 @@ const overlayWidth = computed(() => {
   return chessboardBounds.width.value - (chessboardBounds.width.value % 8);
 });
 
+function toPreviousMove() {
+  props.game.toPreviousMove((node) => {
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+  });
+}
+
+function toNextMove() {
+  props.game.toNextMove((node) => {
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+  });
+}
+
+function toFirstMove() {
+  props.game.toFirstMove(() => {
+    document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
+  });
+}
+
+function toLastMove() {
+  props.game.toLastMove((node) => {
+    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+  });
+}
+
+onKeyStroke("ArrowLeft", toPreviousMove);
+onKeyStroke("ArrowRight", toNextMove);
+onKeyStroke("ArrowUp", (e) => {
+  e.preventDefault();
+  toFirstMove();
+});
+onKeyStroke("ArrowDown", (e) => {
+  e.preventDefault();
+  toLastMove();
+});
+onKeyStroke("f", props.game.toggleOrientation);
+useEventListener(chessboardRef, "wheel", (e: WheelEvent) => {
+  const { deltaY } = e;
+  if (deltaY < 0) {
+    toPreviousMove();
+  } else {
+    toNextMove();
+  }
+});
+
 onMounted(async () => {
   if (!chessboardRef.value) return;
   props.game.initializeBoard(chessboardRef.value, {
@@ -68,6 +112,5 @@ onMounted(async () => {
 </script>
 
 <style>
-/* TODO: import not resolving correctly, when using module name or alias */
 @import "./../assets/css/chessground.css";
 </style>
