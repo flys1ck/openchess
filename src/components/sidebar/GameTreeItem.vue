@@ -52,7 +52,7 @@
       class="col-span-7 pl-4 text-gray-500"
       >{{ node.nextPosition && "..." }}</span
     >
-    <div class="relative col-span-full break-words bg-gray-100 p-2 text-xs text-gray-700 shadow-inner">
+    <div class="relative col-span-full break-words bg-gray-100 p-2 text-xs text-gray-700 shadow-inner 2xl:text-sm">
       <span
         class="absolute inset-y-0"
         :class="[

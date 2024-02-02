@@ -1,7 +1,7 @@
 <template>
   <TabGroup
     as="aside"
-    class="flex w-96 shrink-0 flex-col border-l border-gray-200"
+    class="flex w-96 shrink-0 flex-col border-l border-gray-200 2xl:w-[30rem]"
     manual
     :selected-index="selectedTab"
     @change="changeTab"
