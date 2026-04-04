@@ -73,7 +73,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm tauri dev",
+    command: "vp run tauri dev",
     url: "http://localhost:1420",
     reuseExistingServer: !process.env.CI,
   },

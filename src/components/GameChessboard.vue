@@ -15,7 +15,7 @@
           class="aspect-square w-full scale-90 rounded bg-slate-300 hover:bg-orange-300"
           @click.stop="game.promote(piece as PromotionPiece)"
         >
-          <div :class="`${game.promotionColor.value} ${piece} h-full w-full  bg-cover`" />
+          <div :class="`${game.promotionColor.value} ${piece} h-full w-full bg-cover`" />
         </button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 /* eslint-env node */
 import cpuFeatures from "cpu-features";
 import fd from "follow-redirects";

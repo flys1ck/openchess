@@ -1,4 +1,4 @@
-import { Command } from "@tauri-apps/api/shell";
+import { Command } from "@tauri-apps/plugin-shell";
 import { parseFen } from "chessops/fen";
 import {
   BestMoveCommand,
@@ -97,7 +97,11 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
       });
 
       await child.write(`position fen ${fen.value}\n`);
-      options && options.depth ? await child.write(`go depth ${options.depth.value}\n`) : await child.write("go\n");
+      if (options && options.depth) {
+        await child.write(`go depth ${options.depth.value}\n`);
+      } else {
+        await child.write("go\n");
+      }
       isEvaluating.value = true;
 
       // cleanup is called, if there are running promises, when the watcher updates

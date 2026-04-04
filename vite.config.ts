@@ -1,13 +1,40 @@
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "unplugin-vue-router/vite";
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 import ClientSideLayout from "vite-plugin-vue-layouts";
-import TSConfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  lint: {
+    plugins: ["typescript"],
+    env: {
+      builtin: true,
+    },
+    ignorePatterns: [".vscode", "dist", "pnpm-lock.yaml", "src-tauri", "src/*.d.ts", "src-python", "test-results"],
+    rules: {
+      "no-console": [
+        "warn",
+        {
+          allow: ["warn", "error"],
+        },
+      ],
+      "no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+        },
+      ],
+    },
+    options: {},
+  },
+  fmt: {
+    printWidth: 120,
+    trailingComma: "es5",
+    sortTailwindcss: {},
+    sortPackageJson: false,
+    ignorePatterns: [".vscode", "dist", "pnpm-lock.yaml", "src-tauri", "src/*.d.ts", "src-python", "test-results"],
+  },
   plugins: [
-    TSConfigPaths({ loose: true }),
     VueRouter({
       dts: "./src/typed-router.d.ts",
     }),
@@ -37,5 +64,8 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+  },
+  resolve: {
+    tsconfigPaths: true,
   },
 });

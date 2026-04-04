@@ -67,7 +67,7 @@ import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { definePage } from "vue-router/auto";
 import { z } from "zod";
 

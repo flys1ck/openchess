@@ -39,7 +39,11 @@ export function useGame() {
       possibleMoves: getPossibleMoves(fen.value),
       isCheck: pos.isCheck(),
     };
-    board = useChessground(element, { orientation: options?.orientation, position, onMove: processMove });
+    board = useChessground(element, {
+      orientation: options?.orientation,
+      position,
+      onMove: processMove,
+    });
   }
 
   function createNewGame() {
@@ -65,7 +69,7 @@ export function useGame() {
     if (!previousPosition) return;
 
     setActivePosition(previousPosition);
-    cb && cb(previousPosition);
+    if (cb) cb(previousPosition);
   }
 
   function toNextMove(cb?: (node: PositionNode) => void) {
@@ -83,7 +87,7 @@ export function useGame() {
     }
 
     setActivePosition(nextPosition);
-    cb && cb(nextPosition);
+    if (cb) cb(nextPosition);
   }
 
   function toFirstMove(cb?: (node: PositionNode) => void) {
@@ -91,7 +95,7 @@ export function useGame() {
     if (!root) return;
 
     setActivePosition(root);
-    cb && cb(root);
+    if (cb) cb(root);
   }
 
   function toLastMove(cb?: (node: PositionNode) => void) {
@@ -102,7 +106,7 @@ export function useGame() {
     if (!node) return;
 
     setActivePosition(node);
-    cb && cb(node);
+    if (cb) cb(node);
   }
 
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
@@ -133,8 +137,8 @@ export function useGame() {
     const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
     if (isPromotion(fixedDestination, piece.role)) {
-      const orientation = board?.getOrientation()!;
-      intentPromotion(fixedDestination, pos.turn, orientation);
+      const orientation = board?.getOrientation();
+      if (orientation) intentPromotion(fixedDestination, pos.turn, orientation);
       return;
     }
 
@@ -247,7 +251,7 @@ export function useGame() {
   }
 
   function setOrientation(orientation: Color) {
-    board?.getOrientation() !== orientation && board?.toggleOrientation();
+    if (board?.getOrientation() !== orientation) board?.toggleOrientation();
   }
 
   function setAutoShapes(shapes: DrawShape[], type: "temporary" | "persistent" = "persistent") {
