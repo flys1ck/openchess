@@ -77,12 +77,12 @@ export function useGame() {
     if (!nextPosition) return;
     if (nextPosition.move?.san !== "--") {
       if (nextPosition.move?.isCapture) {
-        playAudio("capture", 0.5);
+        void playAudio("capture", 0.5);
       } else if (nextPosition.move?.isCheck) {
         // TODO add proper sound
-        playAudio("move", 0.5);
+        void playAudio("move", 0.5);
       } else {
-        playAudio("move", 0.5);
+        void playAudio("move", 0.5);
       }
     }
 
@@ -158,9 +158,9 @@ export function useGame() {
 
     // play move audio
     if (isCapture) {
-      playAudio("capture", 0.5);
+      void playAudio("capture", 0.5);
     } else {
-      playAudio("move", 0.5);
+      void playAudio("move", 0.5);
     }
 
     fen.value = makeFen(pos.toSetup());

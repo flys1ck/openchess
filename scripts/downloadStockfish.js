@@ -84,8 +84,6 @@ function parseArchive(readStream) {
         console.log("Finished extracting tar archive");
         renameAndCleanup();
       });
-  } else {
-    throw new Error(`Unsupported archive extension: ${STOCKFISH_ARCHIVE_EXTENSION}`);
   }
 }
 

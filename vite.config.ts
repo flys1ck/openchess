@@ -1,13 +1,10 @@
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "unplugin-vue-router/vite";
-import { defineConfig } from "vite-plus";
+import { defineConfig } from "vite";
 import ClientSideLayout from "vite-plugin-vue-layouts";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  staged: {
-    "*": "vp check --fix",
-  },
   plugins: [
     VueRouter({
       dts: "./src/typed-router.d.ts",

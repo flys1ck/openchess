@@ -4,7 +4,7 @@ test("should open sign in page", async ({ page }) => {
   await page.goto("/");
   const title = page.getByRole("heading", { name: "Sign in to your account" });
 
-  expect(title).toBeVisible();
+  await expect(title).toBeVisible();
 });
 
 test("should fail sign in with empty values", async ({ page }) => {

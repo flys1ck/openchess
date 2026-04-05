@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { roundToFixed } from "./math";
 
 describe("roundToFixed", () => {
@@ -24,8 +24,8 @@ describe("roundToFixed", () => {
   });
 
   it("should fail on invalid precisions", () => {
-    expect(() => roundToFixed(1000, -10)).toThrowError();
-    expect(() => roundToFixed(1000, 1.5)).toThrowError();
-    expect(() => roundToFixed(1000, 999)).toThrowError();
+    expect(() => roundToFixed(1000, -10)).toThrow("kaputt");
+    expect(() => roundToFixed(1000, 1.5)).toThrow("kaputt");
+    expect(() => roundToFixed(1000, 999)).toThrow("kaputt");
   });
 });

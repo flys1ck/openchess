@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { getMoveStringFromSan } from "./moves";
 
 describe("getMoveStringFromSan", () => {
@@ -93,6 +93,6 @@ describe("getMoveStringFromSan", () => {
   });
 
   it("should throw error when invalid FEN is provided", () => {
-    expect(() => getMoveStringFromSan(["e4", "e5", "Nf3"], "invalid FEN")).toThrowError();
+    expect(() => getMoveStringFromSan(["e4", "e5", "Nf3"], "invalid FEN")).toThrow("error");
   });
 });

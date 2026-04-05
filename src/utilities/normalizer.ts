@@ -48,7 +48,7 @@ export function normalizeLichessGame(lichessGame: LichessGame): ChessGame {
   return game;
 }
 
-function normalizeLichessPlayer(player: LichessGame["players"]["white"] | LichessGame["players"]["black"]) {
+function normalizeLichessPlayer(player: LichessGame["players"]["white"]) {
   if ("aiLevel" in player) {
     return {
       name: `Stockfish (Level ${player.aiLevel})`,

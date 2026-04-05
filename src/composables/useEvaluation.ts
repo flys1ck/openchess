@@ -51,7 +51,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     };
 
     sidecar.stdout.on("data", resolveOnEngineName);
-    child.write("uci\n");
+    void child.write("uci\n");
   });
 
   // TODO: get threads/hash size from system
@@ -72,7 +72,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         currentDepth.value = 0;
         nodesPerSecond.value = 0;
         multiPvInfo.value = [];
-        child.write("stop\n");
+        void child.write("stop\n");
         return;
       }
 
@@ -93,12 +93,12 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         };
 
         sidecar.stdout.on("data", resolveOnReadyOk);
-        child.write("isready\n");
+        void child.write("isready\n");
       });
 
       await child.write(`position fen ${fen.value}\n`);
       if (options && options.depth) {
-        await child.write(`go depth ${options.depth.value}\n`);
+        await child.write(`go depth ${options.depth.value[0]}\n`);
       } else {
         await child.write("go\n");
       }

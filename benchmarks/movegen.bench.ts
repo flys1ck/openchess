@@ -1,6 +1,6 @@
 import { Chess } from "chessops/chess";
 import { parseFen } from "chessops/fen";
-import { bench, describe } from "vite-plus/test";
+import { bench, describe } from "vitest";
 
 describe("chessops movegen", () => {
   // for positions see https://www.chessprogramming.org/Perft_Results

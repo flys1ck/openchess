@@ -19,5 +19,7 @@
       }
     ]
   },
-  "options": {}
+  "options": {
+    "typeAware": true
+  }
 }

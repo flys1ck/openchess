@@ -25,7 +25,7 @@ interface ExportGamesByUserQueryParameters {
   max: number;
   vs?: string;
   rated?: boolean;
-  perfType?: PerfType | string;
+  perfType?: PerfType;
   color?: "white" | "black";
   analysed?: boolean;
   moves?: boolean;
