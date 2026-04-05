@@ -101,7 +101,7 @@ async function processPgn(pgn: string) {
     const chapterQueryResult = await execute(chapterQuery);
 
     let chapterId: number;
-    if (chapterQueryResult.rowsAffected === 0) {
+    if (chapterQueryResult.rowsAffected === 0 && !chapterQueryResult.lastInsertId) {
       const chapterQuery = db
         .selectFrom("chapters")
         .select("id")
@@ -110,6 +110,7 @@ async function processPgn(pgn: string) {
         .compile();
       chapterId = (await selectFirst(chapterQuery)).id;
     } else {
+      if (!chapterQueryResult.lastInsertId) throw new Error("Insert succeeded but no lastInsertId returned");
       chapterId = chapterQueryResult.lastInsertId;
     }
 
@@ -136,6 +137,7 @@ async function processPgn(pgn: string) {
         .compile();
       lineId = (await selectFirst(lineQuery)).id;
     } else {
+      if (!lineQueryResult.lastInsertId) throw new Error("Insert succeeded but no lastInsertId returned");
       lineId = lineQueryResult.lastInsertId;
     }
 
