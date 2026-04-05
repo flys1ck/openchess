@@ -52,7 +52,7 @@ import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useToasts } from "@stores/useToasts";
 import { Insertable } from "kysely";
 import { reactive, ref } from "vue";
-import { definePage, useRoute, useRouter } from "vue-router/auto";
+import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute("/studies/[studyId]/edit");

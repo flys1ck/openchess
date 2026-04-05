@@ -26,7 +26,7 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import ChapterList from "@components/chapters/ChapterList.vue";
-import { definePage, useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute("/studies/[studyId]/");
 

@@ -39,6 +39,7 @@
         }
       ]
     },
+    "shell:allow-kill",
     "shell:allow-open",
     "shell:allow-stdin-write",
     "dialog:allow-confirm"

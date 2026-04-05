@@ -55,7 +55,7 @@ import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
 import { parseSan } from "chessops/san";
 import { ref } from "vue";
-import { definePage, useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);

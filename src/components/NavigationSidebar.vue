@@ -28,7 +28,7 @@
 import { navigationItems } from "@data/navigationItems";
 import { getVersion } from "@tauri-apps/api/app";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 function isRouteActive(to: string, isActive: boolean) {

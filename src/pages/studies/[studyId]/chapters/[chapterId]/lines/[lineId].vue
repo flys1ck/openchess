@@ -9,7 +9,7 @@ import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { watch } from "vue";
-import { definePage, useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 definePage({
   meta: {

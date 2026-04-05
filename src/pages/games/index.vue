@@ -27,7 +27,6 @@ import OTBThumbnail from "@assets/images/otb.png";
 import BaseCard from "@components/base/BaseCard.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { definePage } from "vue-router/auto";
 
 definePage({
   meta: {

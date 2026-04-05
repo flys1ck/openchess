@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { ref, type FunctionalComponent } from "vue";
-import type { RouteNamedMap } from "vue-router/auto/routes";
+import { RouteLocationRaw } from "vue-router";
+// import type { RouteNamedMap } from "vue-router/auto-routes";
 
 interface Breadcrumb {
   icon?: FunctionalComponent;
   name: string;
-  to: keyof RouteNamedMap;
+  to: RouteLocationRaw;
 }
 
 export const useBreadcrumbs = defineStore("breadcrumbs", () => {

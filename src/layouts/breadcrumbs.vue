@@ -5,8 +5,8 @@
       <div class="flex flex-grow flex-col overflow-y-auto">
         <!-- Breadcrumbs -->
         <nav aria-label="Breadcrumb" class="flex-shrink-0">
-          <ol role="list" class="flex items-center border-b p-2">
-            <li v-for="(breadcrumb, i) in breadcrumbsStore.breadcrumbs" :key="breadcrumb.to">
+          <ol class="flex items-center border-b p-2">
+            <li v-for="(breadcrumb, i) in breadcrumbsStore.breadcrumbs" :key="breadcrumb.name">
               <div class="flex items-center text-sm">
                 <ChevronRightIcon v-if="i !== 0" class="mx-2 h-5 w-5 flex-shrink-0 text-gray-400" />
                 <RouterLink
@@ -32,7 +32,7 @@
 import NavigationSidebar from "@components/NavigationSidebar.vue";
 import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 const breadcrumbsStore = useBreadcrumbs();

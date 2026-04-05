@@ -28,7 +28,6 @@ import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import StudyList from "@components/studies/StudyList.vue";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { definePage } from "vue-router/auto";
 
 definePage({
   meta: {

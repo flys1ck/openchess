@@ -35,7 +35,7 @@ import { db, execute } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useToasts } from "@stores/useToasts";
 import { reactive } from "vue";
-import { definePage, useRouter } from "vue-router/auto";
+import { useRouter } from "vue-router";
 
 definePage({
   meta: {

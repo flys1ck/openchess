@@ -17,7 +17,6 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import LineList from "@components/lines/LineList.vue";
-import { definePage } from "vue-router/auto";
 
 definePage({
   meta: {
