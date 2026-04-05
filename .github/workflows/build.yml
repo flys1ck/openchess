@@ -36,16 +36,16 @@ jobs:
             external/stockfish
           key: stockfish-${{ env.STOCKFISH_VERSION }}-ubuntu-latest
         env:
-          STOCKFISH_VERSION: 16
+          STOCKFISH_VERSION: 18
 
       - name: Install Stockfish
-        run: node scripts/downloadStockfish.js
+        run: bun run scripts/downloadStockfish.js
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
 
       - name: Generate Target Triple
         run: |
           mkdir src-tauri/bin
-          node scripts/generateTargetTriple.js
+          bun run scripts/generateTargetTriple.js
 
       - uses: Swatinem/rust-cache@v2
         with:

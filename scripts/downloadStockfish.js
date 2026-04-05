@@ -1,5 +1,4 @@
 /* oxlint-disable no-console */
-/* eslint-env node */
 import cpuFeatures from "cpu-features";
 import fd from "follow-redirects";
 import fs from "fs";
@@ -22,20 +21,33 @@ function getPlatform() {
 
 function getCpuArchitecture() {
   const platform = process.platform;
-  const features = cpuFeatures();
+  if (platform === "darwin") {
+    if (process.arch === "arm64") {
+      return "m1";
+    } else if (process.arch === "x64") {
+      return "x86-64";
+    }
+  }
+}
+
+function getCpuExtension(features) {
+  const platform = process.platform;
   if (features.flags.avx2 && platform !== "darwin") {
     return "avx2";
   }
-  return "modern";
+  return "apple-silicon";
 }
 
-const STOCKFISH_VERSION = "16";
-const STOCKFISH_PLATFORM = getPlatform();
-const STOCKFISH_CPU_ARCHITECTURE = getCpuArchitecture();
+const STOCKFISH_VERSION = process.env.STOCKFISH_VERSION;
 
-const STOCKFISH_ARCHIVE_EXTENSION = STOCKFISH_PLATFORM === "windows" ? ".zip" : ".tar";
-const STOCKFISH_FILE_EXTENSION = STOCKFISH_PLATFORM === "windows" ? ".exe" : "";
-const STOCKFISH_FILENAME = `stockfish-${STOCKFISH_PLATFORM}-x86-64-${STOCKFISH_CPU_ARCHITECTURE}`;
+const CPU_FEATURES = cpuFeatures();
+const PLATFORM = getPlatform();
+const CPU_ARCHITECTURE = getCpuArchitecture(CPU_FEATURES);
+const CPU_EXTENSION = getCpuExtension(CPU_FEATURES);
+
+const STOCKFISH_ARCHIVE_EXTENSION = PLATFORM === "windows" ? ".zip" : ".tar";
+const STOCKFISH_FILE_EXTENSION = PLATFORM === "windows" ? ".exe" : "";
+const STOCKFISH_FILENAME = `stockfish-${PLATFORM}-${CPU_ARCHITECTURE}-${CPU_EXTENSION}`;
 const STOCKFISH_DOWNLOAD_BASE_URL = `https://github.com/official-stockfish/Stockfish/releases/download/sf_${STOCKFISH_VERSION}`;
 const STOCKFISH_DOWNLOAD_URL = `${STOCKFISH_DOWNLOAD_BASE_URL}/${STOCKFISH_FILENAME}${STOCKFISH_ARCHIVE_EXTENSION}`;
 const STOCKFISH_DOWNLOAD_PATH = `external/stockfish${STOCKFISH_ARCHIVE_EXTENSION}`;
@@ -96,7 +108,6 @@ async function main() {
     fs.unlinkSync(STOCKFISH_BINARY_PATH);
   }
 
-  console.log("Creating write stream");
   const writeStream = fs.createWriteStream(STOCKFISH_DOWNLOAD_PATH);
   const request = fd.https.get(STOCKFISH_DOWNLOAD_URL, (response) => {
     console.log(`Downloading from ${STOCKFISH_DOWNLOAD_URL}`);
