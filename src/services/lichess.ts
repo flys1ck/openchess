@@ -84,17 +84,17 @@ export function LichessClient(token: string) {
   async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers?: { accept: "application/x-chess-pgn" },
+    headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
   async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers?: { accept: "application/x-ndjson" },
+    headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame[]>;
   async function exportGamesByUser(
     username: string,
     queryParameters?: ExportGamesByUserQueryParameters,
-    headers: LichessHeaders = { accept: "application/x-chess-pgn" },
+    headers: LichessHeaders = { accept: "application/x-chess-pgn" }
   ): Promise<string | LichessGame[]> {
     // @ts-ignore URLSearchParams can handle numbers in Records
     const params = new URLSearchParams(queryParameters).toString();
@@ -121,17 +121,17 @@ export function LichessClient(token: string) {
   async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers?: { accept: "application/x-chess-pgn" },
+    headers?: { accept: "application/x-chess-pgn" }
   ): Promise<string>;
   async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers?: { accept: "application/x-ndjson" },
+    headers?: { accept: "application/x-ndjson" }
   ): Promise<LichessGame>;
   async function exportGameById(
     gameId: string,
     queryParameters?: ExportGameByIdQueryParameters,
-    headers: LichessHeaders = { accept: "application/x-chess-pgn" },
+    headers: LichessHeaders = { accept: "application/x-chess-pgn" }
   ): Promise<string | LichessGame> {
     // @ts-ignore URLSearchParams can handle numbers in Records
     const params = new URLSearchParams(queryParameters).toString();

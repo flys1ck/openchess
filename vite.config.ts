@@ -5,34 +5,8 @@ import ClientSideLayout from "vite-plugin-vue-layouts";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  lint: {
-    plugins: ["typescript"],
-    env: {
-      builtin: true,
-    },
-    ignorePatterns: [".vscode", "dist", "pnpm-lock.yaml", "src-tauri", "src/*.d.ts", "src-python", "test-results"],
-    rules: {
-      "no-console": [
-        "warn",
-        {
-          allow: ["warn", "error"],
-        },
-      ],
-      "no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-        },
-      ],
-    },
-    options: {},
-  },
-  fmt: {
-    printWidth: 120,
-    trailingComma: "es5",
-    sortTailwindcss: {},
-    sortPackageJson: false,
-    ignorePatterns: [".vscode", "dist", "pnpm-lock.yaml", "src-tauri", "src/*.d.ts", "src-python", "test-results"],
+  staged: {
+    "*": "vp check --fix",
   },
   plugins: [
     VueRouter({

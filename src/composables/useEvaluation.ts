@@ -109,7 +109,7 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
         isEvaluating.value = false;
         await child.write("stop\n");
       });
-    },
+    }
   );
 
   function getEvaluatedScore(centipawns: number | undefined, mate: number | undefined): string {
