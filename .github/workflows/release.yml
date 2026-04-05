@@ -10,10 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-20.04, windows-latest, macos-latest]
+        platform: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: oven-sh/setup-bun@v2
         name: Install bun
@@ -36,7 +36,7 @@ jobs:
       - name: Install frontend dependencies
         run: bun install
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v5
         id: stockfish-cache
         with:
           path: |
