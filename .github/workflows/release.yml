@@ -15,18 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 21
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+      - uses: oven-sh/setup-bun@v2
+        name: Install bun
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -44,7 +34,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install frontend dependencies
-        run: pnpm install
+        run: bun install
 
       - uses: actions/cache@v3
         id: stockfish-cache

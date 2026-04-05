@@ -16,22 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 21
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+      - uses: oven-sh/setup-bun@v2
+        name: Install Bun
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - run: pnpm install
+      - run: bun install
 
       - name: Install OS dependencies
         run: |
