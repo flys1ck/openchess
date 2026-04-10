@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ZodFirstPartySchemaTypes } from "zod";
+import { ZodType } from "zod";
 import BaseInput from "./BaseInput.vue";
 import BaseInputLabel from "./BaseInputLabel.vue";
 
@@ -25,12 +25,12 @@ withDefaults(
   defineProps<{
     label: string;
     type?: string;
-    schema?: ZodFirstPartySchemaTypes;
+    schema?: ZodType;
     /**
      * Async schema, when the value requires async validation The value will
      * only be validated against `asyncSchema`, when `schema` passes validation.
      */
-    asyncSchema?: ZodFirstPartySchemaTypes;
+    asyncSchema?: ZodType;
   }>(),
   {
     type: "text",
