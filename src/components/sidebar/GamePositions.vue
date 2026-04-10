@@ -14,8 +14,13 @@
           <!-- TODO: shapes are not refreshing when there is no pointer movement -->
           <button
             class="flex w-full justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(position.source, position.destination)"
-            @pointerover="
+            @click="
+              () => {
+                game.playMove(position.source, position.destination);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
+            @pointermove="
               () =>
                 game.setAutoShapes(
                   [{ brush: 'paleBlue', orig: position.source, dest: position.destination }],
@@ -41,7 +46,7 @@
               line.fen
             )}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
-            @pointerover="
+            @pointermove="
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
             "
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
@@ -66,8 +71,13 @@
         <li v-for="move in masterMoves" :key="move.uci">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key)"
-            @pointerover="
+            @click="
+              () => {
+                game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
+            @pointermove="
               () =>
                 game.setAutoShapes(
                   [{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key }],
@@ -111,7 +121,12 @@
         <li v-for="topGame in masterGames" :key="topGame.id">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key)"
+            @click="
+              () => {
+                game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
             @pointermove="
               () =>
                 game.setAutoShapes([
