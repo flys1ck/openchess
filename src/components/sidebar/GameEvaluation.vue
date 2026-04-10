@@ -27,7 +27,7 @@
         :style="`transform: scaleX(${depth / computedDepth})`"
       ></span>
     </div>
-    <ol v-if="multiPvInfo.length" class="divide-y border-t border-gray-200">
+    <ol v-if="multiPvInfo.length" class="divide-y divide-gray-200 border-t border-gray-200">
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
         <span class="ml-2">{{ getMovesStringFromUci(info.principleVariation, fen) }}</span>

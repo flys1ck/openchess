@@ -62,7 +62,7 @@
       >
         <span class="font-semibold">Moves</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="move in masterMoves" :key="move.uci">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
@@ -102,10 +102,12 @@
           </button>
         </li>
       </ul>
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Games</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="topGame in masterGames" :key="topGame.id">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
