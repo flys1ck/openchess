@@ -1,0 +1,15 @@
+diff --git a/binding.gyp b/binding.gyp
+index 461c3e5e602e77c13d80c9f679d49ffeb2a2e7d2..e5ad986212c25f0b1fdf909da1965e6a282cf56f 100644
+--- a/binding.gyp
++++ b/binding.gyp
+@@ -2,6 +2,10 @@
+   'targets': [
+     {
+       'target_name': 'cpufeatures',
++      'cflags_cc': ['-std=c++20'],
++      'xcode_settings': {
++        'CLANG_CXX_LANGUAGE_STANDARD': 'c++20'
++      },
+       'dependencies': [ 'deps/cpu_features/cpu_features.gyp:cpu_features' ],
+       'include_dirs': [
+         'src',
