@@ -54,10 +54,10 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
     void child.write("uci\n");
   });
 
+  sidecar.stderr.on("data", (line) => console.error(line));
+  sidecar.stdout.on("data", onEngineResponse);
   // TODO: get threads/hash size from system
   await Promise.all([
-    sidecar.stderr.on("data", (line) => console.error(line)),
-    sidecar.stdout.on("data", onEngineResponse),
     child.write(`setoption name Threads value 1\n`),
     child.write(`setoption name Hash value 32\n`),
     child.write(`setoption name UCI_AnalyseMode value true\n`),

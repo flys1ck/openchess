@@ -69,6 +69,7 @@
     "kysely-codegen": "^0.20.0",
     "oxfmt": "^0.44.0",
     "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
     "prettier": "^3.8.2",
     "tailwindcss": "^4.2.2",
     "tar": "^7.5.13",
