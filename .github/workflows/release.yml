@@ -3,6 +3,9 @@ name: Release
 on:
   workflow_dispatch:
 
+env:
+  STOCKFISH_VERSION: 18
+
 jobs:
   release:
     permissions:
@@ -46,8 +49,6 @@ jobs:
           path: |
             external/stockfish
           key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}
-        env:
-          STOCKFISH_VERSION: 16
 
       - name: Install Stockfish
         run: bun run scripts/downloadStockfish.ts
