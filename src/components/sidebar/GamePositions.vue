@@ -49,7 +49,7 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 text-center text-sm italic text-gray-700">No lines with this position</p>
+    <p v-else class="p-2 text-center text-sm text-gray-700 italic">No lines with this position</p>
     <!-- Masters Database -->
     <BaseSidebarSectionHeading heading="Master's Database" />
     <template v-if="masterMoves.length || masterGames.length">
@@ -74,7 +74,7 @@
               <span class="w-12 text-left font-medium">{{ move.san }}</span>
               <span class="w-10 text-right font-light">{{ move.playPercentage }}%</span>
             </div>
-            <div class="inline-flex w-56 overflow-hidden rounded border text-xs font-light">
+            <div class="inline-flex w-56 overflow-hidden rounded-sm border border-gray-200 text-xs font-light">
               <span
                 v-if="move.whiteWinPercentage"
                 class="bg-white text-gray-900"
@@ -89,7 +89,7 @@
               >
                 {{ percentageText(move.drawPercentage) }}
               </span>
-              <span v-if="move.blackWinPercentage" class="flex-grow bg-gray-600 text-gray-50">
+              <span v-if="move.blackWinPercentage" class="grow bg-gray-600 text-gray-50">
                 {{ percentageText(move.blackWinPercentage) }}
               </span>
             </div>
@@ -134,7 +134,7 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 text-center text-sm italic text-gray-700">No games with this position</p>
+    <p v-else class="p-2 text-center text-sm text-gray-700 italic">No games with this position</p>
   </div>
 </template>
 

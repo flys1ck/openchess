@@ -2,11 +2,11 @@
   <ul class="mx-auto my-4 grid max-w-5xl grid-cols-2 gap-8 md:grid-cols-3">
     <BaseCard v-for="platform in platforms" :key="platform.title" as="li" class="relative p-6">
       <div>
-        <img class="aspect-square rounded" :src="platform.imgSrc" :alt="platform.imgAlt" />
+        <img class="aspect-square rounded-sm" :src="platform.imgSrc" :alt="platform.imgAlt" />
       </div>
       <div>
-        <h3 class="mt-4 text-lg font-semibold leading-6 text-gray-900">
-          <RouterLink :to="platform.to" class="focus:outline-none">
+        <h3 class="mt-4 text-lg leading-6 font-semibold text-gray-900">
+          <RouterLink :to="platform.to" class="focus:outline-hidden">
             <!-- Extend touch target to entire panel -->
             <span class="absolute inset-0" aria-hidden="true" />
             {{ platform.title }}

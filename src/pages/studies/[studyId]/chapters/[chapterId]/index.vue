@@ -6,7 +6,7 @@
       </template>
     </BaseSectionHeading>
     <Suspense>
-      <LineList class="mt-4 flex-grow" />
+      <LineList class="mt-4 grow" />
       <template #fallback>TODO LOADIN...</template>
     </Suspense>
   </BaseContainer>

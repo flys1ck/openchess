@@ -15,7 +15,7 @@
       </template>
     </BaseSectionHeading>
     <Suspense>
-      <ChapterList class="flex-grow" />
+      <ChapterList class="grow" />
       <template #fallback> Loading ... </template>
     </Suspense>
   </BaseContainer>

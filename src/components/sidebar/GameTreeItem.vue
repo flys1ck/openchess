@@ -2,7 +2,7 @@
   <template v-if="node.move">
     <!-- white's move -->
     <template v-if="node.ply % 2 === 1">
-      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
+      <span class="col-span-2 flex items-center justify-end border-r border-gray-200 py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <button
@@ -21,7 +21,7 @@
         node.ply % 2 === 0
       "
     >
-      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
+      <span class="col-span-2 flex items-center justify-end border-r border-gray-200 py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <span class="col-span-7 pl-4 text-gray-500">...</span>
@@ -52,7 +52,7 @@
       class="col-span-7 pl-4 text-gray-500"
       >{{ node.nextPosition && "..." }}</span
     >
-    <div class="relative col-span-full break-words bg-gray-100 p-2 text-xs text-gray-700 shadow-inner 2xl:text-sm">
+    <div class="relative col-span-full bg-gray-100 p-2 text-xs wrap-break-word text-gray-700 shadow-inner 2xl:text-sm">
       <span
         class="absolute inset-y-0"
         :class="[

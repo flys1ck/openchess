@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-3 gap-x-8 gap-y-10">
     <div>
-      <h2 class="text-base font-semibold leading-7 text-gray-900">{{ heading }}</h2>
+      <h2 class="text-base leading-7 font-semibold text-gray-900">{{ heading }}</h2>
       <p v-if="$slots.description" class="mt-1 text-sm leading-6 text-gray-700">
         <slot name="description" />
       </p>

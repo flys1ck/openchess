@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-shrink-0 flex-col border-r border-gray-300 bg-gray-200">
+  <div class="flex shrink-0 flex-col border-r border-gray-300 bg-gray-200">
     <!-- Navigation -->
-    <div class="mt-10 flex flex-grow flex-col justify-between">
+    <div class="mt-10 flex grow flex-col justify-between">
       <nav class="flex flex-1 flex-col gap-2 p-2">
         <RouterLink v-for="{ icon, text, to } in navigationItems" :to="to" :key="to" v-slot="{ isActive }">
           <div

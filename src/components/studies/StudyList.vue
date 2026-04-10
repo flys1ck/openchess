@@ -1,11 +1,11 @@
 <template>
   <div v-if="studies" class="flex">
     <StudiesEmptyState v-if="!studies.length" />
-    <ul v-else role="list" class="flex-grow space-y-4">
+    <ul v-else role="list" class="grow space-y-4">
       <BaseCard v-for="study in studies" :key="study.id" as="li" class="relative flex justify-between gap-x-6 p-6">
         <div>
           <div class="flex items-start gap-x-3">
-            <RouterLink :to="`/studies/${study.id}`" class="text-sm font-semibold leading-6 text-gray-900">
+            <RouterLink :to="`/studies/${study.id}`" class="text-sm leading-6 font-semibold text-gray-900">
               <span class="absolute inset-0" />
               {{ study.name }}
             </RouterLink>

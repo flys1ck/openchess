@@ -1,16 +1,16 @@
 <template>
   <SliderRoot
     v-model="modelValue"
-    class="relative flex h-5 touch-none select-none items-center"
+    class="relative flex h-5 touch-none items-center select-none"
     :min="min"
     :max="max"
     :step="step"
   >
-    <SliderTrack class="relative h-[3px] grow rounded bg-gray-300">
-      <SliderRange class="absolute h-full rounded bg-orange-400" />
+    <SliderTrack class="relative h-[3px] grow rounded-sm bg-gray-300">
+      <SliderRange class="absolute h-full rounded-sm bg-orange-400" />
     </SliderTrack>
     <SliderThumb
-      class="block h-4 w-4 rounded border-2 border-orange-400 bg-orange-200 ring ring-gray-50 focus:outline-none focus:ring-orange-300/50"
+      class="block h-4 w-4 rounded-sm border-2 border-orange-400 bg-orange-200 ring-3 ring-gray-50 focus:ring-orange-300/50 focus:outline-hidden"
       aria-label="Volume"
     />
   </SliderRoot>

@@ -1,5 +1,5 @@
 <template>
-  <Component :is="as" class="rounded-lg bg-white shadow hover:bg-orange-50 focus-visible:ring">
+  <Component :is="as" class="rounded-lg bg-white shadow-sm hover:bg-orange-50 focus-visible:ring-3">
     <slot />
   </Component>
 </template>

@@ -1,16 +1,16 @@
 <template>
   <TabGroup
     as="aside"
-    class="flex w-96 shrink-0 flex-col border-l border-gray-200 2xl:w-[30rem]"
+    class="flex w-96 shrink-0 flex-col border-l border-gray-200 2xl:w-120"
     manual
     :selected-index="selectedTab"
     @change="changeTab"
   >
-    <TabList class="mx-1 mt-1 flex rounded bg-gray-200 p-1">
+    <TabList class="mx-1 mt-1 flex rounded-sm bg-gray-200 p-1">
       <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
         <button
           :class="selected ? 'bg-orange-50 font-medium text-orange-400' : 'text-gray-500 hover:text-gray-700'"
-          class="flex-grow whitespace-nowrap rounded px-2 py-1 text-sm focus:outline-none"
+          class="grow rounded-sm px-2 py-1 text-sm whitespace-nowrap focus:outline-hidden"
         >
           {{ tab }}
         </button>
@@ -20,7 +20,7 @@
       <!-- Game Tab -->
       <TabPanel
         :unmount="false"
-        class="flex flex-grow flex-col justify-between overflow-hidden focus:outline-none"
+        class="flex grow flex-col justify-between overflow-hidden focus:outline-hidden"
         :tab-index="-1"
       >
         <!-- Engine evaluation -->
@@ -29,7 +29,7 @@
         </Suspense>
         <!-- Move history -->
         <template v-if="game.tree.root.value">
-          <div class="flex-grow overflow-y-auto scroll-smooth">
+          <div class="grow overflow-y-auto scroll-smooth">
             <div class="grid grid-cols-16 items-stretch">
               <GameTreeItem
                 :node="game.tree.root.value"
@@ -38,7 +38,7 @@
               />
             </div>
           </div>
-          <div class="flex flex-col gap-2 border-t p-4">
+          <div class="flex flex-col gap-2 border-t border-gray-200 p-4">
             <div class="flex items-center justify-center gap-4">
               <BaseTooltip>
                 <template #trigger>
@@ -101,7 +101,7 @@
         </template>
       </TabPanel>
       <!-- Positions Tab -->
-      <TabPanel :unmount="false" class="flex flex-grow flex-col overflow-hidden focus:outline-none">
+      <TabPanel :unmount="false" class="flex grow flex-col overflow-hidden focus:outline-hidden">
         <GamePositions :game="game" @line-click="selectedTab = 0" />
       </TabPanel>
       <!-- Settings Tab -->

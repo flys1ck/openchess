@@ -7,7 +7,7 @@
           <BaseInputGroup class="mt-2" label="Name" v-model="studyFormData.name" />
           <div class="mt-2">
             <div class="col-span-full">
-              <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+              <label for="about" class="block text-sm leading-6 font-medium text-gray-900">Description</label>
               <div class="mt-2">
                 <BaseTextarea id="about" name="about" rows="3" v-model="studyFormData.description"></BaseTextarea>
               </div>

@@ -7,7 +7,7 @@
       :game="game"
       class="relative flex gap-8"
     >
-      <div class="flex-grow p-4">
+      <div class="grow p-4">
         <RouterLink :to="`/games/lichess/${game.id}`">
           <div class="flex items-center gap-2">
             <GameCardPlayer :player="game.players.white" class="flex flex-1 flex-col items-end" />
@@ -24,7 +24,7 @@
           {{ getMoveStringFromSan(game.moves?.split(" ") ?? [], game.initialFen) }}
         </p>
       </div>
-      <div class="flex items-center border-l p-4">
+      <div class="flex items-center border-l border-gray-200 p-4">
         <dl class="w-40 space-y-1 text-sm">
           <div v-if="game.clock" class="flex items-center gap-2">
             <dt>

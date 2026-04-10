@@ -16,7 +16,7 @@
             <BaseInput
               id="token"
               name="token"
-              class="flex-grow"
+              class="grow"
               label="Personal API Access Token"
               v-model.trim="lichess.personalAccessToken"
               :schema="lichessTokenSchema"
@@ -39,7 +39,7 @@
             <BaseInput
               id="chessdotcom-username"
               name="chessdotcom-username"
-              class="flex-grow"
+              class="grow"
               v-model.trim="chessdotcom.username"
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
