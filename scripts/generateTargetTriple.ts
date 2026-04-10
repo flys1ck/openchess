@@ -1,4 +1,3 @@
-/* eslint-env node */
 import { execSync } from "child_process";
 import { copyFileSync } from "fs";
 

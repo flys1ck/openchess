@@ -39,13 +39,13 @@ jobs:
           STOCKFISH_VERSION: 18
 
       - name: Install Stockfish
-        run: bun run scripts/downloadStockfish.js
+        run: bun run scripts/downloadStockfish.ts
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
 
       - name: Generate Target Triple
         run: |
           mkdir src-tauri/bin
-          bun run scripts/generateTargetTriple.js
+          bun run scripts/generateTargetTriple.ts
 
       - uses: Swatinem/rust-cache@v2
         with:

@@ -46,13 +46,13 @@ jobs:
           STOCKFISH_VERSION: 16
 
       - name: Install Stockfish
-        run: bun run scripts/downloadStockfish.js
+        run: bun run scripts/downloadStockfish.ts
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
 
       - name: Generate Target Triples
         run: |
           mkdir src-tauri/bin
-          bun run scripts/generateTargetTriple.js
+          bun run scripts/generateTargetTriple.ts
 
       - uses: tauri-apps/tauri-action@v0
         env:
