@@ -6,5 +6,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
-  }
+  },
+  "oxc.useExecPath": true
 }

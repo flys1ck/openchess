@@ -1,3 +1,4 @@
+import TailwindCSS from "@tailwindcss/vite";
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "vue-router/vite";
 import { defineConfig } from "vite";
@@ -15,6 +16,7 @@ export default defineConfig({
         defineModel: true,
       },
     }),
+    TailwindCSS(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

@@ -3,11 +3,13 @@
     <!-- Study Database -->
     <BaseSidebarSectionHeading heading="Studies" />
     <template v-if="positions.length">
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Moves in Study</span>
         <span class="font-light">Number of Lines</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="position in positions" :key="position.id">
           <!-- TODO: shapes are not refreshing when there is no pointer movement -->
           <button
@@ -27,10 +29,12 @@
           </button>
         </li>
       </ul>
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Lines with Position</span>
       </div>
-      <ul class="divide-y">
+      <ul class="divide-y divide-gray-200">
         <li v-for="line in lines" :key="line.line_id">
           <RouterLink
             :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${getPlyCount(
@@ -53,7 +57,9 @@
     <!-- Masters Database -->
     <BaseSidebarSectionHeading heading="Master's Database" />
     <template v-if="masterMoves.length || masterGames.length">
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Moves</span>
       </div>
       <ul class="flex flex-col divide-y">
