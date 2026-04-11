@@ -39,7 +39,8 @@ export function ChessDotComClient() {
 
   async function getRecentGamesByPlayer(username: string) {
     const today = new Date();
-    const url = `https://api.chess.com/pub/player/${username}/games/${today.getFullYear()}/${today.getMonth() + 1}`;
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const url = `https://api.chess.com/pub/player/${username}/games/${today.getFullYear()}/${month}`;
     const headers = recentGamesEtag ? new Headers({ "If-None-Match": recentGamesEtag }) : new Headers({});
     const response = await fetch(url, { headers });
     if (response.status === 304) return recentGames;
