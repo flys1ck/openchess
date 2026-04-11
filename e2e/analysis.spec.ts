@@ -1,16 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test.use({ storageState: "e2e/.auth/user.json" });
 
-async function move(page, from, to) {
+async function move(page: Page, from: string, to: string) {
   await page.getByTestId(`square-${from}`).dragTo(page.getByTestId(`square-${to}`), { force: true });
 }
 
 test("should load inital position", async ({ page }) => {
   await page.goto("/analysis");
-  expect(page.getByLabel("FEN")).toHaveValue("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-  expect(page.locator("cg-container")).toHaveScreenshot();
+  await expect(page.getByLabel("FEN")).toHaveValue("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  await expect(page.locator("cg-container")).toHaveScreenshot();
 });
 
 test("should move pieces", async ({ page }) => {

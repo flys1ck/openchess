@@ -25,7 +25,7 @@ interface ExportGamesByUserQueryParameters {
   max: number;
   vs?: string;
   rated?: boolean;
-  perfType?: PerfType | string;
+  perfType?: PerfType;
   color?: "white" | "black";
   analysed?: boolean;
   moves?: boolean;
@@ -170,7 +170,9 @@ export function LichessClient(token: string) {
     let url = `https://explorer.lichess.ovh/masters`;
     if (params) url += `?${params}`;
 
-    const fetchResponse = await fetch(url);
+    const fetchResponse = await fetch(url, {
+      headers: { Authorization: `Bearer ${personalAccessToken}` },
+    });
     const response = await fetchResponse.json();
 
     return MasterGamesSchema.parse(response);

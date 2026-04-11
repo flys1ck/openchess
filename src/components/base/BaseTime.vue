@@ -1,7 +1,7 @@
 <template>
   <BaseTooltip>
     <template #trigger>
-      <time datetime="TODO" v-bind="$attrs">{{ formattedRelativeDate }}</time>
+      <time :datetime="isoString" v-bind="$attrs">{{ formattedRelativeDate }}</time>
     </template>
     {{ formattedDate }}
   </BaseTooltip>
@@ -12,14 +12,12 @@ import BaseTooltip from "@components/base/BaseTooltip.vue";
 import { format, formatDistance } from "date-fns";
 import { computed } from "vue";
 
-defineOptions({
-  inheritAttrs: false,
+defineOptions({ inheritAttrs: false });
+
+const props = defineProps<{ date: Date }>();
+const isoString = computed(() => {
+  return props.date.toISOString();
 });
-
-const props = defineProps<{
-  date: Date;
-}>();
-
 const formattedDate = computed(() => {
   return format(props.date, "dd MMM yyyy, HH:mm");
 });

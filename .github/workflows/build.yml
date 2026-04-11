@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: main
 
+env:
+  STOCKFISH_VERSION: 18
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -12,49 +15,50 @@ concurrency:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: "ubuntu-22.04"
+            arch: "x86_64"
+    runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
+      - uses: actions/setup-node@v6
         with:
-          version: 8
-          run_install: false
+          node-version: lts/*
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 21
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+      - uses: oven-sh/setup-bun@v2
+        name: Install Bun
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - run: pnpm install
+      - run: bun install
 
       - name: Install OS dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webkit2gtk-driver xvfb
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v5
         id: stockfish-cache
         with:
           path: |
             external/stockfish
-          key: stockfish-${{ env.STOCKFISH_VERSION }}-ubuntu-latest
-        env:
-          STOCKFISH_VERSION: 16
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}-${{ matrix.arch }}
 
       - name: Install Stockfish
-        run: node scripts/downloadStockfish.js
+        run: bun run scripts/downloadStockfish.ts
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
 
       - name: Generate Target Triple
         run: |
           mkdir src-tauri/bin
-          node scripts/generateTargetTriple.js
+          bun run scripts/generateTargetTriple.ts
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -63,5 +67,5 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}

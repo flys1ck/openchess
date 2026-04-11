@@ -17,7 +17,7 @@
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 import BaseCard from "../base/BaseCard.vue";
 
 // TODO: move route param to chapter (props)

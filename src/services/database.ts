@@ -1,6 +1,6 @@
 import { DB } from "@/database";
 import { CompiledQuery, DummyDriver, Kysely, SqliteAdapter, SqliteIntrospector, SqliteQueryCompiler } from "kysely";
-import Database from "tauri-plugin-sql-api";
+import Database from "@tauri-apps/plugin-sql";
 
 // Kysely query builder. Used to build queries and return typed results.
 export const db = new Kysely<DB>({

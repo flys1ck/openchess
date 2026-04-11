@@ -1,6 +1,6 @@
 <template>
   <kbd
-    class="flex items-center justify-center rounded border border-gray-400 bg-gray-50 font-mono text-xs font-thin leading-none text-gray-800 shadow-sm"
+    class="flex items-center justify-center rounded-sm border border-gray-400 bg-gray-50 font-mono text-xs leading-none font-thin text-gray-800 shadow-xs"
     :class="computedClasses"
   >
     <Component v-if="icon" :is="icon" class="h-3 w-3" />

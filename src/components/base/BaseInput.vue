@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="relative shadow-sm">
+    <div class="relative shadow-xs">
       <input
         ref="inputRef"
         v-model="modelValue"
         :id="id"
         :type="type"
         :name="name"
-        class="block w-full rounded-md py-1.5 text-sm focus:outline-none"
+        class="block w-full rounded-md py-1.5 text-sm focus:outline-hidden"
         :class="inputClasses"
         spellcheck="false"
       />
@@ -32,7 +32,7 @@ import { ExclamationCircleIcon } from "@heroicons/vue/20/solid";
 import { MinusIcon } from "@heroicons/vue/24/solid";
 import { useEventListener } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
-import { ZodFirstPartySchemaTypes } from "zod";
+import { ZodType } from "zod";
 import BaseInputFeedbackError from "./BaseInputFeedbackError.vue";
 
 const props = withDefaults(
@@ -40,12 +40,12 @@ const props = withDefaults(
     id: string;
     name: string;
     type?: string;
-    schema?: ZodFirstPartySchemaTypes;
+    schema?: ZodType;
     /**
      * Async schema, when the value requires async validation The value will
      * only be validated against `asyncSchema`, when `schema` passes validation.
      */
-    asyncSchema?: ZodFirstPartySchemaTypes;
+    asyncSchema?: ZodType;
   }>(),
   {
     type: "text",
@@ -73,7 +73,7 @@ async function validate() {
 }
 
 const inputClasses = computed(() => ({
-  "border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500/50": !errors.value.length,
+  "border-gray-300 shadow-xs focus:border-orange-500 focus:ring-orange-500/50": !errors.value.length,
   "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500/50 pr-10":
     errors.value.length,
 }));

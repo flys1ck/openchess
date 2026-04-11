@@ -11,7 +11,7 @@ import BaseLink from "@components/base/BaseLink.vue";
 import { AcademicCapIcon } from "@heroicons/vue/20/solid";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 // TODO: move route param to chapter
 const route = useRoute("/studies/[studyId]/");

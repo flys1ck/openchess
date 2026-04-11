@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formatComment } from "./comment";
 
 describe("formatComment", () => {
-  it("should replace html content ", () => {
+  it("should replace html content", () => {
     expect(formatComment("<b>test</b>")).toBe("");
     expect(formatComment("<script>alert('hello')</script>")).toBe("");
   });

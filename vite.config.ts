@@ -1,15 +1,14 @@
+import TailwindCSS from "@tailwindcss/vite";
 import Vue from "@vitejs/plugin-vue";
-import VueRouter from "unplugin-vue-router/vite";
+import VueRouter from "vue-router/vite";
 import { defineConfig } from "vite";
 import ClientSideLayout from "vite-plugin-vue-layouts";
-import TSConfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    TSConfigPaths({ loose: true }),
     VueRouter({
-      dts: "./src/typed-router.d.ts",
+      dts: "src/route-map.d.ts",
     }),
     ClientSideLayout(),
     Vue({
@@ -17,6 +16,7 @@ export default defineConfig({
         defineModel: true,
       },
     }),
+    TailwindCSS(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -37,5 +37,8 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+  },
+  resolve: {
+    tsconfigPaths: true,
   },
 });

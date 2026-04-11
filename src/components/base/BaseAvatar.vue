@@ -1,6 +1,6 @@
 <template>
   <img
-    class="inline-block h-10 w-10 rounded-full outline outline-2 outline-offset-2 outline-orange-400"
+    class="inline-block h-10 w-10 rounded-full outline-2 outline-offset-2 outline-orange-400 outline-solid"
     :src="src"
     :alt="alt"
   />

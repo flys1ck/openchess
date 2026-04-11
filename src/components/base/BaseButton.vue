@@ -1,7 +1,7 @@
 <template>
   <Component
     :is="as"
-    class="inline-flex flex-none items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus:outline-none focus:ring"
+    class="inline-flex flex-none items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors focus:ring-3 focus:outline-hidden"
     :class="computedClasses"
     :type="as === 'button' && 'button'"
   >
@@ -51,13 +51,13 @@ const computedClasses = computed(() => {
   return {
     "hover:bg-orange-500 focus:ring-orange-400/50 active:bg-orange-300 text-orange-50 bg-orange-400 duration-100 border border-orange-400":
       props.variant === "primary",
-    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-white border":
+    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-white border border-gray-200":
       props.variant === "secondary",
     "hover:bg-red-500 focus:ring-red-600/50 active:bg-red-700 text-red-50 bg-red-600 duration-100 border border-red-600":
       props.variant === "danger",
     "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-transparent dark:text-gray-50":
       props.variant === "ghost",
-    "shadow-sm": props.variant !== "ghost",
+    "shadow-xs": props.variant !== "ghost",
     "p-1": !slots.default && props.size === "sm",
     "p-2": !slots.default && props.size === "md",
     "p-3": !slots.default && props.size === "lg",

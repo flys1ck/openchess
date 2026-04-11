@@ -1,49 +1,63 @@
-/* eslint-disable no-console */
-/* eslint-env node */
-import cpuFeatures from "cpu-features";
+/* oxlint-disable no-console */
+import { default as cpuFeatures, type CpuFeatures } from "cpu-features";
 import fd from "follow-redirects";
 import fs from "fs";
-import tar from "tar";
+import * as tar from "tar";
 import unzipper from "unzipper";
 
-function getPlatform() {
+type Platform = "windows" | "macos" | "ubuntu";
+type CpuArchitecture = "m1" | "x86-64" | "armv8";
+type CpuExtension = "avx2" | "apple-silicon";
+
+function getPlatform(): Platform {
   const platform = process.platform;
   if (platform === "win32") {
     return "windows";
-  }
-  if (platform === "darwin") {
+  } else if (platform === "darwin") {
     return "macos";
-  }
-  if (platform === "linux") {
+  } else if (platform === "linux") {
     return "ubuntu";
   }
   throw new Error(`Unsupported platform: ${platform}`);
 }
 
-function getCpuArchitecture() {
+function getCpuArchitecture(): CpuArchitecture {
   const platform = process.platform;
-  const features = cpuFeatures();
-  if (features.flags.avx2 && platform !== "darwin") {
-    return "avx2";
+  if (platform === "darwin" && process.arch === "arm64") {
+    return "m1";
+  } else if (process.arch === "x64") {
+    return "x86-64";
   }
-  return "modern";
+  return "armv8";
 }
 
-const STOCKFISH_VERSION = "16";
-const STOCKFISH_PLATFORM = getPlatform();
-const STOCKFISH_CPU_ARCHITECTURE = getCpuArchitecture();
+function getCpuExtension(features: CpuFeatures): CpuExtension {
+  const platform = process.platform;
+  if ("avx2" in features.flags && features.flags.avx2 && platform !== "darwin") {
+    return "avx2";
+  }
+  return "apple-silicon";
+}
 
-const STOCKFISH_ARCHIVE_EXTENSION = STOCKFISH_PLATFORM === "windows" ? ".zip" : ".tar";
-const STOCKFISH_FILE_EXTENSION = STOCKFISH_PLATFORM === "windows" ? ".exe" : "";
-const STOCKFISH_FILENAME = `stockfish-${STOCKFISH_PLATFORM}-x86-64-${STOCKFISH_CPU_ARCHITECTURE}`;
+const STOCKFISH_VERSION = process.env.STOCKFISH_VERSION;
+
+const CPU_FEATURES = cpuFeatures();
+const PLATFORM = getPlatform();
+const CPU_ARCHITECTURE = getCpuArchitecture();
+const CPU_EXTENSION = getCpuExtension(CPU_FEATURES);
+
+const STOCKFISH_ARCHIVE_EXTENSION = PLATFORM === "windows" ? ".zip" : ".tar";
+const STOCKFISH_FILE_EXTENSION = PLATFORM === "windows" ? ".exe" : "";
+const STOCKFISH_FILENAME = `stockfish-${PLATFORM}-${CPU_ARCHITECTURE}-${CPU_EXTENSION}`;
 const STOCKFISH_DOWNLOAD_BASE_URL = `https://github.com/official-stockfish/Stockfish/releases/download/sf_${STOCKFISH_VERSION}`;
 const STOCKFISH_DOWNLOAD_URL = `${STOCKFISH_DOWNLOAD_BASE_URL}/${STOCKFISH_FILENAME}${STOCKFISH_ARCHIVE_EXTENSION}`;
 const STOCKFISH_DOWNLOAD_PATH = `external/stockfish${STOCKFISH_ARCHIVE_EXTENSION}`;
 const STOCKFISH_BINARY_PATH = `external/stockfish${STOCKFISH_FILE_EXTENSION}`;
 
-const stockfishBinaryFilter = (path) => path.includes(`${STOCKFISH_FILENAME}${STOCKFISH_FILE_EXTENSION}`);
+const stockfishBinaryFilter = (path: string): boolean =>
+  path.includes(`${STOCKFISH_FILENAME}${STOCKFISH_FILE_EXTENSION}`);
 
-function renameAndCleanup() {
+function renameAndCleanup(): void {
   console.log("Cleaning up");
   if (fs.existsSync("external/stockfish")) {
     const stockfishBinary = fs.readdirSync("external/stockfish")[0];
@@ -56,10 +70,10 @@ function renameAndCleanup() {
   }
 }
 
-function parseArchive(readStream) {
+function parseArchive(readStream: fs.ReadStream): void {
   if (STOCKFISH_ARCHIVE_EXTENSION === ".zip") {
     console.log("Extracting zip archive");
-    readStream.pipe(unzipper.Parse()).on("entry", (entry) => {
+    readStream.pipe(unzipper.Parse()).on("entry", (entry: unzipper.Entry) => {
       if (stockfishBinaryFilter(entry.path)) {
         entry.pipe(
           fs.createWriteStream(`external/stockfish${STOCKFISH_FILE_EXTENSION}`).on("finish", renameAndCleanup)
@@ -77,19 +91,17 @@ function parseArchive(readStream) {
           filter: stockfishBinaryFilter,
         })
       )
-      .on("error", (error) => {
+      .on("error", (error: Error) => {
         if (error) throw error;
       })
       .on("finish", () => {
         console.log("Finished extracting tar archive");
         renameAndCleanup();
       });
-  } else {
-    throw new Error(`Unsupported archive extension: ${STOCKFISH_ARCHIVE_EXTENSION}`);
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   if (!fs.existsSync("external")) {
     fs.mkdirSync("external");
   }
@@ -98,15 +110,14 @@ async function main() {
     fs.unlinkSync(STOCKFISH_BINARY_PATH);
   }
 
-  console.log("Creating write stream");
   const writeStream = fs.createWriteStream(STOCKFISH_DOWNLOAD_PATH);
   const request = fd.https.get(STOCKFISH_DOWNLOAD_URL, (response) => {
     console.log(`Downloading from ${STOCKFISH_DOWNLOAD_URL}`);
     response.pipe(writeStream);
   });
 
-  request.on("error", (error) => {
-    fs.unlink(STOCKFISH_DOWNLOAD_PATH);
+  request.on("error", (error: Error) => {
+    fs.unlink(STOCKFISH_DOWNLOAD_PATH, () => {});
     if (error) throw error;
   });
   writeStream.on("finish", function () {
@@ -118,6 +129,6 @@ async function main() {
   });
 }
 
-main().catch((error) => {
+main().catch((error: Error) => {
   console.error(error);
 });

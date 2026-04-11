@@ -4,15 +4,15 @@
       <span class="flex w-16 items-center justify-center font-medium">
         {{ multiPvInfo.length > 0 ? multiPvInfo[0].evaluatedScore : "-" }}
       </span>
-      <div class="flex flex-grow flex-col gap-1">
+      <div class="flex grow flex-col gap-1">
         <span class="text-sm">{{ engineName }}</span>
         <div class="flex gap-4">
           <div class="flex flex-col text-xs">
-            <span class="font-thin uppercase tracking-widest text-gray-500">Depth</span>
+            <span class="font-thin tracking-widest text-gray-500 uppercase">Depth</span>
             <span>{{ depth }} / {{ computedDepth }}</span>
           </div>
           <div class="flex flex-col text-xs">
-            <span class="font-thin uppercase tracking-widest text-gray-500">Nodes/s</span>
+            <span class="font-thin tracking-widest text-gray-500 uppercase">Nodes/s</span>
             <span>{{ nodesPerSecond }}</span>
           </div>
         </div>
@@ -27,7 +27,7 @@
         :style="`transform: scaleX(${depth / computedDepth})`"
       ></span>
     </div>
-    <ol v-if="multiPvInfo.length" class="divide-y border-t">
+    <ol v-if="multiPvInfo.length" class="divide-y divide-gray-200 border-t border-gray-200">
       <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
         <span class="ml-2">{{ getMovesStringFromUci(info.principleVariation, fen) }}</span>

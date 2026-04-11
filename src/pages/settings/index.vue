@@ -16,7 +16,7 @@
             <BaseInput
               id="token"
               name="token"
-              class="flex-grow"
+              class="grow"
               label="Personal API Access Token"
               v-model.trim="lichess.personalAccessToken"
               :schema="lichessTokenSchema"
@@ -39,7 +39,7 @@
             <BaseInput
               id="chessdotcom-username"
               name="chessdotcom-username"
-              class="flex-grow"
+              class="grow"
               v-model.trim="chessdotcom.username"
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
@@ -67,8 +67,7 @@ import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
-import { open } from "@tauri-apps/api/shell";
-import { definePage } from "vue-router/auto";
+import { open } from "@tauri-apps/plugin-shell";
 import { z } from "zod";
 
 definePage({

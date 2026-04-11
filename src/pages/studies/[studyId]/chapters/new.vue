@@ -3,7 +3,7 @@
     <BaseSectionHeading heading="New Chapters" />
     <form class="space-y-4" @submit.prevent="onSubmit">
       <div>
-        <BaseInputLabel htmlFor="chapter-name" class="block text-sm font-medium leading-6 text-gray-900"
+        <BaseInputLabel htmlFor="chapter-name" class="block text-sm leading-6 font-medium text-gray-900"
           >Chapter Header</BaseInputLabel
         >
         <select id="chapter-name" v-model="chapterHeader">
@@ -12,7 +12,7 @@
         </select>
       </div>
       <div>
-        <BaseInputLabel htmlFor="line-name" class="block text-sm font-medium leading-6 text-gray-900"
+        <BaseInputLabel htmlFor="line-name" class="block text-sm leading-6 font-medium text-gray-900"
           >Line Header</BaseInputLabel
         >
         <select id="line-name" v-model="lineHeader">
@@ -22,7 +22,7 @@
         </select>
       </div>
       <div>
-        <BaseInputLabel htmlFor="line-orientation" class="block text-sm font-medium leading-6 text-gray-900"
+        <BaseInputLabel htmlFor="line-orientation" class="block text-sm leading-6 font-medium text-gray-900"
           >Line Orientation</BaseInputLabel
         >
         <select id="line-orientation" v-model="lineOrientation">
@@ -31,7 +31,7 @@
         </select>
       </div>
       <div>
-        <BaseInputLabel htmlFor="cover-photo" class="block text-sm font-medium leading-6 text-gray-900"
+        <BaseInputLabel htmlFor="cover-photo" class="block text-sm leading-6 font-medium text-gray-900"
           >PGNs</BaseInputLabel
         >
         <BaseFileUpload v-model="files" :multiple="true" accept=".pgn" />
@@ -55,7 +55,7 @@ import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
 import { parseSan } from "chessops/san";
 import { ref } from "vue";
-import { definePage, useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
@@ -101,7 +101,7 @@ async function processPgn(pgn: string) {
     const chapterQueryResult = await execute(chapterQuery);
 
     let chapterId: number;
-    if (chapterQueryResult.rowsAffected === 0) {
+    if (chapterQueryResult.rowsAffected === 0 && !chapterQueryResult.lastInsertId) {
       const chapterQuery = db
         .selectFrom("chapters")
         .select("id")
@@ -110,6 +110,7 @@ async function processPgn(pgn: string) {
         .compile();
       chapterId = (await selectFirst(chapterQuery)).id;
     } else {
+      if (!chapterQueryResult.lastInsertId) throw new Error("Insert succeeded but no lastInsertId returned");
       chapterId = chapterQueryResult.lastInsertId;
     }
 
@@ -136,6 +137,7 @@ async function processPgn(pgn: string) {
         .compile();
       lineId = (await selectFirst(lineQuery)).id;
     } else {
+      if (!lineQueryResult.lastInsertId) throw new Error("Insert succeeded but no lastInsertId returned");
       lineId = lineQueryResult.lastInsertId;
     }
 

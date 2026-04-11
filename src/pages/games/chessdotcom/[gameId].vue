@@ -9,7 +9,7 @@ import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { parsePgn } from "chessops/pgn";
-import { definePage, useRoute } from "vue-router/auto";
+import { useRoute } from "vue-router";
 
 const route = useRoute("/games/chessdotcom/[gameId]");
 const chessDotCom = useChessDotCom();

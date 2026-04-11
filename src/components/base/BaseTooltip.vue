@@ -7,7 +7,7 @@
       <TooltipPortal>
         <TooltipContent
           :side-offset="4"
-          class="TooltipContent flex select-none rounded bg-gray-200 px-2 py-0.5 text-sm font-light text-gray-800 shadow-md"
+          class="TooltipContent flex rounded-sm bg-gray-200 px-2 py-0.5 text-sm font-light text-gray-800 shadow-md select-none"
         >
           <slot />
         </TooltipContent>

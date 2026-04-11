@@ -1,6 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+@theme {
+  --font-sans:
+    Inter var, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+
+  --grid-template-columns-16: repeat(16, minmax(0, 1fr));
+
+  --spacing-1\/8: 12.5%;
+}
 
 @layer base {
   @font-face {

@@ -4,7 +4,7 @@ const authFile = "e2e/.auth/user.json";
 
 setup("should authenticate", async ({ page }) => {
   // mock tauri
-  page.addInitScript(() => {
+  await page.addInitScript(() => {
     window.__TAURI_METADATA__ = {
       __windows: ["main"].map((label) => ({ label })),
       __currentWindow: { label: "main" },

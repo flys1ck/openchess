@@ -24,8 +24,8 @@ describe("roundToFixed", () => {
   });
 
   it("should fail on invalid precisions", () => {
-    expect(() => roundToFixed(1000, -10)).toThrowError();
-    expect(() => roundToFixed(1000, 1.5)).toThrowError();
-    expect(() => roundToFixed(1000, 999)).toThrowError();
+    expect(() => roundToFixed(1000, -10)).toThrow("Precision -10 is invalid.");
+    expect(() => roundToFixed(1000, 1.5)).toThrow("Precision 1.5 is invalid.");
+    expect(() => roundToFixed(1000, 999)).toThrow("Precision 999 is too indefinite. Use precision closer to 0.");
   });
 });

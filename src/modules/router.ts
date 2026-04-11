@@ -1,5 +1,6 @@
 import { setupLayouts } from "virtual:generated-layouts";
-import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router/auto";
+import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
+import { routes, handleHotUpdate } from "vue-router/auto-routes";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -7,7 +8,6 @@ declare module "vue-router" {
   }
 }
 
-// @see https://github.com/posva/unplugin-vue-router/issues/121
 function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
   if (!route.children) return setupLayouts([route])[0];
 
@@ -19,9 +19,11 @@ function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
 
 const router = createRouter({
   history: createWebHistory(),
-  extendRoutes(routes) {
-    return routes.map(recursiveLayouts);
-  },
+  routes: routes.map(recursiveLayouts),
 });
+
+if (import.meta.hot) {
+  handleHotUpdate(router);
+}
 
 export default router;

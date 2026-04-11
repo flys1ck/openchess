@@ -3,17 +3,24 @@
     <!-- Study Database -->
     <BaseSidebarSectionHeading heading="Studies" />
     <template v-if="positions.length">
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Moves in Study</span>
         <span class="font-light">Number of Lines</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="position in positions" :key="position.id">
           <!-- TODO: shapes are not refreshing when there is no pointer movement -->
           <button
             class="flex w-full justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(position.source, position.destination)"
-            @pointerover="
+            @click="
+              () => {
+                game.playMove(position.source, position.destination);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
+            @pointermove="
               () =>
                 game.setAutoShapes(
                   [{ brush: 'paleBlue', orig: position.source, dest: position.destination }],
@@ -27,17 +34,19 @@
           </button>
         </li>
       </ul>
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Lines with Position</span>
       </div>
-      <ul class="divide-y">
+      <ul class="divide-y divide-gray-200">
         <li v-for="line in lines" :key="line.line_id">
           <RouterLink
             :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${getPlyCount(
               line.fen
             )}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
-            @pointerover="
+            @pointermove="
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
             "
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
@@ -49,19 +58,26 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 text-center text-sm italic text-gray-700">No lines with this position</p>
+    <p v-else class="p-2 text-center text-sm text-gray-700 italic">No lines with this position</p>
     <!-- Masters Database -->
     <BaseSidebarSectionHeading heading="Master's Database" />
     <template v-if="masterMoves.length || masterGames.length">
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Moves</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="move in masterMoves" :key="move.uci">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key)"
-            @pointerover="
+            @click="
+              () => {
+                game.playMove(move.uci.substring(0, 2) as Key, move.uci.substring(2, 4) as Key);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
+            @pointermove="
               () =>
                 game.setAutoShapes(
                   [{ brush: 'paleBlue', orig: move.uci.substring(0, 2) as Key, dest: move.uci.substring(2, 4) as Key }],
@@ -74,7 +90,7 @@
               <span class="w-12 text-left font-medium">{{ move.san }}</span>
               <span class="w-10 text-right font-light">{{ move.playPercentage }}%</span>
             </div>
-            <div class="inline-flex w-56 overflow-hidden rounded border text-xs font-light">
+            <div class="inline-flex w-56 overflow-hidden rounded-sm border border-gray-200 text-xs font-light">
               <span
                 v-if="move.whiteWinPercentage"
                 class="bg-white text-gray-900"
@@ -89,21 +105,28 @@
               >
                 {{ percentageText(move.drawPercentage) }}
               </span>
-              <span v-if="move.blackWinPercentage" class="flex-grow bg-gray-600 text-gray-50">
+              <span v-if="move.blackWinPercentage" class="grow bg-gray-600 text-gray-50">
                 {{ percentageText(move.blackWinPercentage) }}
               </span>
             </div>
           </button>
         </li>
       </ul>
-      <div class="flex justify-between border-y bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600">
+      <div
+        class="flex justify-between border-y border-gray-200 bg-gray-100 px-4 py-0.5 text-xs leading-6 text-gray-600"
+      >
         <span class="font-semibold">Games</span>
       </div>
-      <ul class="flex flex-col divide-y">
+      <ul class="flex flex-col divide-y divide-gray-200">
         <li v-for="topGame in masterGames" :key="topGame.id">
           <button
             class="flex w-full items-center justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
-            @click="() => game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key)"
+            @click="
+              () => {
+                game.playMove(topGame.uci.substring(0, 2) as Key, topGame.uci.substring(2, 4) as Key);
+                game.setAutoShapes([], 'temporary');
+              }
+            "
             @pointermove="
               () =>
                 game.setAutoShapes([
@@ -134,7 +157,7 @@
         </li>
       </ul>
     </template>
-    <p v-else class="p-2 text-center text-sm italic text-gray-700">No games with this position</p>
+    <p v-else class="p-2 text-center text-sm text-gray-700 italic">No games with this position</p>
   </div>
 </template>
 

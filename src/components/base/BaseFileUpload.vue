@@ -7,7 +7,7 @@
       <div class="mt-4 flex text-sm leading-6 text-gray-600">
         <label
           for="file-upload"
-          class="relative cursor-pointer rounded-md font-semibold text-orange-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-orange-400 focus-within:ring-offset-2 hover:text-orange-500"
+          class="relative cursor-pointer rounded-md font-semibold text-orange-400 focus-within:ring-2 focus-within:ring-orange-400 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-orange-500"
         >
           Upload files
           <input
