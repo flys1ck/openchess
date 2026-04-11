@@ -12,13 +12,10 @@ describe("getMoveStringFromSan", () => {
     );
   });
 
-  it.skip("should format for black's turn", () => {
-    expect(
-      getMoveStringFromSan(
-        ["e4", "e5", "Nf3", "Nc6"],
-        "rnbqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 2 2"
-      )
-    ).toBe("2 ... Nc6");
+  it("should format for black's turn", () => {
+    expect(getMoveStringFromSan(["Nc6"], "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")).toBe(
+      "2... Nc6"
+    );
   });
 
   it("should format for long input", () => {

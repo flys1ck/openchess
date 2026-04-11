@@ -51,5 +51,5 @@ export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>)
     }, "")
     .trim();
 
-  return turn === "white" ? moveString : `${moveCount} ... ${moveString}`;
+  return turn === "white" ? moveString : `${moveCount}... ${moveString}`;
 }
