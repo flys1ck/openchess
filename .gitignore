@@ -21,16 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# python vendor files
-src-python
-
-# playwright
-/test-results/
-/tests-examples/
-/playwright-report/
-/playwright/.cache/
-/e2e/.auth
-
 # env
 .arg
 .envrc

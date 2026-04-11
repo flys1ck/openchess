@@ -9,14 +9,13 @@
     "build": "vue-tsc --noEmit && vite build",
     "tauri": "tauri",
     "db:gen:types": "kysely-codegen --dialect sqlite --exclude-pattern __* --out-file src/database.d.ts",
-    "format": "oxfmt",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "lint": "oxlint --fix",
-    "lint:types": "vue-tsc --noEmit",
+    "lint:check": "oxlint",
     "test:bench": "vitest bench",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "types:check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.5.4",
@@ -45,7 +44,6 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.1",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/vite": "^4.2.2",
     "@tauri-apps/cli": "^2.10.1",
