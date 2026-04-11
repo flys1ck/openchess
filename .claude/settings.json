@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | { read -r f; bun run format -- \"$f\"; } 2>/dev/null || true",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; bun run fmt -- \"$f\"; } 2>/dev/null || true",
             "statusMessage": "Formatting..."
           }
         ]

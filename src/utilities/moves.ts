@@ -33,7 +33,7 @@ export function getMovesStringFromUci(uciMoves: UciMove[], fen: MaybeRef<string>
 }
 
 /**
- *  Generates SAN move string from a given starting fen and list of SAN moves.
+ * Generates SAN move string from a given starting fen and list of SAN moves.
  */
 export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>) {
   if (sanMoves.length === 0) return "";
@@ -51,5 +51,5 @@ export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>)
     }, "")
     .trim();
 
-  return turn === "white" ? moveString : `${moveCount} ... ${moveString}`;
+  return turn === "white" ? moveString : `${moveCount}... ${moveString}`;
 }

@@ -17,16 +17,19 @@ const props = withDefaults(
   defineProps<{
     /**
      * Tag or component name.
+     *
      * @values button, a, RouterLink
      */
     as?: "button" | "a" | "RouterLink";
     /**
      * Visual style of the button.
+     *
      * @values primary, secondary, danger, ghost
      */
     variant?: "primary" | "secondary" | "ghost" | "danger";
     /**
      * Size of the button.
+     *
      * @values sm, md, lg
      */
     size?: "sm" | "md" | "lg";

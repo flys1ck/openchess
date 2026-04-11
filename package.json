@@ -9,14 +9,13 @@
     "build": "vue-tsc --noEmit && vite build",
     "tauri": "tauri",
     "db:gen:types": "kysely-codegen --dialect sqlite --exclude-pattern __* --out-file src/database.d.ts",
-    "format": "oxfmt",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "lint": "oxlint --fix",
-    "lint:types": "vue-tsc --noEmit",
+    "lint:check": "oxlint",
     "test:bench": "vitest bench",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "types:check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.5.4",
@@ -45,8 +44,6 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.1",
-    "@rushstack/eslint-patch": "^1.7.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/vite": "^4.2.2",
     "@tauri-apps/cli": "^2.10.1",
@@ -56,14 +53,8 @@
     "@types/unzipper": "^0.10.11",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vitest/coverage-v8": "^4.1.2",
-    "@volar/vue-typescript": "^1.6.5",
     "@vue/devtools": "^8.1.1",
-    "@vue/eslint-config-prettier": "^10.2.0",
-    "@vue/eslint-config-typescript": "^14.7.0",
-    "@vue/typescript": "^1.8.20",
     "cpu-features": "^0.0.10",
-    "dotenv": "^17.4.0",
-    "eslint-plugin-vue": "^10.8.0",
     "follow-redirects": "^1.15.5",
     "happy-dom": "^20.8.9",
     "kysely-codegen": "^0.20.0",

@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { EditableStudy } from "@/types";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
@@ -36,6 +35,7 @@ import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useToasts } from "@stores/useToasts";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import { EditableStudy } from "@/types";
 
 definePage({
   meta: {

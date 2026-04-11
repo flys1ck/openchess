@@ -47,12 +47,12 @@ export function useGameTree() {
   const activeNode = ref<PositionNode>();
 
   /**
-   * Add a new node to the tree
+   * Add a new node to the tree.
    *
-   * @param fen FEN string of the position
-   * @param options Options for the move
-   * @param force force move to be added, even if it already exists on current node
-   * @returns newly added node
+   * @param fen FEN string of the position.
+   * @param options Options for the move.
+   * @param force Force move to be added, even if it already exists on current node.
+   * @returns Newly added node
    */
   function addNode(fen: string, options?: AddMoveOptions, force: boolean = false): PositionNode {
     const nodeId = window.crypto.randomUUID();
