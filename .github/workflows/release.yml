@@ -15,13 +15,17 @@ jobs:
       matrix:
         include:
           - platform: "macos-latest" # for Arm based macs (M1 and above).
-            args: "--target aarch64-apple-darwin"
+            arch: "aarch64"
+            tauri-build-args: "--target aarch64-apple-darwin"
           - platform: "macos-latest" # for Intel based macs.
-            args: "--target x86_64-apple-darwin"
+            arch: "x86_64"
+            tauri-build-args: "--target x86_64-apple-darwin"
           - platform: "ubuntu-22.04"
-            args: ""
+            arch: "x86_64"
+            tauri-build-args: ""
           - platform: "windows-latest"
-            args: ""
+            arch: "x86_64"
+            tauri-build-args: ""
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
@@ -59,7 +63,7 @@ jobs:
         with:
           path: |
             external/stockfish
-          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}
+          key: stockfish-${{ env.STOCKFISH_VERSION }}-${{ matrix.platform }}-${{ matrix.arch }}
 
       - name: Install Stockfish
         run: bun run scripts/downloadStockfish.ts
@@ -80,4 +84,4 @@ jobs:
           releaseName: OpenChess v__VERSION__
           releaseDraft: true
           generateReleaseNotes: true
-          args: ${{ matrix.args }}
+          args: ${{ matrix.tauri-build-args }}
