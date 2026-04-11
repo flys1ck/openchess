@@ -1,14 +1,15 @@
 /**
  * Rounds the given value's decimal places to the given precision.
  *
- * @param value decimal number, which should be rounded
- * @param precision positive integer number, which indicates the rounding precision
+ * @param {number} value Decimal number, which should be rounded.
+ * @param {number} precision Positive integer number, which indicates the rounding precision.
+ * @returns {number} Rounded number.
  *
- * ```
- * roundToFixed(1.512) // 1
- * roundToFixed(1.512, 1) // 1.5
- * roundToFixed(1.512, 2) // 1.51
- * ```
+ *   ```
+ *   roundToFixed(1.512); // 1
+ *   roundToFixed(1.512, 1); // 1.5
+ *   roundToFixed(1.512, 2); // 1.51
+ *   ```
  */
 export const roundToFixed = (value: number, precision = 0) => {
   if (precision < 0 || !Number.isInteger(precision)) {

@@ -11,6 +11,7 @@ const props = withDefaults(
   defineProps<{
     /**
      * Visual style of the button.
+     *
      * @values primary, secondary
      */
     variant?: "gray" | "red" | "yellow" | "green" | "blue" | "indigo" | "purple" | "pink";

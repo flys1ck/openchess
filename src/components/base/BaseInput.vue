@@ -42,8 +42,8 @@ const props = withDefaults(
     type?: string;
     schema?: ZodType;
     /**
-     * Async schema, when the value requires async validation The value will
-     * only be validated against `asyncSchema`, when `schema` passes validation.
+     * Async schema, when the value requires async validation The value will only be validated against `asyncSchema`,
+     * when `schema` passes validation.
      */
     asyncSchema?: ZodType;
   }>(),
