@@ -1,8 +1,8 @@
 import TailwindCSS from "@tailwindcss/vite";
 import Vue from "@vitejs/plugin-vue";
-import VueRouter from "vue-router/vite";
 import { defineConfig } from "vite";
 import ClientSideLayout from "vite-plugin-vue-layouts";
+import VueRouter from "vue-router/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({

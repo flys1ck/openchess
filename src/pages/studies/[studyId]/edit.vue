@@ -37,8 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { Studies } from "@/database";
-import { EditableStudy } from "@/types";
 import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseInputGroup from "@components/base/BaseInputGroup.vue";
@@ -53,6 +51,8 @@ import { useToasts } from "@stores/useToasts";
 import { Insertable } from "kysely";
 import { reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { Studies } from "@/database";
+import { EditableStudy } from "@/types";
 
 const router = useRouter();
 const route = useRoute("/studies/[studyId]/edit");

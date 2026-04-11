@@ -4,5 +4,6 @@
   "trailingComma": "es5",
   "sortTailwindcss": {},
   "sortPackageJson": false,
+  "sortImports": { "newlinesBetween": false },
   "ignorePatterns": [".vscode", "dist", "src-tauri", "src/*.d.ts", "src-python", "test-results"]
 }

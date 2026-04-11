@@ -1,7 +1,7 @@
 /* oxlint-disable no-console */
+import fs from "fs";
 import { default as cpuFeatures, type CpuFeatures } from "cpu-features";
 import fd from "follow-redirects";
-import fs from "fs";
 import * as tar from "tar";
 import unzipper from "unzipper";
 
