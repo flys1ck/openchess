@@ -1,6 +1,6 @@
 import { setupLayouts } from "virtual:generated-layouts";
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
-import { routes, handleHotUpdate } from "vue-router/auto-routes";
+import { routes } from "vue-router/auto-routes";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -21,9 +21,5 @@ const router = createRouter({
   history: createWebHistory(),
   routes: routes.map(recursiveLayouts),
 });
-
-if (import.meta.hot) {
-  handleHotUpdate(router);
-}
 
 export default router;
