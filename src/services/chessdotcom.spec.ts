@@ -36,7 +36,10 @@ describe("ChessDotComClient", () => {
       vi.stubGlobal("fetch", fetchMock);
 
       const client = ChessDotComClient();
+
+      vi.setSystemTime(new Date("2026-04-01T12:00:00Z"));
       await client.getRecentGamesByPlayer("testuser");
+      vi.useRealTimers();
 
       expect(fetchMock).toHaveBeenCalledWith("https://api.chess.com/pub/player/testuser/games/2026/04", {
         headers: new Headers({}),
