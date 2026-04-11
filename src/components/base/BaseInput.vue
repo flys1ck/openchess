@@ -5,18 +5,30 @@
         ref="inputRef"
         v-model="modelValue"
         :id="id"
-        :type="type"
+        :type="resolvedType"
         :name="name"
-        class="block w-full rounded-md py-1.5 text-sm focus:outline-hidden"
+        class="block w-full rounded-md py-1.5 text-sm focus-within:ring-2 focus:outline-hidden"
         :class="inputClasses"
         spellcheck="false"
       />
       <div
-        v-if="errors.length || isEvaluating"
-        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+        v-if="props.type === 'password' || errors.length || isEvaluating"
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center gap-x-1 pr-2.5"
       >
-        <ExclamationCircleIcon v-if="!isEvaluating" class="h-5 w-5 text-red-500" aria-hidden="true" />
-        <MinusIcon v-if="isEvaluating" class="h-5 w-5 animate-spin text-blue-500" />
+        <span v-if="errors.length || isEvaluating">
+          <ExclamationCircleIcon v-if="!isEvaluating" class="size-5 text-red-500" aria-hidden="true" />
+          <MinusIcon v-if="isEvaluating" class="size-5 animate-spin text-blue-500" />
+        </span>
+        <button
+          v-if="props.type === 'password'"
+          type="button"
+          @click="showPassword = !showPassword"
+          :aria-label="showPassword ? 'Hide password' : 'Show password'"
+          class="pointer-events-auto rounded-md p-0.5 text-gray-400 hover:text-gray-600 focus:ring-2 focus:ring-amber-500/50 focus:outline-hidden"
+        >
+          <EyeSlashIcon v-if="showPassword" class="size-5" aria-hidden="true" />
+          <EyeIcon v-else class="size-5" aria-hidden="true" />
+        </button>
       </div>
     </div>
     <div v-if="errors.length" class="mt-1">
@@ -28,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ExclamationCircleIcon } from "@heroicons/vue/20/solid";
+import { EyeIcon, EyeSlashIcon, ExclamationCircleIcon } from "@heroicons/vue/24/outline";
 import { MinusIcon } from "@heroicons/vue/24/solid";
 import { useEventListener } from "@vueuse/core";
 import { computed, onMounted, ref } from "vue";
@@ -55,6 +67,8 @@ const props = withDefaults(
 const errors = ref<string[]>([]);
 const isEvaluating = ref(false);
 const modelValue = defineModel<string>({ default: "" });
+const showPassword = ref(false);
+const resolvedType = computed(() => (props.type === "password" && showPassword.value ? "text" : props.type));
 
 async function validate() {
   if (!props.schema && !props.asyncSchema) return [];
@@ -73,8 +87,8 @@ async function validate() {
 }
 
 const inputClasses = computed(() => ({
-  "border-gray-300 shadow-xs focus:border-orange-500 focus:ring-orange-500/50": !errors.value.length,
-  "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500/50 pr-10":
+  "border-gray-300 shadow-xs focus-within:ring-orange-500/50": !errors.value.length,
+  "border-red-300 placeholder-red-300 focus-within:border-red-500 focus-within:ring-red-500/50 pr-10":
     errors.value.length,
 }));
 

@@ -5,20 +5,20 @@
     <BaseSettingsSection heading="Lichess Token">
       <template #description>
         Integrate your Lichess account with a generated
-        <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token')"
+        <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token/create?description=OpenChess')"
           >Personal API Access Token</BaseLink
         >. There are no extra permissions required.
       </template>
       <template #form>
         <form class="space-y-1" @submit.prevent>
-          <BaseInputLabel html-for="token">Personal API Access Token</BaseInputLabel>
+          <BaseInputLabel html-for="lichess-token">Personal API Access Token</BaseInputLabel>
           <div class="flex items-start gap-2">
             <BaseInput
-              id="token"
-              name="token"
+              id="lichess-token"
+              name="lichess-token"
+              type="password"
               class="grow"
-              label="Personal API Access Token"
-              v-model.trim="lichess.personalAccessToken"
+              v-model.trim="lichessTokenInputRef"
               :schema="lichessTokenSchema"
               :async-schema="lichessTokenAsyncSchema"
             />
@@ -40,7 +40,7 @@
               id="chessdotcom-username"
               name="chessdotcom-username"
               class="grow"
-              v-model.trim="chessdotcom.username"
+              v-model.trim="chessdotcomUsernameInputRef"
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
             />
@@ -68,6 +68,7 @@ import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
 import { open } from "@tauri-apps/plugin-shell";
+import { ref } from "vue";
 import { z } from "zod";
 
 definePage({
@@ -96,6 +97,7 @@ const lichessTokenAsyncSchema = z.string().refine(
   },
   { message: "Token not valid." }
 );
+const lichessTokenInputRef = ref(lichess.personalAccessToken);
 
 const chessdotcom = useChessDotCom();
 const chessdotcomUsernameSchema = z
@@ -108,4 +110,5 @@ const chessdotcomUsernameAsyncSchema = z.string().refine(
   },
   { message: "Username not valid." }
 );
+const chessdotcomUsernameInputRef = ref(chessdotcom.username);
 </script>
