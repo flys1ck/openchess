@@ -1,16 +1,94 @@
-# Tauri + Vue 3 + TypeScript
+# OpenChess
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A cross-platform desktop chess application built with Tauri and Vue 3.
 
-## Recommended IDE Setup
+- **Frontend**: Vue 3 + TypeScript + Vite + TailwindCSS
+- **Backend**: Rust (Tauri 2)
+- **Database**: SQLite via Tauri SQL plugin, with Kysely for type-safe queries and Diesel for migrations
+- **Package manager**: Bun
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Prerequisites
 
-## Type Support For `.vue` Imports in TS
+- [Rust](https://rustup.rs/)
+- [Bun](https://bun.sh/)
+- Linux only:
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+```bash
+sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webkit2gtk-driver xvfb
+```
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+## Local Development
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+**1. Install dependencies**
+
+```bash
+bun install
+```
+
+**2. Download Stockfish and generate Tauri binary sidecar**
+
+The Stockfish binary is not committed to the repository. Download it for your platform:
+
+```bash
+bun run scripts/downloadStockfish.ts
+```
+
+This places the binary in `external/stockfish/`. It only needs to be run once (or when the Stockfish version changes). Tauri requires the binary to be named with a target triple suffix. Run:
+
+```bash
+bun run scripts/generateTargetTriple.ts
+```
+
+**3. Start the app**
+
+```bash
+bun tauri dev
+```
+
+## Code Quality
+
+```bash
+bun run fmt           # Format (oxfmt)
+bun run lint          # Lint with auto-fix (oxlint)
+bun run types:check   # TypeScript type checking
+bun run test:unit     # Unit tests (Vitest)
+```
+
+## Building a Release Locally
+
+```bash
+bun tauri build
+```
+
+The bundled app (`.app`, `.dmg`, `.deb`, `.exe`, etc.) is output to `src-tauri/target/release/bundle/`.
+
+The app version is read from `package.json`. To cut a new version, update the `version` field there — `tauri.conf.json` reads it via `"version": "../package.json"`.
+
+## Release workflow
+
+Triggered manually via GitHub workflow. Builds the app in parallel across the targets:
+
+| Runner           | Arch           | Output               |
+| ---------------- | -------------- | -------------------- |
+| `macos-latest`   | ARM64 (M1+)    | `.dmg` / `.app`      |
+| `macos-latest`   | x86_64 (Intel) | `.dmg` / `.app`      |
+| `ubuntu-22.04`   | x86_64         | `.deb` / `.AppImage` |
+| `windows-latest` | x86_64         | `.exe` / `.msi`      |
+
+Creates a **draft** GitHub release named `OpenChess v<version>` with auto-generated release notes and attaches all platform artifacts. Publish the draft manually once you've reviewed it. The release also produces a `latest.json` updater manifest consumed by the in-app auto-updater endpoint configured in `tauri.conf.json`.
+
+### Required environment variables
+
+| Secret                               | Purpose                      |
+| ------------------------------------ | ---------------------------- |
+| `STOCKFISH_VERSION`                  | Stockfish version            |
+| `TAURI_SIGNING_PRIVATE_KEY`          | Signs update artifacts       |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for the signing key |
+
+## IDE Setup
+
+VS Code with the following extensions:
+
+- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) — Vue 3 language support
+- [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) — Tauri tooling
+- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) — Rust language support
