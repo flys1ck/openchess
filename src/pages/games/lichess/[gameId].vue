@@ -15,7 +15,7 @@ import { useRoute } from "vue-router";
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();
 const { data: lichessGamePgn } = (await exportOneGame({
-  path: { gameId: route.params.gameId },
+  path: { gameId: route.params.gameId as string },
   headers: { Accept: "application/x-chess-pgn" },
 })) as { data: string };
 
