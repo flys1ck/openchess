@@ -6,5 +6,5 @@
   "sortPackageJson": false,
   "sortImports": { "newlinesBetween": false },
   "jsdoc": { "commentLineStrategy": "multiline", "preferCodeFences": true, "descriptionWithDot": true },
-  "ignorePatterns": [".vscode", "dist", "src-tauri", "src/*.d.ts", "src-python", "test-results"]
+  "ignorePatterns": [".vscode", "dist", "src-tauri", "src/*.d.ts", "src-python", "test-results", "packages"]
 }
