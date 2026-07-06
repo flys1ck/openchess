@@ -1,5 +1,6 @@
 import pinia from "@modules/pinia";
 import router from "@modules/router";
+import { initLichessStore } from "@stores/useLichess";
 // import devtools from "@vue/devtools";
 import { createApp } from "vue";
 import App from "./App.vue";
@@ -10,4 +11,8 @@ import "./assets/css/main.css";
 // }
 
 const app = createApp(App);
-app.use(pinia).use(router).mount("#app");
+app.use(pinia).use(router);
+
+await initLichessStore();
+
+app.mount("#app");

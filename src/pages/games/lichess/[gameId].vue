@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
+import { exportOneGame } from "@flys1ck/lichess-client";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
@@ -13,7 +14,10 @@ import { useRoute } from "vue-router";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();
-const lichessGamePgn = await lichess.client.exportGameById(route.params.gameId);
+const { data: lichessGamePgn } = (await exportOneGame({
+  path: { gameId: route.params.gameId },
+  headers: { Accept: "application/x-chess-pgn" },
+})) as { data: string };
 
 const game = useGame();
 game.createNewGame();

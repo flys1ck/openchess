@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "gen": "openapi-ts",
-    "build": "vue-tsc --noEmit && vite build",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint --fix",
