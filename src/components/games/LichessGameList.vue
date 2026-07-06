@@ -52,8 +52,8 @@
 import BaseTime from "@components/base/BaseTime.vue";
 import GameCard from "@components/games/GameCard.vue";
 import GameCardPlayer from "@components/games/GameCardPlayer.vue";
+import { exportGamesOfAuser, type GameJson } from "@flys1ck/lichess-client";
 import { ClockIcon, PlayIcon } from "@heroicons/vue/24/outline";
-import { LichessGame } from "@services/lichess";
 import { useLichess } from "@stores/useLichess";
 import { getMoveStringFromSan } from "@utilities/moves";
 import { normalizeLichessGame } from "@utilities/normalizer";
@@ -62,13 +62,31 @@ import { computed, shallowRef } from "vue";
 defineExpose({ refresh });
 
 const lichess = useLichess();
-const games = shallowRef<LichessGame[]>(
-  await lichess.client.exportGamesByUser(
-    lichess.username,
-    { max: 5, opening: true },
-    { accept: "application/x-ndjson" }
-  )
-);
+
+async function fetchGames(): Promise<GameJson[]> {
+  const response = await exportGamesOfAuser({
+    path: { username: lichess.username },
+    query: { max: 5, opening: true },
+    parseAs: "text",
+    headers: { Accept: "application/x-ndjson" },
+  });
+
+  const text = (response.data as string) ?? "";
+  if (!text) return [];
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (Array.isArray(parsed)) return parsed as GameJson[];
+  } catch {}
+
+  return text
+    .trimEnd()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as GameJson);
+}
+
+const games = shallowRef<GameJson[]>(await fetchGames());
 
 const normalizedGames = computed(() => {
   return games.value.map((game) => {
@@ -77,10 +95,6 @@ const normalizedGames = computed(() => {
 });
 
 async function refresh() {
-  games.value = await lichess.client.exportGamesByUser(
-    lichess.username,
-    { max: 5, opening: true },
-    { accept: "application/x-ndjson" }
-  );
+  games.value = await fetchGames();
 }
 </script>

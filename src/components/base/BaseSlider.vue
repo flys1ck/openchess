@@ -6,7 +6,7 @@
     :max="max"
     :step="step"
   >
-    <SliderTrack class="relative h-[3px] grow rounded-sm bg-gray-300">
+    <SliderTrack class="relative h-0.75 grow rounded-sm bg-gray-300">
       <SliderRange class="absolute h-full rounded-sm bg-orange-400" />
     </SliderTrack>
     <SliderThumb
@@ -20,7 +20,7 @@
 import { SliderRange, SliderRoot, SliderThumb, SliderTrack } from "radix-vue";
 
 // TODO: in general not focusable via label
-const modelValue = defineModel<[number]>({ default: [0] });
+const modelValue = defineModel<[number]>({ default: () => [0] });
 
 withDefaults(
   defineProps<{

@@ -1,5 +1,5 @@
+import { type GameJson, type GamePlayerUser } from "@flys1ck/lichess-client";
 import { ChessDotComGame } from "@services/chessdotcom";
-import { LichessGame } from "@services/lichess";
 import { getMoveStringFromSan } from "@utilities/moves";
 import { parsePgn } from "chessops/pgn";
 
@@ -30,7 +30,7 @@ export interface ChessGame {
   createdAt: number;
 }
 
-export function normalizeLichessGame(lichessGame: LichessGame): ChessGame {
+export function normalizeLichessGame(lichessGame: GameJson): ChessGame {
   const { id, players, opening, variant, moves, clock, createdAt, initialFen } = lichessGame;
   const white = normalizeLichessPlayer(players.white);
   const black = normalizeLichessPlayer(players.black);
@@ -48,8 +48,8 @@ export function normalizeLichessGame(lichessGame: LichessGame): ChessGame {
   return game;
 }
 
-function normalizeLichessPlayer(player: LichessGame["players"]["white"]) {
-  if ("aiLevel" in player) {
+function normalizeLichessPlayer(player: GamePlayerUser) {
+  if (player.aiLevel !== undefined) {
     return {
       name: `Stockfish (Level ${player.aiLevel})`,
     };

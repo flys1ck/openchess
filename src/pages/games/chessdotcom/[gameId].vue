@@ -14,7 +14,7 @@ import { useRoute } from "vue-router";
 const route = useRoute("/games/chessdotcom/[gameId]");
 const chessDotCom = useChessDotCom();
 // assuming the route guard will prevent the access of uncached games
-const gameInfo = (await chessDotCom.client.getGameByUuid(route.params.gameId))!;
+const gameInfo = (await chessDotCom.client.getGameByUuid(route.params.gameId as string))!;
 
 const game = useGame();
 game.tree.fromPgn(gameInfo.pgn);

@@ -1,0 +1,24 @@
+{
+  "name": "@flys1ck/lichess-client",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "gen": "openapi-ts",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint --fix",
+    "lint:check": "oxlint",
+    "types:check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.95.0",
+    "@types/bun": "latest",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
+    "oxlint-tsgolint": "^0.20.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

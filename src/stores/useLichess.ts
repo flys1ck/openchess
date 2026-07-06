@@ -1,25 +1,32 @@
 import { useSetting } from "@composables/useSetting";
-import { LichessClient } from "@services/lichess";
+import { client, explorerClient, getMyProfile } from "@flys1ck/lichess-client";
 import { defineStore } from "pinia";
+import type { Ref } from "vue";
 
-const personalAccessToken = await useSetting("lichessToken", "");
-const username = await useSetting("lichessUsername", "");
+let personalAccessToken: Ref<string>;
+let username: Ref<string>;
+
+export async function initLichessStore() {
+  personalAccessToken = await useSetting("lichessToken", "");
+  username = await useSetting("lichessUsername", "");
+  client.setConfig({ auth: personalAccessToken.value });
+  explorerClient.setConfig({ auth: personalAccessToken.value });
+}
 
 export const useLichess = defineStore("lichess", () => {
-  const client = LichessClient(personalAccessToken.value);
-
   async function validateAndSetPersonalAccessToken(token: string) {
-    client.setPersonalAccessToken(token);
-    const response = await client.getCurrentAccount();
-    if (response.error) {
-      // reset token to previous one
-      username.value = response.username;
-      client.setPersonalAccessToken(personalAccessToken.value);
+    client.setConfig({ auth: token });
+    explorerClient.setConfig({ auth: token });
+
+    const response = await getMyProfile();
+    if (response.error || !response.data) {
+      client.setConfig({ auth: personalAccessToken.value });
+      explorerClient.setConfig({ auth: personalAccessToken.value });
+
       return false;
     }
 
-    username.value = response.username;
-    client.setPersonalAccessToken(token);
+    username.value = response.data.username;
     personalAccessToken.value = token;
     return true;
   }
@@ -27,7 +34,6 @@ export const useLichess = defineStore("lichess", () => {
   return {
     personalAccessToken,
     username,
-    client,
     validateAndSetPersonalAccessToken,
   };
 });

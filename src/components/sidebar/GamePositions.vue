@@ -165,9 +165,8 @@
 import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import GameResultTag from "@components/sidebar/GameResultTag.vue";
 import { useGame } from "@composables/useGame";
+import { explorerClient, mastersDatabase, type OpeningExplorerMasters } from "@flys1ck/lichess-client";
 import { db, select } from "@services/database";
-import { MasterGameCollection } from "@services/lichess";
-import { useLichess } from "@stores/useLichess";
 import { roundToFixed } from "@utilities/math";
 import { getPlyCount } from "@utilities/move";
 import { Key } from "chessground/types";
@@ -188,12 +187,11 @@ defineEmits<{
   lineClick: [];
 }>();
 
-const lichess = useLichess();
 const positions = shallowRef<any[]>([]);
 const lines = shallowRef<any[]>([]);
 const totalMasterMoves = shallowRef(0);
-const masterGames = shallowRef<MasterGameCollection["topGames"]>([]);
-type MasterMove = MasterGameCollection["moves"][number] & MoveStatistics;
+const masterGames = shallowRef<OpeningExplorerMasters["topGames"]>([]);
+type MasterMove = OpeningExplorerMasters["moves"][number] & MoveStatistics;
 const masterMoves = shallowRef<MasterMove[]>([]);
 
 watchEffect(async () => {
@@ -203,7 +201,7 @@ watchEffect(async () => {
     .select(({ fn }) => ["source", "destination", "san", fn.count<number>("study").as("study_count")])
     .where("positions.fen", "like", `${fenWithoutMoves}%`)
     .groupBy(["source", "destination", "san"])
-    .orderBy("study_count desc")
+    .orderBy("study_count", "desc")
     .compile();
 
   positions.value = await select(positionGroupByQuery);
@@ -230,16 +228,16 @@ watchEffect(async () => {
 
   lines.value = await select(positionQuery);
 
-  lichess.client
-    .getMasterGames({ fen: props.game.fen.value, topGames: 10 })
-    .then(({ moves, topGames, white, black, draws }) => {
-      totalMasterMoves.value = white + black + draws;
-      masterMoves.value = moves.map((move) => ({ ...move, ...getMoveStatistics(move) }));
-      masterGames.value = topGames;
-    });
+  mastersDatabase({ client: explorerClient, query: { fen: props.game.fen.value, topGames: 10 } }).then(({ data }) => {
+    if (!data) return;
+    const { moves, topGames, white, black, draws } = data;
+    totalMasterMoves.value = white + black + draws;
+    masterMoves.value = moves.map((move) => ({ ...move, ...getMoveStatistics(move) }));
+    masterGames.value = topGames;
+  });
 });
 
-function getMoveStatistics(move: MasterGameCollection["moves"][number]): MoveStatistics {
+function getMoveStatistics(move: OpeningExplorerMasters["moves"][number]): MoveStatistics {
   const moveTotal = roundToFixed(move.white + move.black + move.draws, 0);
   const playPercentage = roundToFixed((moveTotal * 100) / totalMasterMoves.value, 0);
   const whiteWinPercentage = roundToFixed((move.white * 100) / moveTotal, 0);

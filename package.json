@@ -9,16 +9,17 @@
     "build": "vue-tsc --noEmit && vite build",
     "tauri": "tauri",
     "db:gen:types": "kysely-codegen --dialect sqlite --exclude-pattern __* --out-file src/database.d.ts",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
-    "lint": "oxlint --fix",
-    "lint:check": "oxlint",
+    "fmt": "oxfmt && bun run --filter '*' fmt",
+    "fmt:check": "oxfmt --check && bun run --filter '*' fmt:check",
+    "lint": "oxlint --fix && bun run --filter '*' lint",
+    "lint:check": "oxlint && bun run --filter '*' lint:check",
     "test:bench": "vitest bench",
     "test:unit": "vitest",
     "types:check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.5.4",
+    "@flys1ck/lichess-client": "./packages/lichess-client",
     "@headlessui/vue": "^1.7.17",
     "@heroicons/vue": "^2.1.1",
     "@tauri-apps/api": "^2.0.0",
@@ -71,6 +72,9 @@
     "vitest": "^4.1.2",
     "vue-tsc": "^3.2.6"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "packageManager": "bun@1.3.11",
   "patchedDependencies": {
     "cpu-features@0.0.10": "patches/cpu-features@0.0.10.patch"
