@@ -1,5 +1,5 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "extends": ["../../.oxlintrc.json"],
-  "ignorePatterns": ["src/*.gen.ts"]
+  "ignorePatterns": ["src/**/*.gen.ts"]
 }

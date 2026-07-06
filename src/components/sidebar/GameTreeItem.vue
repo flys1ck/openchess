@@ -127,7 +127,7 @@ const nags: Record<number, string> = {
 };
 
 const resolvedAnnotation = computed(() => {
-  if (!props.node.move?.annotations?.length) return;
+  if (!props.node.move?.annotations?.length) return "";
 
   return props.node.move.annotations.reduce((acc, nag) => {
     return `${acc}${nags[nag]}`;
