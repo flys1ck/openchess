@@ -19,18 +19,6 @@
         </button>
       </div>
     </div>
-    <!-- e2e test helper -->
-    <div
-      v-if="mode === 'development'"
-      :style="`width: ${overlayWidth}px`"
-      class="pointer-events-none absolute top-0 left-0 grid aspect-square grid-cols-8"
-    >
-      <template v-for="rank in ['1', '2', '3', '4', '5', '6', '7', '8'].reverse()" :key="rank">
-        <template v-for="file in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']" :key="file">
-          <span :data-test="`square-${file}${rank}`"></span>
-        </template>
-      </template>
-    </div>
   </div>
 </template>
 
