@@ -1,10 +1,6 @@
-# CLAUDE.md
+# OpenChess
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-OpenChess is a cross-platform desktop chess application built with Tauri 2 (Rust backend) and Vue 3 + TypeScript (frontend). It integrates the Stockfish 18 engine, Lichess/Chess.com APIs, and SQLite for local storage.
+OpenChess is a cross-platform desktop chess application built with Tauri 2 (Rust backend) and Vue 3 + TypeScript (frontend). It integrates the Stockfish engine, Lichess/Chess.com APIs, and SQLite for local storage.
 
 ## Commands
 
@@ -33,8 +29,6 @@ bun run test:bench       # Run benchmarks
 # Database
 bun run db:gen:types     # Regenerate TypeScript types from SQLite schema
 ```
-
-`.claude/settings.json` hooks auto-run `fmt` and `lint` after file edits.
 
 ## Architecture
 

@@ -26,7 +26,7 @@ const props = withDefaults(
      *
      * @values primary, secondary, danger, ghost
      */
-    variant?: "primary" | "secondary" | "ghost" | "danger";
+    variant?: "primary" | "secondary" | "ghost" | "danger" | "danger-outline";
     /**
      * Size of the button.
      *
@@ -58,7 +58,9 @@ const computedClasses = computed(() => {
       props.variant === "secondary",
     "hover:bg-red-500 focus:ring-red-600/50 active:bg-red-700 text-red-50 bg-red-600 duration-100 border border-red-600":
       props.variant === "danger",
-    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-transparent dark:text-gray-50":
+    "hover:bg-red-50 focus:ring-red-600/50 active:bg-red-100 text-red-600 bg-transparent duration-100 border border-red-600":
+      props.variant === "danger-outline",
+    "hover:bg-gray-100 focus:ring-orange-400/50 active:bg-gray-200 text-gray-900 bg-transparent":
       props.variant === "ghost",
     "shadow-xs": props.variant !== "ghost",
     "p-1": !slots.default && props.size === "sm",

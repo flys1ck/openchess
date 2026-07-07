@@ -14,11 +14,15 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental'
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-      | never
+    _ParamParsers: {}
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -150,11 +154,15 @@ declare module 'vue-router/auto-routes' {
         | '/[...all]'
       views:
         | never
+      pathParamNames:
+        | 'all'
     }
     'src/pages/analysis/index.vue': {
       routes:
         | '/analysis/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/games/index.vue': {
@@ -162,11 +170,15 @@ declare module 'vue-router/auto-routes' {
         | '/games/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/games/chessdotcom/index.vue': {
       routes:
         | '/games/chessdotcom/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/games/chessdotcom/[gameId].vue': {
@@ -174,11 +186,15 @@ declare module 'vue-router/auto-routes' {
         | '/games/chessdotcom/[gameId]'
       views:
         | never
+      pathParamNames:
+        | 'gameId'
     }
     'src/pages/games/lichess/index.vue': {
       routes:
         | '/games/lichess/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/games/lichess/[gameId].vue': {
@@ -186,11 +202,15 @@ declare module 'vue-router/auto-routes' {
         | '/games/lichess/[gameId]'
       views:
         | never
+      pathParamNames:
+        | 'gameId'
     }
     'src/pages/settings/index.vue': {
       routes:
         | '/settings/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/studies/index.vue': {
@@ -198,11 +218,15 @@ declare module 'vue-router/auto-routes' {
         | '/studies/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/studies/[studyId]/index.vue': {
       routes:
         | '/studies/[studyId]/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/studies/[studyId]/chapters/[chapterId]/index.vue': {
@@ -210,17 +234,23 @@ declare module 'vue-router/auto-routes' {
         | '/studies/[studyId]/chapters/[chapterId]/'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/studies/[studyId]/chapters/[chapterId]/lines/[lineId].vue': {
       routes:
         | '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]'
       views:
         | never
+      pathParamNames:
+        | 'lineId'
     }
     'src/pages/studies/[studyId]/chapters/new.vue': {
       routes:
         | '/studies/[studyId]/chapters/new'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/studies/[studyId]/edit.vue': {
@@ -228,11 +258,15 @@ declare module 'vue-router/auto-routes' {
         | '/studies/[studyId]/edit'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/studies/new.vue': {
       routes:
         | '/studies/new'
       views:
+        | never
+      pathParamNames:
         | never
     }
   }

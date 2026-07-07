@@ -32,8 +32,11 @@ fn main() {
                 .unwrap_or_else(|_| panic!("Migrations could not be ran"));
             Ok(())
         })
+        .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {}))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_sql::Builder::default().build())

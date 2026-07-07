@@ -24,6 +24,9 @@ vampirc-uci = "0.11.1"
 pgn-reader = "0.23.0"
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
+tauri-plugin-deep-link = "2"
+tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+tauri-plugin-opener = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
