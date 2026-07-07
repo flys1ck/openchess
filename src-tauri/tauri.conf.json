@@ -10,16 +10,8 @@
     "category": "DeveloperTool",
     "copyright": "",
     "targets": "all",
-    "externalBin": [
-      "bin/stockfish"
-    ],
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
+    "externalBin": ["bin/stockfish"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
@@ -47,11 +39,14 @@
   "version": "../package.json",
   "identifier": "com.openchess.dev",
   "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["com.openchess.dev"]
+      }
+    },
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIxQTgxNjE2RDUzOTUzMTEKUldRUlV6blZGaGFvc1JBek5saEtUcGhZMVo3ZDN5VHhBV2NwMUd0NVk0bkJxSzZRWTVObmVYc0MK",
-      "endpoints": [
-        "https://github.com/flys1ck/openchess/releases/latest/download/latest.json"
-      ]
+      "endpoints": ["https://github.com/flys1ck/openchess/releases/latest/download/latest.json"]
     }
   },
   "app": {

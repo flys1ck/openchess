@@ -1,35 +1,25 @@
 <template>
   <BaseContainer class="space-y-8">
     <BaseSectionHeading heading="Settings" />
-    <!-- Lichess Token -->
-    <BaseSettingsSection heading="Lichess Token">
-      <template #description>
-        Integrate your Lichess account with a generated
-        <BaseLink as="button" @click="open('https://lichess.org/account/oauth/token/create?description=OpenChess')"
-          >Personal API Access Token</BaseLink
-        >. There are no extra permissions required.
-      </template>
+    <!-- Lichess Account -->
+    <BaseSettingsSection heading="Lichess Account">
+      <template #description> Connect your Lichess account to access your games and profile. </template>
       <template #form>
-        <form class="space-y-1" @submit.prevent>
-          <BaseInputLabel html-for="lichess-token">Personal API Access Token</BaseInputLabel>
-          <div class="flex items-start gap-2">
-            <BaseInput
-              id="lichess-token"
-              name="lichess-token"
-              type="password"
-              class="grow"
-              v-model.trim="lichessTokenInputRef"
-              :schema="lichessTokenSchema"
-              :async-schema="lichessTokenAsyncSchema"
-            />
-            <BaseButton variant="primary" type="submit">Save</BaseButton>
-          </div>
-          <p v-if="lichess.username" class="flex items-center gap-1 text-sm text-gray-500">
-            <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Token connected to {{ lichess.username }}
+        <div v-if="lichess.isConnected" class="flex items-center gap-4">
+          <BaseButton variant="danger-outline" :disabled="isDisconnecting" @click="handleDisconnect">
+            Disconnect
+          </BaseButton>
+          <p class="flex items-center gap-1 text-sm text-gray-500">
+            <CheckBadgeIcon class="h-4 w-4 text-blue-500" />
+            Connected as {{ lichess.username }}
           </p>
-        </form>
+        </div>
+        <BaseButton v-else :disabled="isConnecting" @click="handleConnect">
+          {{ isConnecting ? "Connecting..." : "Connect with Lichess" }}
+        </BaseButton>
       </template>
     </BaseSettingsSection>
+    <!-- Chess.com Username -->
     <BaseSettingsSection heading="Chess.com Username">
       <template #description> Integrate your Chess.com account with your username. </template>
       <template #form>
@@ -60,14 +50,12 @@ import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseInput from "@components/base/BaseInput.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
-import BaseLink from "@components/base/BaseLink.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
-import { open } from "@tauri-apps/plugin-shell";
 import { ref } from "vue";
 import { z } from "zod";
 
@@ -87,17 +75,28 @@ setBreadcrumbs([
 ]);
 
 const lichess = useLichess();
-const lichessTokenSchema = z
-  .string()
-  .min(1)
-  .regex(/^[A-Za-z0-9_]+$/, "Token must contain only alphanumeric characters, - and _.");
-const lichessTokenAsyncSchema = z.string().refine(
-  async (token) => {
-    return await lichess.validateAndSetPersonalAccessToken(token);
-  },
-  { message: "Token not valid." }
-);
-const lichessTokenInputRef = ref(lichess.personalAccessToken);
+const isConnecting = ref(false);
+const isDisconnecting = ref(false);
+
+async function handleConnect() {
+  isConnecting.value = true;
+  try {
+    await lichess.login();
+  } catch {
+    // Error is already surfaced via toast in the store
+  } finally {
+    isConnecting.value = false;
+  }
+}
+
+async function handleDisconnect() {
+  isDisconnecting.value = true;
+  try {
+    await lichess.logout();
+  } finally {
+    isDisconnecting.value = false;
+  }
+}
 
 const chessdotcom = useChessDotCom();
 const chessdotcomUsernameSchema = z
