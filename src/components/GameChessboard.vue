@@ -37,7 +37,6 @@ const props = withDefaults(
   }
 );
 
-const mode = import.meta.env.MODE;
 const chessboardRef = ref<HTMLDivElement>();
 
 // chessground board size are always divisible by 8
