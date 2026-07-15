@@ -1,0 +1,6 @@
+@import "tailwindcss" source(none);
+@source "./floating-button.ts";
+
+:host {
+  all: initial;
+}
