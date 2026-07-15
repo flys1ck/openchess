@@ -1,9 +1,9 @@
-import { OPEN_IN_OPENCHESS_MESSAGE } from "../shared/messages";
-import { getFinishedChessDotComGameId } from "./chessdotcom";
-import { getFinishedLichessGameId } from "./lichess";
 import styles from "./floating-button.css?inline";
 
 const HOST_ID = "openchess-floating-button-host";
+const OPENCHESS_SCHEME = "com.openchess.dev";
+
+type OpenChessGameProvider = "lichess" | "chessdotcom";
 
 const BUTTON_CLASSES = [
   "fixed",
@@ -19,6 +19,7 @@ const BUTTON_CLASSES = [
   "text-white",
   "hover:bg-orange-600",
   "cursor-pointer",
+  "z-50"
 ].join(" ");
 
 export function mountFloatingButton(): void {
@@ -36,33 +37,42 @@ export function mountFloatingButton(): void {
   button.className = BUTTON_CLASSES;
   button.textContent = "Analyze in OpenChess";
 
-  button.addEventListener("click", () => {
-    void openCurrentGameInOpenChess();
-  });
+  button.addEventListener("click", openCurrentGameInOpenChess);
 
   shadow.append(style, button);
   document.body.append(host);
 }
 
-async function openCurrentGameInOpenChess(): Promise<void> {
-  const lichessGameId = getFinishedLichessGameId();
-  if (lichessGameId) {
-    void chrome.runtime.sendMessage({
-      type: OPEN_IN_OPENCHESS_MESSAGE,
-      provider: "lichess",
-      gameId: lichessGameId,
-    });
-    return;
+function openCurrentGameInOpenChess(): void {
+  const game = getCurrentGame();
+  if (!game) return;
+
+  const url = `${OPENCHESS_SCHEME}://games/${game.provider}?id=${encodeURIComponent(game.gameId)}`;
+
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.rel = "noopener noreferrer";
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+}
+
+function getCurrentGame(
+  locationLike: Pick<Location, "hostname" | "pathname"> = location
+): { provider: OpenChessGameProvider; gameId: string } | null {
+  // Matches `/gameId`, `/gameIdXXXX` (player seat), and optional `/white|black|/analysis` suffixes.
+  const LICHESS_GAME_PATH = /^\/([a-zA-Z0-9]{8})([a-zA-Z0-9]{4})?(?:\/(?:white|black))?(?:\/analysis)?\/?$/;
+  if (/(^|\.)lichess\.org$/i.test(locationLike.hostname)) {
+    const gameId = locationLike.pathname.match(LICHESS_GAME_PATH)?.[1];
+    return gameId ? { provider: "lichess", gameId } : null;
   }
 
-  const chessDotComGameId = await getFinishedChessDotComGameId();
-  if (!chessDotComGameId) {
-    return;
+  // Matches `/game/live/{numericId}` with an optional trailing slash.
+  const CHESSCOM_LIVE_GAME_PATH = /^\/game\/live\/(\d+)\/?$/;
+  if (/(^|\.)chess\.com$/i.test(locationLike.hostname)) {
+    const gameId = locationLike.pathname.match(CHESSCOM_LIVE_GAME_PATH)?.[1];
+    return gameId ? { provider: "chessdotcom", gameId } : null;
   }
 
-  void chrome.runtime.sendMessage({
-    type: OPEN_IN_OPENCHESS_MESSAGE,
-    provider: "chessdotcom",
-    gameId: chessDotComGameId,
-  });
+  return null;
 }

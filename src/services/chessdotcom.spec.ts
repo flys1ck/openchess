@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ChessDotComClient, type ChessDotComGame } from "./chessdotcom";
 
+const fetchMock = vi.fn<() => Promise<Response>>();
+
+vi.mock("@tauri-apps/plugin-http", () => ({
+  fetch: (...args: unknown[]) => fetchMock(...(args as [])),
+}));
+
 function gameFixture(overrides: Partial<ChessDotComGame> = {}): ChessDotComGame {
   return {
     url: "https://www.chess.com/game/live/1",
@@ -23,7 +29,7 @@ function gameFixture(overrides: Partial<ChessDotComGame> = {}): ChessDotComGame 
 
 describe("ChessDotComClient", () => {
   beforeEach(() => {
-    vi.unstubAllGlobals();
+    fetchMock.mockReset();
   });
 
   describe("getRecentGamesByPlayer", () => {
@@ -32,8 +38,7 @@ describe("ChessDotComClient", () => {
         status: 200,
         headers: new Headers(),
       });
-      const fetchMock = vi.fn<() => Promise<Response>>().mockResolvedValue(mockResponse);
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(mockResponse);
 
       const client = ChessDotComClient();
 
@@ -54,8 +59,7 @@ describe("ChessDotComClient", () => {
         status: 200,
         headers: new Headers(),
       });
-      const fetchMock = vi.fn<() => Promise<Response>>().mockResolvedValue(mockResponse);
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(mockResponse);
 
       const client = ChessDotComClient();
       const games = await client.getRecentGamesByPlayer("testuser");
@@ -72,8 +76,7 @@ describe("ChessDotComClient", () => {
         status: 200,
         headers: new Headers(),
       });
-      const fetchMock = vi.fn<() => Promise<Response>>().mockResolvedValue(mockResponse);
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(mockResponse);
 
       const client = ChessDotComClient();
       const games = await client.getRecentGamesByPlayer("testuser");
@@ -92,8 +95,7 @@ describe("ChessDotComClient", () => {
         status: 200,
         headers: new Headers(),
       });
-      const fetchMock = vi.fn<() => Promise<Response>>().mockResolvedValue(mockResponse);
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(mockResponse);
 
       const client = ChessDotComClient();
       await client.getRecentGamesByPlayer("testuser");
@@ -142,10 +144,7 @@ describe("ChessDotComClient", () => {
         },
       };
 
-      const fetchMock = vi
-        .fn<() => Promise<Response>>()
-        .mockResolvedValue(new Response(new Blob([JSON.stringify(callbackResponse)]), { status: 200 }));
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(new Response(new Blob([JSON.stringify(callbackResponse)]), { status: 200 }));
 
       const client = ChessDotComClient();
       const result = await client.getGameByUuid("b1fbba96-de02-11ef-b596-6cfe544c0428");
@@ -160,8 +159,7 @@ describe("ChessDotComClient", () => {
     });
 
     it("should return null for an unknown ID", async () => {
-      const fetchMock = vi.fn<() => Promise<Response>>().mockResolvedValue(new Response(null, { status: 404 }));
-      vi.stubGlobal("fetch", fetchMock);
+      fetchMock.mockResolvedValue(new Response(null, { status: 404 }));
 
       const client = ChessDotComClient();
       const result = await client.getGameByUuid("nonexistent");

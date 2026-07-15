@@ -1,3 +1,4 @@
+import { fetch } from "@tauri-apps/plugin-http";
 import { Chess } from "chessops/chess";
 import { makeFen, parseFen } from "chessops/fen";
 import { defaultSetup } from "chessops/setup";
