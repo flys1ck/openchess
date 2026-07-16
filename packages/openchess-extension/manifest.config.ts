@@ -16,7 +16,11 @@ export default defineManifest({
   content_scripts: [
     {
       js: ["src/content/main.ts"],
-      matches: ["https://lichess.org/*", "https://www.chess.com/*"],
+      matches: [
+        "https://lichess.org/*",
+        "https://www.chess.com/game/live/*",
+        "https://www.chess.com/analysis/game/live/*",
+      ],
       run_at: "document_idle",
     },
   ],

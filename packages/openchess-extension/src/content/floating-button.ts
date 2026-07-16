@@ -19,11 +19,12 @@ const BUTTON_CLASSES = [
   "text-white",
   "hover:bg-orange-600",
   "cursor-pointer",
-  "z-50"
+  "z-50",
 ].join(" ");
 
 export function mountFloatingButton(): void {
   if (document.getElementById(HOST_ID)) return;
+  if (!getCurrentGame()) return;
 
   const host = document.createElement("div");
   host.id = HOST_ID;
@@ -67,8 +68,8 @@ function getCurrentGame(
     return gameId ? { provider: "lichess", gameId } : null;
   }
 
-  // Matches `/game/live/{numericId}` with an optional trailing slash.
-  const CHESSCOM_LIVE_GAME_PATH = /^\/game\/live\/(\d+)\/?$/;
+  // Matches `/game/live/{numericId}` and `/analysis/game/live/{numericId}` with optional trailing path.
+  const CHESSCOM_LIVE_GAME_PATH = /^\/(?:analysis\/)?game\/live\/(\d+)(?:\/.*)?\/?$/;
   if (/(^|\.)chess\.com$/i.test(locationLike.hostname)) {
     const gameId = locationLike.pathname.match(CHESSCOM_LIVE_GAME_PATH)?.[1];
     return gameId ? { provider: "chessdotcom", gameId } : null;
