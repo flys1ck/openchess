@@ -1,29 +1,30 @@
 /**
- * Matches `/game/live/{numericId}` and `/analysis/game/live/{numericId}` with optional trailing path.
+ * Matches `/game/{numericId}` (active), `/game/live/{numericId}` (finished "live" chess), and
+ * `/analysis/game/(live/)?{numericId}` with optional trailing path.
  */
-const CHESSCOM_LIVE_GAME_PATH = /^\/(?:analysis\/)?game\/live\/(\d+)(?:\/.*)?\/?$/;
+const CHESSCOM_LIVE_GAME_PATH = /^\/(?:analysis\/)?game\/(?:live\/)?(\d+)(?:\/.*)?\/?$/;
 
 /**
- * End-of-game modal container shown on finished Chess.com live games.
+ * End-of-game modal container shown when a Chess.com live game is finished.
  */
 const CHESSCOM_FINISHED_SELECTOR = ".game-over-modal-shell-container";
 
 /**
- * Returns the live game id from a Chess.com live or analysis pathname, or null if it does not match.
+ * Returns the live game id from a Chess.com game or analysis pathname, or null if it does not match.
  */
 export function extractChessDotComLiveGameId(pathname: string): string | null {
   return pathname.match(CHESSCOM_LIVE_GAME_PATH)?.[1] ?? null;
 }
 
 /**
- * Returns true when the page is a finished Chess.com live game: analysis URLs are always finished; otherwise looks for
- * the end-of-game modal in the DOM.
+ * Returns true when the page is a finished Chess.com game: analysis URLs are always finished; otherwise looks for the
+ * end-of-game modal in the DOM (`/game/{id}` while playing, `/game/live/{id}` after).
  */
 export function isChessDotComGameFinished(
   doc: Document = document,
   locationLike: Pick<Location, "pathname"> = location
 ): boolean {
-  if (/^\/analysis\/game\/live\/\d+/i.test(locationLike.pathname)) return true;
+  if (/^\/analysis\/game\/(?:live\/)?\d+/i.test(locationLike.pathname)) return true;
 
   return Boolean(doc.querySelector(CHESSCOM_FINISHED_SELECTOR));
 }
