@@ -1,7 +1,7 @@
-import { mountFloatingButton } from "./floating-button";
+import { mountFloatingButtonWhenFinished } from "./floating-button";
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", mountFloatingButton, { once: true });
+  document.addEventListener("DOMContentLoaded", () => void mountFloatingButtonWhenFinished(), { once: true });
 } else {
-  mountFloatingButton();
+  void mountFloatingButtonWhenFinished();
 }

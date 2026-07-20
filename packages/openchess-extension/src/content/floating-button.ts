@@ -1,9 +1,13 @@
+import { extractChessDotComLiveGameId, waitForChessDotComGameFinished } from "./chessdotcom";
+import { extractLichessGameId, waitForLichessGameFinished } from "./lichess";
 import styles from "./floating-button.css?inline";
 
 const HOST_ID = "openchess-floating-button-host";
 const OPENCHESS_SCHEME = "com.openchess.dev";
 
 type OpenChessGameProvider = "lichess" | "chessdotcom";
+
+type CurrentGame = { provider: OpenChessGameProvider; gameId: string };
 
 const BUTTON_CLASSES = [
   "fixed",
@@ -22,6 +26,36 @@ const BUTTON_CLASSES = [
   "z-50",
 ].join(" ");
 
+let waitController: AbortController | null = null;
+
+/**
+ * Waits until the current Lichess or Chess.com game is finished, then mounts the floating button. No-ops when the URL
+ * is not a game page. Cancels any in-flight wait when called again.
+ */
+export async function mountFloatingButtonWhenFinished(): Promise<void> {
+  waitController?.abort();
+  waitController = new AbortController();
+  const { signal } = waitController;
+
+  const game = getCurrentGame();
+  if (!game) return;
+
+  const finished =
+    game.provider === "lichess"
+      ? await waitForLichessGameFinished(document, signal)
+      : await waitForChessDotComGameFinished(document, signal);
+  if (!finished || signal.aborted) return;
+
+  // Bail if the user navigated to a different game while waiting.
+  const current = getCurrentGame();
+  if (!current || current.provider !== game.provider || current.gameId !== game.gameId) return;
+
+  mountFloatingButton();
+}
+
+/**
+ * Mounts the "Analyze in OpenChess" shadow-DOM button if it is not already present and the URL is a game page.
+ */
 export function mountFloatingButton(): void {
   if (document.getElementById(HOST_ID)) return;
   if (!getCurrentGame()) return;
@@ -44,6 +78,9 @@ export function mountFloatingButton(): void {
   document.body.append(host);
 }
 
+/**
+ * Opens the current game in the OpenChess app via the `com.openchess.dev` deep link.
+ */
 function openCurrentGameInOpenChess(): void {
   const game = getCurrentGame();
   if (!game) return;
@@ -58,20 +95,17 @@ function openCurrentGameInOpenChess(): void {
   anchor.remove();
 }
 
-function getCurrentGame(
-  locationLike: Pick<Location, "hostname" | "pathname"> = location
-): { provider: OpenChessGameProvider; gameId: string } | null {
-  // Matches `/gameId`, `/gameIdXXXX` (player seat), and optional `/white|black|/analysis` suffixes.
-  const LICHESS_GAME_PATH = /^\/([a-zA-Z0-9]{8})([a-zA-Z0-9]{4})?(?:\/(?:white|black))?(?:\/analysis)?\/?$/;
+/**
+ * Returns provider + game id for the current Lichess or Chess.com URL, or null when not on a supported game page.
+ */
+function getCurrentGame(locationLike: Pick<Location, "hostname" | "pathname"> = location): CurrentGame | null {
   if (/(^|\.)lichess\.org$/i.test(locationLike.hostname)) {
-    const gameId = locationLike.pathname.match(LICHESS_GAME_PATH)?.[1];
+    const gameId = extractLichessGameId(locationLike.pathname);
     return gameId ? { provider: "lichess", gameId } : null;
   }
 
-  // Matches `/game/live/{numericId}` and `/analysis/game/live/{numericId}` with optional trailing path.
-  const CHESSCOM_LIVE_GAME_PATH = /^\/(?:analysis\/)?game\/live\/(\d+)(?:\/.*)?\/?$/;
   if (/(^|\.)chess\.com$/i.test(locationLike.hostname)) {
-    const gameId = locationLike.pathname.match(CHESSCOM_LIVE_GAME_PATH)?.[1];
+    const gameId = extractChessDotComLiveGameId(locationLike.pathname);
     return gameId ? { provider: "chessdotcom", gameId } : null;
   }
 
