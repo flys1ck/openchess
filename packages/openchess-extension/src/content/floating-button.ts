@@ -9,23 +9,6 @@ type OpenChessGameProvider = "lichess" | "chessdotcom";
 
 type CurrentGame = { provider: OpenChessGameProvider; gameId: string };
 
-const BUTTON_CLASSES = [
-  "fixed",
-  "right-5",
-  "top-20",
-  "flex",
-  "items-center",
-  "justify-center",
-  "rounded-sm",
-  "border-none",
-  "bg-orange-500",
-  "p-2",
-  "text-white",
-  "hover:bg-orange-600",
-  "cursor-pointer",
-  "z-50",
-].join(" ");
-
 let waitController: AbortController | null = null;
 
 /**
@@ -54,7 +37,7 @@ export async function mountFloatingButtonWhenFinished(): Promise<void> {
 }
 
 /**
- * Mounts the "Analyze in OpenChess" shadow-DOM button if it is not already present and the URL is a game page.
+ * Mounts the liquid blob "Analyze in OpenChess" button if it is not already present and the URL is a game page.
  */
 export function mountFloatingButton(): void {
   if (document.getElementById(HOST_ID)) return;
@@ -69,9 +52,8 @@ export function mountFloatingButton(): void {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.className = BUTTON_CLASSES;
-  button.textContent = "Analyze in OpenChess";
-
+  button.className = "oc-blob";
+  button.setAttribute("aria-label", "Analyze in OpenChess");
   button.addEventListener("click", openCurrentGameInOpenChess);
 
   shadow.append(style, button);

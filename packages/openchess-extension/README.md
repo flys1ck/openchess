@@ -1,6 +1,6 @@
 # OpenChess Browser Extension
 
-Vue 3 + TypeScript browser extension built with [CRXJS](https://crxjs.dev/) and Vite.
+TypeScript browser extension built with [CRXJS](https://crxjs.dev/) and Vite.
 
 ## Development
 
@@ -37,7 +37,6 @@ After the first load, reload the extension from the extensions page when CRXJS r
 
 ```
 src/
-  popup/        Extension popup UI (Vue)
   background/   Service worker
   content/      Content scripts injected on Lichess and Chess.com
 ```

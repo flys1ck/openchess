@@ -5,10 +5,6 @@ export default defineManifest({
   name: "OpenChess",
   version: "0.0.1",
   description: "OpenChess browser extension for Lichess and Chess.com",
-  action: {
-    default_popup: "src/popup/index.html",
-    default_title: "OpenChess",
-  },
   background: {
     service_worker: "src/background/index.ts",
     type: "module",
@@ -20,6 +16,5 @@ export default defineManifest({
       run_at: "document_idle",
     },
   ],
-  permissions: ["storage", "activeTab"],
   host_permissions: ["https://lichess.org/*", "https://www.chess.com/*"],
 });
