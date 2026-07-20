@@ -1,0 +1,66 @@
+:host {
+  all: initial;
+}
+
+.oc-blob {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(50%);
+  z-index: 2147483646;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: none;
+  border-radius: 58% 42% 48% 52% / 52% 48% 52% 48%;
+  background: linear-gradient(to bottom right, #fb923c, #ea580c);
+  box-shadow:
+    0 0 28px rgb(249 115 22 / 0.65),
+    0 8px 18px rgb(194 65 12 / 0.4);
+  cursor: pointer;
+  transition:
+    transform 200ms cubic-bezier(0.22, 1.4, 0.36, 1),
+    box-shadow 200ms cubic-bezier(0.22, 1.4, 0.36, 1),
+    border-radius 200ms cubic-bezier(0.22, 1.4, 0.36, 1);
+  animation: blob-idle 4.2s ease-in-out infinite;
+}
+
+.oc-blob:hover {
+  transform: translateY(-50%) translateX(0) scale(1.1);
+  box-shadow:
+    0 0 36px rgb(249 115 22 / 0.75),
+    0 10px 22px rgb(194 65 12 / 0.45);
+}
+
+.oc-blob:active {
+  transform: translateY(-50%) translateX(0) scale(0.95);
+}
+
+.oc-blob:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 28px rgb(249 115 22 / 0.65),
+    0 8px 18px rgb(194 65 12 / 0.4),
+    0 0 0 2px #fff,
+    0 0 0 6px rgb(249 115 22 / 0.5);
+}
+
+@keyframes blob-idle {
+  0%,
+  100% {
+    border-radius: 58% 42% 48% 52% / 52% 48% 52% 48%;
+  }
+  33% {
+    border-radius: 42% 58% 52% 48% / 48% 52% 48% 52%;
+  }
+  66% {
+    border-radius: 50% 50% 42% 58% / 58% 42% 58% 42%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oc-blob {
+    animation: none;
+    transition: none;
+  }
+}
