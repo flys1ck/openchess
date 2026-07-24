@@ -77,7 +77,12 @@ export function showFloatingButton(): void {
   button.setAttribute("aria-label", "Analyze in OpenChess");
   button.addEventListener("click", openCurrentGameInOpenChess);
 
-  shadow.append(style, button);
+  const label = document.createElement("span");
+  label.className = "openchess-floating-button-label";
+  label.textContent = "Analyze in OpenChess";
+  label.setAttribute("aria-hidden", "true");
+
+  shadow.append(style, button, label);
   document.body.append(host);
 }
 

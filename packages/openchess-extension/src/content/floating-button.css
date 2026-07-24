@@ -35,11 +35,43 @@
   opacity: 0;
 }
 
+.openchess-floating-button-label {
+  position: fixed;
+  right: 64px;
+  top: 50%;
+  z-index: 2147483646;
+  padding: 8px 12px;
+  border-radius: 8px;
+  opacity: 0;
+  color: #fff;
+  background: rgb(31 41 55 / 0.95);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.25);
+  font:
+    600 14px/1.2 system-ui,
+    sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateY(-50%) translateX(8px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
 .openchess-floating-button:hover {
   transform: translateY(-50%) translateX(0) scale(1.1);
   box-shadow:
     0 0 36px rgb(249 115 22 / 0.75),
     0 10px 22px rgb(194 65 12 / 0.45);
+}
+
+.openchess-floating-button:hover + .openchess-floating-button-label,
+.openchess-floating-button:focus-visible + .openchess-floating-button-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+:host(.openchess-floating-button-hidden) .openchess-floating-button-label {
+  opacity: 0;
 }
 
 .openchess-floating-button:active {
@@ -69,7 +101,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .openchess-floating-button {
+  .openchess-floating-button,
+  .openchess-floating-button-label {
     animation: none;
     transition: none;
   }
