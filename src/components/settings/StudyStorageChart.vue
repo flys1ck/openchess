@@ -79,14 +79,31 @@ const studyStorageQuery = sql<StudyStorage>`
     select
       chapters.study,
       length(cast(positions.created_at as blob))
-        + length(cast(positions.fen as blob))
-        + length(cast(positions.position_key as blob))
+        + length(cast(positions.ply as blob))
+        + length(cast(positions.halfmove_clock as blob))
+        + length(cast(positions.fullmove_number as blob))
         + length(cast(positions.san as blob))
         + length(cast(positions.source as blob))
         + length(cast(positions.destination as blob))
     from positions
     inner join lines on lines.id = positions.line
     inner join chapters on chapters.id = lines.chapter
+
+    union all
+
+    select
+      study_positions.study,
+      length(cast(study_positions.position_key as blob))
+    from (
+      select distinct
+        chapters.study,
+        chess_positions.id,
+        chess_positions.position_key
+      from positions
+      inner join chess_positions on chess_positions.id = positions.chess_position
+      inner join lines on lines.id = positions.line
+      inner join chapters on chapters.id = lines.chapter
+    ) as study_positions
   )
   select
     studies.id,

@@ -45,7 +45,8 @@
     <!-- Study Storage -->
     <BaseSettingsSection heading="Study Storage">
       <template #description>
-        See the total local database size and compare study content. Per-study values exclude shared SQLite overhead.
+        See the total local database size and compare study content. Per-study values are logical estimates: shared
+        positions are counted once per study and SQLite overhead is excluded.
       </template>
       <template #form>
         <Suspense>

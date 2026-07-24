@@ -48,7 +48,7 @@ import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
-import { db, execute, selectFirst } from "@services/database";
+import { db, execute, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { getPositionKey } from "@utilities/move";
 import { NormalMove, makeSquare } from "chessops";
@@ -80,7 +80,7 @@ function onSubmit() {
 // TODO: will currently only work with mainline
 async function processPgn(pgn: string) {
   const games = parsePgn(pgn);
-  games.forEach(async (game) => {
+  for (const game of games) {
     const pos = startingPosition(game.headers).unwrap();
     const headers = game.headers;
     const chapterName = headers.get(chapterHeader.value) ?? "";
@@ -141,7 +141,7 @@ async function processPgn(pgn: string) {
       lineId = lineQueryResult.lastInsertId;
     }
 
-    let positions = [];
+    const positions = [];
     for (const node of game.moves.mainline()) {
       const move = parseSan(pos, node.san) as NormalMove;
       if (!move) {
@@ -150,8 +150,10 @@ async function processPgn(pgn: string) {
       }
       const fen = makeFen(pos.toSetup());
       positions.push({
-        fen,
         position_key: getPositionKey(fen),
+        ply: positions.length,
+        halfmove_clock: pos.halfmoves,
+        fullmove_number: pos.fullmoves,
         source: makeSquare(move.from),
         destination: makeSquare(move.to),
         san: node.san,
@@ -160,14 +162,41 @@ async function processPgn(pgn: string) {
       pos.play(move);
     }
 
-    if (positions.length === 0) return;
+    if (positions.length === 0) continue;
+    const positionKeys = [...new Set(positions.map((position) => position.position_key))];
+    const chessPositionsQuery = db
+      .insertInto("chess_positions")
+      .values(positionKeys.map((position_key) => ({ position_key })))
+      .onConflict((oc) => oc.column("position_key").doNothing())
+      .compile();
+    await execute(chessPositionsQuery);
+
+    const storedChessPositionsQuery = db
+      .selectFrom("chess_positions")
+      .select(["id", "position_key"])
+      .where("position_key", "in", positionKeys)
+      .compile();
+    const storedChessPositions = await select(storedChessPositionsQuery);
+    const chessPositionIds = new Map(
+      storedChessPositions.map((position) => [position.position_key, position.id] as const)
+    );
+
     const positionsQuery = db
       .insertInto("positions")
-      .values(positions)
-      .onConflict((oc) => oc.columns(["line", "fen"]).doNothing())
+      .values(
+        positions.map(({ position_key, ...position }) => {
+          const chessPosition = chessPositionIds.get(position_key);
+          if (chessPosition === undefined) throw new Error(`Position key was not stored: ${position_key}`);
+          return {
+            ...position,
+            chess_position: chessPosition,
+          };
+        })
+      )
+      .onConflict((oc) => oc.columns(["line", "ply"]).doNothing())
       .compile();
-    execute(positionsQuery);
-  });
+    await execute(positionsQuery);
+  }
 }
 
 definePage({

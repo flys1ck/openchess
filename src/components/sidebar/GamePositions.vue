@@ -42,9 +42,7 @@
       <ul class="divide-y divide-gray-200">
         <li v-for="line in lines" :key="line.line_id">
           <RouterLink
-            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${getPlyCount(
-              line.fen
-            )}`"
+            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${line.ply}`"
             class="flex flex-col px-4 py-2 hover:bg-orange-200"
             @pointermove="
               () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
@@ -168,7 +166,7 @@ import { useGame } from "@composables/useGame";
 import { explorerClient, mastersDatabase, type OpeningExplorerMasters } from "@flys1ck/lichess-client";
 import { db, select } from "@services/database";
 import { roundToFixed } from "@utilities/math";
-import { getPlyCount, getPositionKey } from "@utilities/move";
+import { getPositionKey } from "@utilities/move";
 import { Key } from "chessground/types";
 import { shallowRef, watchEffect } from "vue";
 
@@ -198,8 +196,9 @@ watchEffect(async () => {
   const positionKey = getPositionKey(props.game.fen.value);
   const positionGroupByQuery = db
     .selectFrom("positions")
+    .innerJoin("chess_positions", "chess_positions.id", "positions.chess_position")
     .select(({ fn }) => ["source", "destination", "san", fn.count<number>("line").distinct().as("line_count")])
-    .where("positions.position_key", "=", positionKey)
+    .where("chess_positions.position_key", "=", positionKey)
     .groupBy(["source", "destination", "san"])
     .orderBy("line_count", "desc")
     .compile();
@@ -208,13 +207,14 @@ watchEffect(async () => {
 
   const positionQuery = db
     .selectFrom("positions")
+    .innerJoin("chess_positions", "chess_positions.id", "positions.chess_position")
     .innerJoin("lines", "lines.id", "positions.line")
     .innerJoin("chapters", "chapters.id", "lines.chapter")
     .innerJoin("studies", "studies.id", "chapters.study")
     .select([
       "positions.source",
       "positions.destination",
-      "positions.fen",
+      "positions.ply",
       "studies.id as study_id",
       "studies.name as study_name",
       "chapters.id as chapter_id",
@@ -222,7 +222,7 @@ watchEffect(async () => {
       "lines.id as line_id",
       "lines.name as line_name",
     ])
-    .where("positions.position_key", "=", positionKey)
+    .where("chess_positions.position_key", "=", positionKey)
     .limit(10)
     .compile();
 
