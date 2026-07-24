@@ -2,7 +2,11 @@
   all: initial;
 }
 
-.oc-blob {
+:host(.openchess-floating-button-hidden) {
+  pointer-events: none;
+}
+
+.openchess-floating-button {
   position: fixed;
   right: 0;
   top: 50%;
@@ -10,6 +14,7 @@
   z-index: 2147483646;
   width: 50px;
   height: 50px;
+  opacity: 1;
   padding: 0;
   border: none;
   border-radius: 58% 42% 48% 52% / 52% 48% 52% 48%;
@@ -19,24 +24,29 @@
     0 8px 18px rgb(194 65 12 / 0.4);
   cursor: pointer;
   transition:
+    opacity 200ms ease,
     transform 200ms cubic-bezier(0.22, 1.4, 0.36, 1),
     box-shadow 200ms cubic-bezier(0.22, 1.4, 0.36, 1),
     border-radius 200ms cubic-bezier(0.22, 1.4, 0.36, 1);
-  animation: blob-idle 4.2s ease-in-out infinite;
+  animation: openchess-floating-button-idle 4.2s ease-in-out infinite;
 }
 
-.oc-blob:hover {
+:host(.openchess-floating-button-hidden) .openchess-floating-button {
+  opacity: 0;
+}
+
+.openchess-floating-button:hover {
   transform: translateY(-50%) translateX(0) scale(1.1);
   box-shadow:
     0 0 36px rgb(249 115 22 / 0.75),
     0 10px 22px rgb(194 65 12 / 0.45);
 }
 
-.oc-blob:active {
+.openchess-floating-button:active {
   transform: translateY(-50%) translateX(0) scale(0.95);
 }
 
-.oc-blob:focus-visible {
+.openchess-floating-button:focus-visible {
   outline: none;
   box-shadow:
     0 0 28px rgb(249 115 22 / 0.65),
@@ -45,7 +55,7 @@
     0 0 0 6px rgb(249 115 22 / 0.5);
 }
 
-@keyframes blob-idle {
+@keyframes openchess-floating-button-idle {
   0%,
   100% {
     border-radius: 58% 42% 48% 52% / 52% 48% 52% 48%;
@@ -59,7 +69,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .oc-blob {
+  .openchess-floating-button {
     animation: none;
     transition: none;
   }

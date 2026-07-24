@@ -1,7 +1,7 @@
-import { mountFloatingButtonWhenFinished } from "./floating-button";
+import { startFloatingButtonSync, stopFloatingButtonSync } from "./floating-button";
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => void mountFloatingButtonWhenFinished(), { once: true });
-} else {
-  void mountFloatingButtonWhenFinished();
+startFloatingButtonSync();
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(stopFloatingButtonSync);
 }

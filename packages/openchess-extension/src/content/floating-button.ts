@@ -1,47 +1,68 @@
-import { extractChessDotComLiveGameId, waitForChessDotComGameFinished } from "./chessdotcom";
-import { extractLichessGameId, waitForLichessGameFinished } from "./lichess";
+import { extractChessDotComLiveGameId, isChessDotComGameFinished } from "./chessdotcom";
+import { extractLichessGameId, isLichessGameFinished } from "./lichess";
 import styles from "./floating-button.css?inline";
 
 const HOST_ID = "openchess-floating-button-host";
+const HIDDEN_CLASS = "openchess-floating-button-hidden";
 const OPENCHESS_SCHEME = "com.openchess.dev";
+const SYNC_INTERVAL_MS = 1000;
 
 type OpenChessGameProvider = "lichess" | "chessdotcom";
 
-type CurrentGame = { provider: OpenChessGameProvider; gameId: string };
+type CurrentGame = {
+  provider: OpenChessGameProvider;
+  gameId: string;
+  isAnalysis: boolean;
+};
 
-let waitController: AbortController | null = null;
+let syncIntervalId: number | null = null;
 
 /**
- * Waits until the current Lichess or Chess.com game is finished, then mounts the floating button. No-ops when the URL
- * is not a game page. Cancels any in-flight wait when called again.
+ * Shows the floating button on game analysis pages and active game pages whose finished-game marker is present.
  */
-export async function mountFloatingButtonWhenFinished(): Promise<void> {
-  waitController?.abort();
-  waitController = new AbortController();
-  const { signal } = waitController;
-
+export function syncFloatingButton(): void {
   const game = getCurrentGame();
-  if (!game) return;
 
-  const finished =
-    game.provider === "lichess"
-      ? await waitForLichessGameFinished(document, signal)
-      : await waitForChessDotComGameFinished(document, signal);
-  if (!finished || signal.aborted) return;
+  if (!game) {
+    hideFloatingButton();
+    return;
+  }
 
-  // Bail if the user navigated to a different game while waiting.
-  const current = getCurrentGame();
-  if (!current || current.provider !== game.provider || current.gameId !== game.gameId) return;
-
-  mountFloatingButton();
+  if (game.isAnalysis || isGameFinished(game)) {
+    showFloatingButton();
+  } else {
+    hideFloatingButton();
+  }
 }
 
 /**
- * Mounts the liquid blob "Analyze in OpenChess" button if it is not already present and the URL is a game page.
+ * Runs an immediate sync, then polls the current game state. No-ops if already started.
  */
-export function mountFloatingButton(): void {
-  if (document.getElementById(HOST_ID)) return;
-  if (!getCurrentGame()) return;
+export function startFloatingButtonSync(): void {
+  if (syncIntervalId !== null) return;
+
+  syncFloatingButton();
+  syncIntervalId = window.setInterval(syncFloatingButton, SYNC_INTERVAL_MS);
+}
+
+/**
+ * Stops polling.
+ */
+export function stopFloatingButtonSync(): void {
+  if (syncIntervalId === null) return;
+  window.clearInterval(syncIntervalId);
+  syncIntervalId = null;
+}
+
+/**
+ * Creates or fades in the liquid blob "Analyze in OpenChess" button.
+ */
+export function showFloatingButton(): void {
+  const existingHost = document.getElementById(HOST_ID);
+  if (existingHost) {
+    existingHost.classList.remove(HIDDEN_CLASS);
+    return;
+  }
 
   const host = document.createElement("div");
   host.id = HOST_ID;
@@ -52,12 +73,19 @@ export function mountFloatingButton(): void {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "oc-blob";
+  button.className = "openchess-floating-button";
   button.setAttribute("aria-label", "Analyze in OpenChess");
   button.addEventListener("click", openCurrentGameInOpenChess);
 
   shadow.append(style, button);
   document.body.append(host);
+}
+
+/**
+ * Fades out the floating button if present.
+ */
+export function hideFloatingButton(): void {
+  document.getElementById(HOST_ID)?.classList.add(HIDDEN_CLASS);
 }
 
 /**
@@ -78,17 +106,36 @@ function openCurrentGameInOpenChess(): void {
 }
 
 /**
+ * Returns true when an active game's provider-specific finished marker is present.
+ */
+function isGameFinished(game: CurrentGame): boolean {
+  return game.provider === "lichess" ? isLichessGameFinished(document) : isChessDotComGameFinished(document, location);
+}
+
+/**
  * Returns provider + game id for the current Lichess or Chess.com URL, or null when not on a supported game page.
  */
 function getCurrentGame(locationLike: Pick<Location, "hostname" | "pathname"> = location): CurrentGame | null {
   if (/(^|\.)lichess\.org$/i.test(locationLike.hostname)) {
     const gameId = extractLichessGameId(locationLike.pathname);
-    return gameId ? { provider: "lichess", gameId } : null;
+    return gameId
+      ? {
+          provider: "lichess",
+          gameId,
+          isAnalysis: /\/analysis\/?$/i.test(locationLike.pathname),
+        }
+      : null;
   }
 
   if (/(^|\.)chess\.com$/i.test(locationLike.hostname)) {
     const gameId = extractChessDotComLiveGameId(locationLike.pathname);
-    return gameId ? { provider: "chessdotcom", gameId } : null;
+    return gameId
+      ? {
+          provider: "chessdotcom",
+          gameId,
+          isAnalysis: /^\/analysis\/game\//i.test(locationLike.pathname),
+        }
+      : null;
   }
 
   return null;
