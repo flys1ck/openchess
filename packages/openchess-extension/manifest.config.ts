@@ -5,14 +5,10 @@ export default defineManifest({
   name: "OpenChess",
   version: "0.0.1",
   description: "OpenChess browser extension for Lichess and Chess.com",
-  background: {
-    service_worker: "src/background/index.ts",
-    type: "module",
-  },
   content_scripts: [
     {
       js: ["src/content/main.ts"],
-      matches: ["https://lichess.org/*", "https://www.chess.com/game/*", "https://www.chess.com/analysis/game/*"],
+      matches: ["https://lichess.org/*", "https://www.chess.com/*"],
       run_at: "document_idle",
     },
   ],
