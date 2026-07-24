@@ -1,0 +1,34 @@
+---
+description: Prefer inlining one-liner logic over extracting dedicated functions
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# No One-Liner Functions
+
+Do not extract a named function when the body is a single expression with no meaningful reuse or abstraction.
+
+Prefer inlining the expression at the call site, or using a named constant when the value itself is reusable (e.g. a regex).
+
+```typescript
+// ❌ BAD — function only wraps one expression
+function isChessDotComAnalysisPath(pathname: string): boolean {
+  return /^\/analysis\/game\/live\/\d+/i.test(pathname);
+}
+
+if (isChessDotComAnalysisPath(locationLike.pathname)) return true;
+
+// ✅ GOOD — inline at the call site
+if (/^\/analysis\/game\/live\/\d+/i.test(locationLike.pathname)) return true;
+
+// ✅ GOOD — named constant when the pattern itself is reused
+const CHESSCOM_ANALYSIS_PATH = /^\/analysis\/game\/live\/\d+/i;
+
+if (CHESSCOM_ANALYSIS_PATH.test(locationLike.pathname)) return true;
+```
+
+Extract a function only when it:
+
+- Has non-trivial logic (multiple statements, branching, or non-obvious behavior)
+- Is reused in multiple places and naming the operation clarifies intent
+- Needs shared documentation or a stable public API

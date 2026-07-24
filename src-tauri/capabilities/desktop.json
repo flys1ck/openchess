@@ -36,9 +36,20 @@
     "shell:allow-stdin-write",
     {
       "identifier": "opener:allow-open-url",
-      "allow": [{ "url": "https://lichess.org/*" }]
+      "allow": [
+        {
+          "url": "https://lichess.org/*"
+        },
+        {
+          "url": "https://chess.com/*"
+        }
+      ]
     },
     "deep-link:default",
-    "dialog:allow-confirm"
+    "dialog:allow-confirm",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://api.chess.com/*" }, { "url": "https://www.chess.com/*" }]
+    }
   ]
 }
