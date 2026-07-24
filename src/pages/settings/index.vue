@@ -5,14 +5,14 @@
     <BaseSettingsSection heading="Lichess Account">
       <template #description> Connect your Lichess account to access your games and profile. </template>
       <template #form>
-        <div v-if="lichess.isConnected" class="flex items-center gap-4">
-          <BaseButton variant="danger-outline" :disabled="isDisconnecting" @click="handleDisconnect">
-            Disconnect
-          </BaseButton>
+        <div v-if="lichess.isConnected" class="flex items-center justify-between gap-4">
           <p class="flex items-center gap-1 text-sm text-gray-500">
             <CheckBadgeIcon class="h-4 w-4 text-blue-500" />
             Connected as {{ lichess.username }}
           </p>
+          <BaseButton variant="danger-outline" :disabled="isDisconnecting" @click="handleDisconnect">
+            Disconnect
+          </BaseButton>
         </div>
         <BaseButton v-else :disabled="isConnecting" @click="handleConnect">
           {{ isConnecting ? "Connecting..." : "Connect with Lichess" }}
@@ -34,7 +34,7 @@
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
             />
-            <BaseButton variant="primary" type="submit">Save</BaseButton>
+            <BaseButton variant="secondary" type="submit">Save</BaseButton>
           </div>
           <p v-if="chessdotcom.username" class="flex items-center gap-1 text-sm text-gray-500">
             <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Connected to {{ chessdotcom.username }}

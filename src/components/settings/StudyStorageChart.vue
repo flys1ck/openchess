@@ -1,16 +1,16 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-4">
     <figure v-if="studies.length">
       <figcaption class="sr-only">Stored content size for each study</figcaption>
       <ul role="list" class="space-y-4">
         <li v-for="study in studies" :key="study.id">
-          <div class="mb-1 flex items-baseline justify-between gap-4 text-sm">
-            <span class="truncate font-medium text-gray-900">{{ study.name }}</span>
+          <div class="flex items-baseline justify-between gap-4 text-sm">
+            <span class="truncate text-gray-900">{{ study.name }}</span>
             <span class="shrink-0 text-gray-500">{{ formatFileSize(study.size_bytes) }}</span>
           </div>
-          <div class="h-3 overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
+          <div class="mt-1 h-2 overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
             <div
-              class="h-full min-w-1 rounded-full bg-orange-400"
+              class="h-full min-w-1 rounded-full bg-gray-300"
               :style="{ width: `${getBarWidth(study.size_bytes)}%` }"
             />
           </div>
@@ -18,9 +18,9 @@
       </ul>
     </figure>
     <p v-else class="text-sm text-gray-500">Create a study to see its stored content size.</p>
-    <dl class="flex items-baseline justify-between gap-4 rounded-lg bg-gray-50 py-3">
-      <dt class="text-sm font-medium text-gray-700">Total database size</dt>
-      <dd class="text-sm font-semibold text-gray-900">{{ formatFileSize(databaseSize) }}</dd>
+    <dl class="flex items-baseline justify-between gap-4 rounded-lg bg-gray-50 py-3 text-sm font-medium">
+      <dt class="text-gray-700">Total database size</dt>
+      <dd class="text-gray-900">{{ formatFileSize(databaseSize) }}</dd>
     </dl>
   </div>
 </template>
