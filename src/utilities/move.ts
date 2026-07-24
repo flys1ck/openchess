@@ -23,6 +23,13 @@ export function getPossibleMoves(fen: string) {
   return chessgroundDests(position);
 }
 
+export function getPositionKey(fen: string) {
+  const fields = fen.trim().split(/\s+/);
+  if (fields.length !== 6) throw new Error("Expected a complete FEN");
+
+  return fields.slice(0, 4).join(" ");
+}
+
 export function getPlyCount(fen: string) {
   const parsedFen = parseFen(fen).unwrap();
   const currentMove = parsedFen.fullmoves - 1;

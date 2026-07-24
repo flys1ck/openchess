@@ -10,7 +10,7 @@
         <span class="font-light">Number of Lines</span>
       </div>
       <ul class="flex flex-col divide-y divide-gray-200">
-        <li v-for="position in positions" :key="position.id">
+        <li v-for="position in positions" :key="`${position.source}-${position.destination}-${position.san}`">
           <!-- TODO: shapes are not refreshing when there is no pointer movement -->
           <button
             class="flex w-full justify-between px-4 py-0.5 text-sm hover:bg-orange-200"
@@ -30,7 +30,7 @@
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
           >
             <span class="font-medium">{{ position.san }}</span>
-            <span>{{ position.study_count }}</span>
+            <span>{{ position.line_count }}</span>
           </button>
         </li>
       </ul>
@@ -168,7 +168,7 @@ import { useGame } from "@composables/useGame";
 import { explorerClient, mastersDatabase, type OpeningExplorerMasters } from "@flys1ck/lichess-client";
 import { db, select } from "@services/database";
 import { roundToFixed } from "@utilities/math";
-import { getPlyCount } from "@utilities/move";
+import { getPlyCount, getPositionKey } from "@utilities/move";
 import { Key } from "chessground/types";
 import { shallowRef, watchEffect } from "vue";
 
@@ -195,22 +195,22 @@ type MasterMove = OpeningExplorerMasters["moves"][number] & MoveStatistics;
 const masterMoves = shallowRef<MasterMove[]>([]);
 
 watchEffect(async () => {
-  const fenWithoutMoves = props.game.fen.value.replaceAll(/ \d+ \d+$/g, "");
+  const positionKey = getPositionKey(props.game.fen.value);
   const positionGroupByQuery = db
     .selectFrom("positions")
-    .select(({ fn }) => ["source", "destination", "san", fn.count<number>("study").as("study_count")])
-    .where("positions.fen", "like", `${fenWithoutMoves}%`)
+    .select(({ fn }) => ["source", "destination", "san", fn.count<number>("line").distinct().as("line_count")])
+    .where("positions.position_key", "=", positionKey)
     .groupBy(["source", "destination", "san"])
-    .orderBy("study_count", "desc")
+    .orderBy("line_count", "desc")
     .compile();
 
   positions.value = await select(positionGroupByQuery);
 
   const positionQuery = db
     .selectFrom("positions")
-    .innerJoin("studies", "studies.id", "positions.study")
-    .innerJoin("chapters", "chapters.id", "positions.chapter")
     .innerJoin("lines", "lines.id", "positions.line")
+    .innerJoin("chapters", "chapters.id", "lines.chapter")
+    .innerJoin("studies", "studies.id", "chapters.study")
     .select([
       "positions.source",
       "positions.destination",
@@ -222,7 +222,7 @@ watchEffect(async () => {
       "lines.id as line_id",
       "lines.name as line_name",
     ])
-    .where("positions.fen", "like", `${fenWithoutMoves}%`)
+    .where("positions.position_key", "=", positionKey)
     .limit(10)
     .compile();
 

@@ -24,19 +24,17 @@ export interface Lines {
   name: string;
   orientation: Generated<string>;
   pgn: string;
-  study: number;
 }
 
 export interface Positions {
-  chapter: number | null;
   created_at: Generated<string>;
   destination: Generated<string>;
   fen: string;
   id: Generated<number>;
-  line: number | null;
+  line: number;
+  position_key: string;
   san: string;
   source: Generated<string>;
-  study: number | null;
 }
 
 export interface Settings {

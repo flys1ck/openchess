@@ -50,6 +50,7 @@ import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import { AcademicCapIcon } from "@heroicons/vue/24/solid";
 import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { getPositionKey } from "@utilities/move";
 import { NormalMove, makeSquare } from "chessops";
 import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
@@ -117,7 +118,6 @@ async function processPgn(pgn: string) {
     const lineQuery = db
       .insertInto("lines")
       .values({
-        study: Number(route.params.studyId),
         chapter: chapterId,
         name: lineName,
         pgn: makePgn(game),
@@ -148,13 +148,13 @@ async function processPgn(pgn: string) {
         console.error("mainline includes illegal moves");
         break;
       }
+      const fen = makeFen(pos.toSetup());
       positions.push({
-        fen: makeFen(pos.toSetup()),
+        fen,
+        position_key: getPositionKey(fen),
         source: makeSquare(move.from),
         destination: makeSquare(move.to),
         san: node.san,
-        study: Number(route.params.studyId),
-        chapter: chapterId,
         line: lineId,
       });
       pos.play(move);
