@@ -42,6 +42,25 @@
         </form>
       </template>
     </BaseSettingsSection>
+    <!-- Study Storage -->
+    <BaseSettingsSection heading="Study Storage">
+      <template #description>
+        See the total local database size and compare study content. Per-study values exclude shared SQLite overhead.
+      </template>
+      <template #form>
+        <Suspense>
+          <StudyStorageChart />
+          <template #fallback>
+            <div class="space-y-4" aria-label="Loading study storage">
+              <div v-for="index in 3" :key="index" class="animate-pulse space-y-2">
+                <div class="h-4 w-1/3 rounded bg-gray-200" />
+                <div class="h-3 rounded-full bg-gray-100" />
+              </div>
+            </div>
+          </template>
+        </Suspense>
+      </template>
+    </BaseSettingsSection>
   </BaseContainer>
 </template>
 
@@ -52,6 +71,7 @@ import BaseInput from "@components/base/BaseInput.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
 import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
