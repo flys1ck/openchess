@@ -2,7 +2,7 @@
   <GameMain
     v-if="parsedGame"
     :game="game"
-    :orientation="parsedGame[0].headers.get('White') === 'flys1ck' ? 'white' : 'black'"
+    :orientation="chessDotCom.username === parsedGame[0].headers.get('White') ? 'white' : 'black'"
   />
 </template>
 
