@@ -108,7 +108,10 @@ export async function useEvaluation(fen: Ref<string>, options?: UseEvaluationOpt
   );
 
   function getEvaluatedScore(centipawns: number | undefined, mate: number | undefined): string {
-    if (mate !== undefined) return `#${mate}`;
+    if (mate !== undefined) {
+      const score = currentTurnColor.value === "white" ? mate : -mate;
+      return `${score < 0 ? "-" : ""}#${Math.abs(score)}`;
+    }
     if (centipawns === undefined) return "-";
     const pawnAdvantage = centipawns / 100;
     const score = currentTurnColor.value === "white" ? pawnAdvantage : -pawnAdvantage;
