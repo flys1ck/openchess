@@ -5,14 +5,14 @@
     <BaseSettingsSection heading="Lichess Account">
       <template #description> Connect your Lichess account to access your games and profile. </template>
       <template #form>
-        <div v-if="lichess.isConnected" class="flex items-center gap-4">
-          <BaseButton variant="danger-outline" :disabled="isDisconnecting" @click="handleDisconnect">
-            Disconnect
-          </BaseButton>
+        <div v-if="lichess.isConnected" class="flex items-center justify-between gap-4">
           <p class="flex items-center gap-1 text-sm text-gray-500">
             <CheckBadgeIcon class="h-4 w-4 text-blue-500" />
             Connected as {{ lichess.username }}
           </p>
+          <BaseButton variant="danger-outline" :disabled="isDisconnecting" @click="handleDisconnect">
+            Disconnect
+          </BaseButton>
         </div>
         <BaseButton v-else :disabled="isConnecting" @click="handleConnect">
           {{ isConnecting ? "Connecting..." : "Connect with Lichess" }}
@@ -34,12 +34,29 @@
               :schema="chessdotcomUsernameSchema"
               :async-schema="chessdotcomUsernameAsyncSchema"
             />
-            <BaseButton variant="primary" type="submit">Save</BaseButton>
+            <BaseButton variant="secondary" type="submit">Save</BaseButton>
           </div>
           <p v-if="chessdotcom.username" class="flex items-center gap-1 text-sm text-gray-500">
             <CheckBadgeIcon class="h-4 w-4 text-blue-500" />Connected to {{ chessdotcom.username }}
           </p>
         </form>
+      </template>
+    </BaseSettingsSection>
+    <!-- Study Storage -->
+    <BaseSettingsSection heading="Study Storage">
+      <template #description> Local database size by study content. Per-study values are estimates. </template>
+      <template #form>
+        <Suspense>
+          <StudyStorageChart />
+          <template #fallback>
+            <div class="space-y-4" aria-label="Loading study storage">
+              <div v-for="index in 3" :key="index" class="animate-pulse space-y-2">
+                <div class="h-4 w-1/3 rounded bg-gray-200" />
+                <div class="h-3 rounded-full bg-gray-100" />
+              </div>
+            </div>
+          </template>
+        </Suspense>
       </template>
     </BaseSettingsSection>
   </BaseContainer>
@@ -52,6 +69,7 @@ import BaseInput from "@components/base/BaseInput.vue";
 import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
 import { CheckBadgeIcon, Cog8ToothIcon } from "@heroicons/vue/24/solid";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";

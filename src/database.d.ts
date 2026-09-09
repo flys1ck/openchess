@@ -16,6 +16,11 @@ export interface Chapters {
   study: number;
 }
 
+export interface ChessPositions {
+  id: Generated<number>;
+  position_key: string;
+}
+
 export interface Lines {
   chapter: number;
   created_at: Generated<string>;
@@ -24,19 +29,19 @@ export interface Lines {
   name: string;
   orientation: Generated<string>;
   pgn: string;
-  study: number;
 }
 
 export interface Positions {
-  chapter: number | null;
+  chess_position: number;
   created_at: Generated<string>;
   destination: Generated<string>;
-  fen: string;
+  fullmove_number: number;
+  halfmove_clock: number;
   id: Generated<number>;
-  line: number | null;
+  line: number;
+  ply: number;
   san: string;
   source: Generated<string>;
-  study: number | null;
 }
 
 export interface Settings {
@@ -53,6 +58,7 @@ export interface Studies {
 
 export interface DB {
   chapters: Chapters;
+  chess_positions: ChessPositions;
   lines: Lines;
   positions: Positions;
   settings: Settings;

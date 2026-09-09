@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { PromotionPiece, useGame } from "@composables/useGame";
 import { onKeyStroke, useElementBounding, useEventListener } from "@vueuse/core";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -96,6 +96,13 @@ onMounted(async () => {
     orientation: props.orientation,
   });
 });
+
+watch(
+  () => props.orientation,
+  (orientation) => {
+    props.game.setOrientation(orientation);
+  }
+);
 </script>
 
 <style>

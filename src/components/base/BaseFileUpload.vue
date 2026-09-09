@@ -53,6 +53,7 @@
 <script setup lang="ts">
 import { DocumentIcon } from "@heroicons/vue/24/outline";
 import { PhotoIcon, XMarkIcon } from "@heroicons/vue/24/solid";
+import { formatFileSize } from "@utilities/fileSize";
 import { computed, ref } from "vue";
 import BaseButton from "./BaseButton.vue";
 
@@ -89,15 +90,6 @@ function removeFile(fileName: string) {
   fileInputRef.value.files = dataTransfer.files;
   files.value = filteredFiles;
   emit("update:modelValue", files.value);
-}
-
-function formatFileSize(bytes: number) {
-  if (bytes < 1024) {
-    return `${bytes} bytes`;
-  } else if (bytes < 1048576) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-  return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
 const totalUploadSize = computed(() => {

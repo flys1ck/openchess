@@ -23,44 +23,9 @@ export function getPossibleMoves(fen: string) {
   return chessgroundDests(position);
 }
 
-export function getPlyCount(fen: string) {
-  const parsedFen = parseFen(fen).unwrap();
-  const currentMove = parsedFen.fullmoves - 1;
-  const turnOffset = parsedFen.turn === "white" ? 0 : 1;
-  return currentMove * 2 + turnOffset;
+export function getPositionKey(fen: string) {
+  const fields = fen.trim().split(/\s+/);
+  if (fields.length !== 6) throw new Error("Expected a complete FEN");
+
+  return fields.slice(0, 4).join(" ");
 }
-
-// export function toRole(piece: PieceSymbol): Role {
-//   const roles: Record<PieceSymbol, Role> = {
-//     q: "queen",
-//     r: "rook",
-//     b: "bishop",
-//     n: "knight",
-//     p: "pawn",
-//     k: "king",
-//   };
-
-//   return roles[piece];
-// }
-
-// export function toPiece(role: Role): PieceSymbol {
-//   const pieces: Record<Role, PieceSymbol> = {
-//     queen: "q",
-//     rook: "r",
-//     bishop: "b",
-//     knight: "n",
-//     pawn: "p",
-//     king: "k",
-//   };
-
-//   return pieces[role];
-// }
-
-// export function toColor(color: Color): CgColor {
-//   const colors: Record<Color, "white" | "black"> = {
-//     w: "white",
-//     b: "black",
-//   };
-
-//   return colors[color];
-// }

@@ -27,8 +27,8 @@ watch(
   () => {
     const lineQuery = db
       .selectFrom("lines")
-      .innerJoin("studies", "studies.id", "lines.study")
       .innerJoin("chapters", "chapters.id", "lines.chapter")
+      .innerJoin("studies", "studies.id", "chapters.study")
       .select([
         "lines.id",
         "lines.name",
