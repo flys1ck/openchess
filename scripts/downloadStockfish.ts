@@ -1,54 +1,53 @@
 /* oxlint-disable no-console */
 import fs from "fs";
-import { default as cpuFeatures, type CpuFeatures } from "cpu-features";
 import fd from "follow-redirects";
 import * as tar from "tar";
 import unzipper from "unzipper";
 
-type Platform = "windows" | "macos" | "ubuntu";
-type CpuArchitecture = "m1" | "x86-64" | "armv8";
-type CpuExtension = "avx2" | "apple-silicon";
-
-function getPlatform(): Platform {
-  const platform = process.platform;
-  if (platform === "win32") {
-    return "windows";
-  } else if (platform === "darwin") {
-    return "macos";
-  } else if (platform === "linux") {
-    return "ubuntu";
+export function getStockfishAssetName(targetTriple: string): string {
+  if (targetTriple === "aarch64-apple-darwin" || targetTriple === "x86_64-apple-darwin") {
+    return "stockfish-macos-universal";
   }
-  throw new Error(`Unsupported platform: ${platform}`);
+
+  if (targetTriple === "x86_64-unknown-linux-gnu") {
+    return "stockfish-linux-x86-64-universal";
+  }
+
+  if (targetTriple === "x86_64-pc-windows-msvc") {
+    return "stockfish-windows-x86-64-universal";
+  }
+
+  throw new Error(`Unsupported target triple: ${targetTriple}`);
 }
 
-function getCpuArchitecture(): CpuArchitecture {
+function getHostTargetTriple(): string {
   const platform = process.platform;
   if (platform === "darwin" && process.arch === "arm64") {
-    return "m1";
-  } else if (process.arch === "x64") {
-    return "x86-64";
+    return "aarch64-apple-darwin";
   }
-  return "armv8";
-}
 
-function getCpuExtension(features: CpuFeatures): CpuExtension {
-  const platform = process.platform;
-  if ("avx2" in features.flags && features.flags.avx2 && platform !== "darwin") {
-    return "avx2";
+  if (platform === "darwin" && process.arch === "x64") {
+    return "x86_64-apple-darwin";
   }
-  return "apple-silicon";
+
+  if (platform === "linux" && process.arch === "x64") {
+    return "x86_64-unknown-linux-gnu";
+  }
+
+  if (platform === "win32" && process.arch === "x64") {
+    return "x86_64-pc-windows-msvc";
+  }
+
+  throw new Error(`Unsupported host: ${platform}-${process.arch}`);
 }
 
 const STOCKFISH_VERSION = process.env.STOCKFISH_VERSION;
+const TARGET_TRIPLE = process.env.TARGET_TRIPLE ?? getHostTargetTriple();
 
-const CPU_FEATURES = cpuFeatures();
-const PLATFORM = getPlatform();
-const CPU_ARCHITECTURE = getCpuArchitecture();
-const CPU_EXTENSION = getCpuExtension(CPU_FEATURES);
-
-const STOCKFISH_ARCHIVE_EXTENSION = PLATFORM === "windows" ? ".zip" : ".tar";
-const STOCKFISH_FILE_EXTENSION = PLATFORM === "windows" ? ".exe" : "";
-const STOCKFISH_FILENAME = `stockfish-${PLATFORM}-${CPU_ARCHITECTURE}-${CPU_EXTENSION}`;
+const IS_WINDOWS_TARGET = TARGET_TRIPLE.endsWith("-windows-msvc");
+const STOCKFISH_ARCHIVE_EXTENSION = IS_WINDOWS_TARGET ? ".zip" : ".tar.gz";
+const STOCKFISH_FILE_EXTENSION = IS_WINDOWS_TARGET ? ".exe" : "";
+const STOCKFISH_FILENAME = getStockfishAssetName(TARGET_TRIPLE);
 const STOCKFISH_DOWNLOAD_BASE_URL = `https://github.com/official-stockfish/Stockfish/releases/download/sf_${STOCKFISH_VERSION}`;
 const STOCKFISH_DOWNLOAD_URL = `${STOCKFISH_DOWNLOAD_BASE_URL}/${STOCKFISH_FILENAME}${STOCKFISH_ARCHIVE_EXTENSION}`;
 const STOCKFISH_DOWNLOAD_PATH = `external/stockfish${STOCKFISH_ARCHIVE_EXTENSION}`;
@@ -82,7 +81,7 @@ function parseArchive(readStream: fs.ReadStream): void {
         entry.autodrain();
       }
     });
-  } else if (STOCKFISH_ARCHIVE_EXTENSION === ".tar") {
+  } else {
     console.log("Extracting tar archive");
     readStream
       .pipe(
@@ -129,6 +128,8 @@ async function main(): Promise<void> {
   });
 }
 
-main().catch((error: Error) => {
-  console.error(error);
-});
+if (import.meta.main) {
+  main().catch((error: Error) => {
+    console.error(error);
+  });
+}
