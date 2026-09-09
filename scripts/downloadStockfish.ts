@@ -4,7 +4,7 @@ import fd from "follow-redirects";
 import * as tar from "tar";
 import unzipper from "unzipper";
 
-export function getStockfishAssetName(targetTriple: string): string {
+function getStockfishAssetName(targetTriple: string): string {
   if (targetTriple === "aarch64-apple-darwin" || targetTriple === "x86_64-apple-darwin") {
     return "stockfish-macos-universal";
   }
