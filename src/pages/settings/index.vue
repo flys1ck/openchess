@@ -44,9 +44,7 @@
     </BaseSettingsSection>
     <!-- Study Storage -->
     <BaseSettingsSection heading="Study Storage">
-      <template #description>
-        Local database size by study content. Per-study values are estimates.
-      </template>
+      <template #description> Local database size by study content. Per-study values are estimates. </template>
       <template #form>
         <Suspense>
           <StudyStorageChart />
