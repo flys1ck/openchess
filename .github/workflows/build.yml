@@ -6,7 +6,7 @@ on:
     branches: main
 
 env:
-  STOCKFISH_VERSION: 18
+  STOCKFISH_VERSION: 19
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

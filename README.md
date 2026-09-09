@@ -45,6 +45,21 @@ bun run scripts/generateTargetTriple.ts
 bun tauri dev
 ```
 
+## Updating Stockfish
+
+Find new Stockfish releases on the [official Stockfish releases page](https://github.com/official-stockfish/Stockfish/releases). Set `STOCKFISH_VERSION` to the release number in your local environment, then run:
+
+```bash
+bun run scripts/downloadStockfish.ts
+bun run scripts/generateTargetTriple.ts
+```
+
+First script downloads the platform-appropriate Stockfish archive into `external/stockfish/`. The second regenerates the Tauri sidecar in `src-tauri/bin/`. Restart `bun tauri dev` after updating the binary. If the app still uses the previous binary, remove the debug build before restarting:
+
+```bash
+rm -rf src-tauri/target/debug
+```
+
 ## Code Quality
 
 ```bash

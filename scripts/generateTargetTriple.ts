@@ -7,7 +7,7 @@ const STOCKFISH_SOURCE_PATH = `external/stockfish${EXTENSION}`;
 const SIDECAR_DIRECTORY = "src-tauri/bin";
 
 async function main() {
-  const targetTriple = execSync("rustc --print host-tuple").toString().trim();
+  const targetTriple = process.env.TARGET_TRIPLE ?? execSync("rustc --print host-tuple").toString().trim();
   if (!targetTriple) {
     console.error("Failed to determine platform target triple");
     process.exit(1);

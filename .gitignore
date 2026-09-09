@@ -24,6 +24,8 @@ dist-ssr
 # env
 .arg
 .envrc
+.env
+mise.local.toml
 
 # external binaries
 external
