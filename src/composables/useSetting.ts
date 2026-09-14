@@ -4,7 +4,7 @@ import { ref, watch } from "vue";
 export async function useSetting(key: string, initialValue: string) {
   const getItem = async (key: string) => {
     const query = db.selectFrom("settings").select("value").where("key", "=", key).compile();
-    return (await selectFirst(query)).value ?? null;
+    return (await selectFirst(query))?.value ?? null;
   };
 
   const setItem = async (key: string, value: string) => {
