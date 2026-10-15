@@ -24,8 +24,8 @@ const resultText = computed(() => {
 });
 
 const resultTagClasses = computed(() => ({
-  "bg-white text-gray-900": props.result === "white",
-  "bg-gray-300 text-gray-800": props.result === null,
-  "bg-gray-600 text-gray-50": props.result === "black",
+  "bg-white text-neutral-950": props.result === "white",
+  "bg-neutral-300 text-neutral-800": props.result === null,
+  "bg-neutral-800 text-neutral-50": props.result === "black",
 }));
 </script>

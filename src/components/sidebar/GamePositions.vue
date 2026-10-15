@@ -85,19 +85,19 @@
             <div class="inline-flex w-56 overflow-hidden rounded-sm border text-xs font-light">
               <span
                 v-if="move.whiteWinPercentage"
-                class="bg-white text-gray-900"
+                class="bg-white text-neutral-950"
                 :style="`width: ${move.whiteWinPercentage}%`"
               >
                 {{ percentageText(move.whiteWinPercentage) }}
               </span>
               <span
                 v-if="move.drawPercentage"
-                class="bg-gray-300 text-gray-800"
+                class="bg-neutral-300 text-neutral-800"
                 :style="`width: ${move.drawPercentage}%`"
               >
                 {{ percentageText(move.drawPercentage) }}
               </span>
-              <span v-if="move.blackWinPercentage" class="grow bg-gray-600 text-gray-50">
+              <span v-if="move.blackWinPercentage" class="grow bg-neutral-800 text-neutral-50">
                 {{ percentageText(move.blackWinPercentage) }}
               </span>
             </div>

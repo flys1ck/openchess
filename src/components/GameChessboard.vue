@@ -12,7 +12,7 @@
         <button
           v-for="piece in ['queen', 'rook', 'bishop', 'knight']"
           :key="piece"
-          class="aspect-square w-full scale-90 rounded-sm bg-slate-300 hover:bg-orange-300"
+          class="bg-muted hover:bg-primary/40 aspect-square w-full scale-90 rounded-sm"
           @click.stop="game.promote(piece as PromotionPiece)"
         >
           <div :class="`${game.promotionColor.value} ${piece} h-full w-full bg-cover`" />
