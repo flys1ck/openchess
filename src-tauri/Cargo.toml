@@ -49,5 +49,10 @@ custom-protocol = ["tauri/custom-protocol"]
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 
+# tauri-plugin-deep-link 2.6.2 constructs rust-ini::ParseOption without the
+# fields added in 0.21.2. Pin until a plugin release uses `..Default::default()`.
+[target.'cfg(target_os = "linux")'.dependencies]
+rust-ini = "=0.21.1"
+
 [dev-dependencies]
 tempfile = "3.6.0"
