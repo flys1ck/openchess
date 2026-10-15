@@ -11,9 +11,6 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tauri::Manager;
 
 fn main() {
-    // Single-instance must be first so Windows/Linux deep links are forwarded
-    // before other plugins (or SQLite setup) run on the second process.
-    // https://v2.tauri.app/plugin/deep-linking/
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
             if let Some(window) = app.get_webview_window("main") {
