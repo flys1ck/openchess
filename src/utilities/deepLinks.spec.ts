@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { parseAppDeepLink } from "./deepLinks";
+import { parseAppDeepLink, parseOAuthCallback } from "./deepLinks";
+
+describe("parseOAuthCallback", () => {
+  it("reads query params from a Lichess OAuth callback", () => {
+    expect(parseOAuthCallback("com.openchess.dev://oauth/callback?code=abc&state=xyz")?.get("code")).toBe("abc");
+  });
+
+  it("ignores game deep links", () => {
+    expect(parseOAuthCallback("com.openchess.dev://games/lichess?id=9SZSSje9")).toBeNull();
+  });
+});
 
 describe("parseAppDeepLink", () => {
   it("maps a finished Lichess game deep link to the game route", () => {
