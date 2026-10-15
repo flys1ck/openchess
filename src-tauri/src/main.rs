@@ -22,7 +22,7 @@ fn main() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_sql::Builder::new().build())
         .setup(|app| {
-            #[cfg(any(windows, target_os = "linux"))]
+            #[cfg(any(target_os = "linux", all(debug_assertions, windows)))]
             {
                 use tauri_plugin_deep_link::DeepLinkExt;
                 if let Err(error) = app.deep_link().register_all() {
