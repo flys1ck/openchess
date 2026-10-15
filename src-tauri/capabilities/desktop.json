@@ -8,6 +8,7 @@
     "sql:default",
     "sql:allow-execute",
     "core:default",
+    "mcp-bridge:default",
     "fs:allow-read-file",
     "fs:allow-write-file",
     "fs:allow-read-dir",
