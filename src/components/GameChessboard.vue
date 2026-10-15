@@ -4,19 +4,21 @@
     <!-- promotion overlay -->
     <div
       v-if="game.isPromoting.value"
-      :style="`width: ${overlayWidth}px`"
+      class="absolute top-0 left-0 z-10 bg-black/70"
+      :style="overlayStyle"
       @click="game.cancelPromotion"
-      class="absolute top-0 left-0 z-10 aspect-square bg-black/70"
     >
-      <div class="absolute flex h-1/2 w-1/8 items-center justify-center" :style="game.promotionStyles.value">
-        <button
-          v-for="piece in ['queen', 'rook', 'bishop', 'knight']"
-          :key="piece"
-          class="bg-muted hover:bg-primary/40 aspect-square w-full scale-90 rounded-sm"
-          @click.stop="game.promote(piece as PromotionPiece)"
-        >
-          <div :class="`${game.promotionColor.value} ${piece} h-full w-full bg-cover`" />
-        </button>
+      <div class="absolute top-0 left-0" :style="promotionBoardStyle">
+        <div class="absolute flex h-1/2 w-1/8 items-center justify-center" :style="game.promotionStyles.value">
+          <button
+            v-for="piece in ['queen', 'rook', 'bishop', 'knight']"
+            :key="piece"
+            class="bg-muted hover:bg-primary aspect-square w-full scale-90 rounded-sm"
+            @click.stop="game.promote(piece as PromotionPiece)"
+          >
+            <div :class="`${game.promotionColor.value} ${piece} h-full w-full bg-cover`" />
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -38,12 +40,26 @@ const props = withDefaults(
 );
 
 const chessboardRef = ref<HTMLDivElement>();
-
-// chessground board size are always divisible by 8
-// adjust size of overlay to match board size
-const chessboardBounds = useElementBounding(chessboardRef);
-const overlayWidth = computed(() => {
-  return chessboardBounds.width.value - (chessboardBounds.width.value % 8);
+const boardContainerRef = ref<HTMLElement | null>(null);
+const wrapBounds = useElementBounding(chessboardRef);
+const boardBounds = useElementBounding(boardContainerRef);
+const overlayStyle = computed(() => {
+  if (!wrapBounds.width.value || !wrapBounds.height.value) {
+    return undefined;
+  }
+  return {
+    width: `${wrapBounds.width.value}px`,
+    height: `${wrapBounds.height.value}px`,
+  };
+});
+const promotionBoardStyle = computed(() => {
+  if (!boardBounds.width.value || !boardBounds.height.value) {
+    return { width: "100%", height: "100%" };
+  }
+  return {
+    width: `${boardBounds.width.value}px`,
+    height: `${boardBounds.height.value}px`,
+  };
 });
 
 function toPreviousMove() {
@@ -95,6 +111,7 @@ onMounted(async () => {
   props.game.initializeBoard(chessboardRef.value, {
     orientation: props.orientation,
   });
+  boardContainerRef.value = chessboardRef.value.querySelector("cg-container");
 });
 
 watch(
