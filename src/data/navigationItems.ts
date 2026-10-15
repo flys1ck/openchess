@@ -1,31 +1,31 @@
-import { AcademicCapIcon, BeakerIcon, Cog8ToothIcon, TrophyIcon } from "@heroicons/vue/24/outline";
-import { FunctionalComponent } from "vue";
+import { FlaskConical, GraduationCap, Settings, Trophy } from "@lucide/vue";
+import { Component } from "vue";
 import { RouteNamedMap } from "vue-router/auto-routes";
 
 export interface NavigationItem {
-  icon: FunctionalComponent;
+  icon: Component;
   text: string;
   to: keyof RouteNamedMap;
 }
 
 export const navigationItems: NavigationItem[] = [
   {
-    icon: BeakerIcon,
+    icon: FlaskConical,
     text: "Analysis",
     to: "/analysis/",
   },
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     text: "Studies",
     to: "/studies/",
   },
   {
-    icon: TrophyIcon,
+    icon: Trophy,
     text: "Games",
     to: "/games/",
   },
   {
-    icon: Cog8ToothIcon,
+    icon: Settings,
     text: "Settings",
     to: "/settings/",
   },

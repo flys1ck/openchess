@@ -1,10 +1,10 @@
 import { useSetting } from "@composables/useSetting";
 import { client, explorerClient, getMyProfile, obtainAccessToken, revokeAccessToken } from "@flys1ck/lichess-client";
-import { useToasts } from "@stores/useToasts";
 import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { defineStore } from "pinia";
 import { computed, type Ref } from "vue";
+import { toast } from "vue-sonner";
 
 const LICHESS_CLIENT_ID = "openchess";
 const LICHESS_OAUTH_URL = "https://lichess.org/oauth";
@@ -37,7 +37,6 @@ export async function initLichessStore() {
 }
 
 export const useLichess = defineStore("lichess", () => {
-  const toasts = useToasts();
   const isConnected = computed(() => !!token.value);
 
   async function login() {
@@ -111,8 +110,7 @@ export const useLichess = defineStore("lichess", () => {
       token.value = access_token;
       username.value = profile.data.username ?? "";
     } catch (error) {
-      toasts.addToast({
-        heading: "Lichess connection failed",
+      toast.error("Lichess connection failed", {
         description: error instanceof Error ? error.message : "An unexpected error occurred",
       });
       throw error;

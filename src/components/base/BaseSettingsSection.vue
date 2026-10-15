@@ -1,8 +1,8 @@
 <template>
   <div class="grid grid-cols-3 gap-x-8 gap-y-10">
     <div>
-      <h2 class="text-base leading-7 font-semibold text-gray-900">{{ heading }}</h2>
-      <p v-if="$slots.description" class="mt-1 text-sm leading-6 text-gray-700">
+      <h2 class="text-base leading-7 font-semibold">{{ heading }}</h2>
+      <p v-if="$slots.description" class="text-muted-foreground mt-1 text-sm leading-6">
         <slot name="description" />
       </p>
     </div>
@@ -18,7 +18,7 @@ defineProps<{
 }>();
 
 defineSlots<{
-  description?: void;
-  form: void;
+  description?: () => unknown;
+  form: () => unknown;
 }>();
 </script>

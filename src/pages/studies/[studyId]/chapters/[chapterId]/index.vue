@@ -2,7 +2,9 @@
   <BaseContainer class="overflow-y-auto">
     <BaseSectionHeading heading="Lines">
       <template #actions>
-        <BaseButton as="RouterLink" to="/studies/new">Create new line</BaseButton>
+        <Button as-child>
+          <RouterLink to="/studies/new">Create new line</RouterLink>
+        </Button>
       </template>
     </BaseSectionHeading>
     <Suspense>
@@ -13,10 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import LineList from "@components/lines/LineList.vue";
+import { Button } from "@/components/ui/button";
 
 definePage({
   meta: {

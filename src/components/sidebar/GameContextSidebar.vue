@@ -1,160 +1,167 @@
 <template>
-  <TabGroup
+  <Tabs
+    v-model="selectedTab"
     as="aside"
-    class="flex w-96 shrink-0 flex-col border-l border-gray-200 2xl:w-120"
-    manual
-    :selected-index="selectedTab"
-    @change="changeTab"
+    activation-mode="manual"
+    :unmount-on-hide="false"
+    class="flex w-96 shrink-0 flex-col gap-0 border-l 2xl:w-120"
   >
-    <TabList class="mx-1 mt-1 flex rounded-sm bg-gray-200 p-1">
-      <Tab v-for="tab in TABS" :key="tab" as="template" v-slot="{ selected }">
-        <button
-          :class="selected ? 'bg-orange-50 font-medium text-orange-400' : 'text-gray-500 hover:text-gray-700'"
-          class="grow rounded-sm px-2 py-1 text-sm whitespace-nowrap focus:outline-hidden"
-        >
-          {{ tab }}
-        </button>
-      </Tab>
-    </TabList>
-    <TabPanels as="template">
-      <!-- Game Tab -->
-      <TabPanel
-        :unmount="false"
-        class="flex grow flex-col justify-between overflow-hidden focus:outline-hidden"
-        :tab-index="-1"
-      >
-        <!-- Engine evaluation -->
-        <Suspense>
-          <GameEvaluation :fen="game.fen" @update:bestmoves="setBestMoveArrows" />
-        </Suspense>
-        <!-- Move history -->
-        <template v-if="game.tree.root.value">
-          <div class="grow overflow-y-auto scroll-smooth">
-            <div class="grid grid-cols-16 items-stretch">
-              <GameTreeItem
-                :node="game.tree.root.value"
-                :active-node-id="game.tree.activeNode.value?.id"
-                @nodeselect="game.setActivePosition"
-              />
-            </div>
+    <TabsList class="mx-1 mt-1 w-auto">
+      <TabsTrigger v-for="tab in TABS" :key="tab" :value="tab">{{ tab }}</TabsTrigger>
+    </TabsList>
+    <!-- Game Tab -->
+    <TabsContent value="Game" class="flex grow flex-col justify-between overflow-hidden text-base" :tabindex="-1">
+      <!-- Engine evaluation -->
+      <Suspense>
+        <GameEvaluation :fen="game.fen" @update:bestmoves="setBestMoveArrows" />
+      </Suspense>
+      <!-- Move history -->
+      <template v-if="game.tree.root.value">
+        <div class="grow overflow-y-auto scroll-smooth">
+          <div class="grid grid-cols-16 items-stretch">
+            <GameTreeItem
+              :node="game.tree.root.value"
+              :active-node-id="game.tree.activeNode.value?.id"
+              @nodeselect="game.setActivePosition"
+            />
           </div>
-          <div class="flex flex-col gap-2 border-t border-gray-200 p-4">
-            <div class="flex items-center justify-center gap-4">
-              <BaseTooltip>
-                <template #trigger>
-                  <BaseButton
-                    variant="secondary"
-                    size="sm"
-                    :prefix-icon="ChevronDoubleLeftIcon"
-                    :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
-                    aria-label="Skip to initial position"
-                    @click="toFirstMove"
-                  />
-                </template>
+        </div>
+        <div class="flex flex-col gap-2 border-t p-4">
+          <div class="flex items-center justify-center gap-4">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  :disabled="game.tree.root.value?.id === game.tree.activeNode.value?.id"
+                  aria-label="Skip to initial position"
+                  @click="toFirstMove"
+                >
+                  <ChevronsLeft />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
                 Skip to initial position
-                <BaseKbd class="ml-2" :icon="ArrowUpIcon" />
-              </BaseTooltip>
-              <BaseTooltip>
-                <template #trigger>
-                  <BaseButton
-                    variant="secondary"
-                    size="sm"
-                    :prefix-icon="ChevronLeftIcon"
-                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
-                    aria-label="Previous move"
-                    @click="toPreviousMove"
-                  />
-                </template>
+                <Kbd><ArrowUp /></Kbd>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.previousPosition"
+                  aria-label="Previous move"
+                  @click="toPreviousMove"
+                >
+                  <ChevronLeft />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
                 Previous move
-                <BaseKbd class="ml-2" :icon="ArrowLeftIcon" />
-              </BaseTooltip>
-              <BaseTooltip>
-                <template #trigger>
-                  <BaseButton
-                    variant="secondary"
-                    size="sm"
-                    :prefix-icon="ChevronRightIcon"
-                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                    aria-label="Next move"
-                    @click="toNextMove"
-                  />
-                </template>
+                <Kbd><ArrowLeft /></Kbd>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                  aria-label="Next move"
+                  @click="toNextMove"
+                >
+                  <ChevronRight />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
                 Next move
-                <BaseKbd :icon="ArrowRightIcon" class="ml-2" />
-              </BaseTooltip>
-              <BaseTooltip>
-                <template #trigger>
-                  <BaseButton
-                    variant="secondary"
-                    size="sm"
-                    :prefix-icon="ChevronDoubleRightIcon"
-                    :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
-                    aria-label="Skip to last move"
-                    @click="toLastMove"
-                  />
-                </template>
+                <Kbd><ArrowRight /></Kbd>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  :disabled="!game.tree.activeNode.value || !game.tree.activeNode.value.nextPosition"
+                  aria-label="Skip to last move"
+                  @click="toLastMove"
+                >
+                  <ChevronsRight />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
                 Skip to last move
-                <BaseKbd class="ml-2" :icon="ArrowDownIcon" />
-              </BaseTooltip>
-            </div>
+                <Kbd><ArrowDown /></Kbd>
+              </TooltipContent>
+            </Tooltip>
           </div>
-        </template>
-      </TabPanel>
-      <!-- Positions Tab -->
-      <TabPanel :unmount="false" class="flex grow flex-col overflow-hidden focus:outline-hidden">
-        <GamePositions :game="game" @line-click="selectedTab = 0" />
-      </TabPanel>
-      <!-- Settings Tab -->
-      <TabPanel>
-        <BaseSidebarSectionHeading heading="Game & Board" />
-        <div class="flex flex-col p-4">
-          <BaseButton variant="secondary" @click="game.createNewGame">New Game</BaseButton>
-          <BaseButton class="mt-2" variant="secondary" @click="game.toggleOrientation"
-            >Toggle Orientation
-            <BaseKbd class="ml-2">f</BaseKbd>
-          </BaseButton>
         </div>
-        <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
-        <div class="p-4">
+      </template>
+    </TabsContent>
+    <!-- Positions Tab -->
+    <TabsContent value="Positions" class="flex grow flex-col overflow-hidden text-base">
+      <GamePositions :game="game" @line-click="selectedTab = 'Game'" />
+    </TabsContent>
+    <!-- Settings Tab -->
+    <TabsContent value="Settings" class="text-base">
+      <BaseSidebarSectionHeading heading="Game & Board" />
+      <div class="flex flex-col gap-2 p-4">
+        <Button variant="outline" @click="game.createNewGame">New Game</Button>
+        <Button variant="outline" @click="game.toggleOrientation">
+          Toggle Orientation
+          <Kbd>f</Kbd>
+        </Button>
+      </div>
+      <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
+      <FieldGroup class="gap-4 p-4">
+        <Field>
           <div class="flex items-center justify-between">
-            <BaseInputLabel html-for="depth">Multiple Lines</BaseInputLabel>
-            <span class="text-sm text-gray-600">{{ settings.engineLines[0] }}</span>
+            <Label>Multiple Lines</Label>
+            <span class="text-muted-foreground text-sm">{{ settings.engineLines[0] }}</span>
           </div>
-          <BaseSlider id="depth" :min="1" :max="5" v-model="settings.engineLines" />
-          <div class="mt-2 flex items-center justify-between">
-            <BaseInputLabel html-for="depth">Depth</BaseInputLabel>
-            <span class="text-sm text-gray-600">{{ settings.engineDepth[0] }}</span>
+          <Slider :min="1" :max="5" v-model="settings.engineLines" />
+        </Field>
+        <Field>
+          <div class="flex items-center justify-between">
+            <Label>Depth</Label>
+            <span class="text-muted-foreground text-sm">{{ settings.engineDepth[0] }}</span>
           </div>
-          <BaseSlider id="depth" :min="1" :max="100" v-model="settings.engineDepth" />
-        </div>
-      </TabPanel>
-    </TabPanels>
-  </TabGroup>
+          <Slider :min="1" :max="100" v-model="settings.engineDepth" />
+        </Field>
+      </FieldGroup>
+    </TabsContent>
+  </Tabs>
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
-import BaseInputLabel from "@components/base/BaseInputLabel.vue";
-import BaseKbd from "@components/base/BaseKbd.vue";
 import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
-import BaseSlider from "@components/base/BaseSlider.vue";
-import BaseTooltip from "@components/base/BaseTooltip.vue";
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import GamePositions from "@components/sidebar/GamePositions.vue";
 import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
 import { useGame } from "@composables/useGame";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/vue/20/solid";
-import { ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon } from "@heroicons/vue/24/solid";
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "@lucide/vue";
 import { useSettings } from "@stores/useSettings";
 import { DrawShape } from "chessground/draw";
 import { Key } from "chessground/types";
 import { ref } from "vue";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Kbd } from "@/components/ui/kbd";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
@@ -162,11 +169,8 @@ const props = defineProps<{
 
 const settings = useSettings();
 
-const selectedTab = ref(0);
 const TABS = ["Game", "Positions", "Settings"];
-function changeTab(index: number) {
-  selectedTab.value = index;
-}
+const selectedTab = ref("Game");
 
 function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
   const shapes: DrawShape[] = bestMoves.map((bestMove, i) => ({

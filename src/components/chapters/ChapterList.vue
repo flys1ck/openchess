@@ -1,17 +1,19 @@
 <template>
   <ul>
     <li v-for="chapter in chapters" :key="chapter.id">
-      <BaseLink :to="`/studies/${route.params.studyId}/chapters/${chapter.id}`">{{ chapter.name }}</BaseLink>
+      <Button variant="link" class="px-0" as-child>
+        <RouterLink :to="`/studies/${route.params.studyId}/chapters/${chapter.id}`">{{ chapter.name }}</RouterLink>
+      </Button>
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
-import BaseLink from "@components/base/BaseLink.vue";
-import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { GraduationCap } from "@lucide/vue";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router";
+import { Button } from "@/components/ui/button";
 
 // TODO: move route param to chapter
 const route = useRoute("/studies/[studyId]/");
@@ -34,7 +36,7 @@ const [study, chapters] = await Promise.all([selectFirst(studyQuery), select(cha
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },

@@ -1,11 +1,15 @@
 <template>
-  <div class="flex animate-pulse justify-between gap-8 rounded-sm bg-gray-200 p-4">
+  <div class="ring-foreground/10 flex justify-between gap-8 rounded-xl p-4 ring-1">
     <div class="flex flex-col gap-4">
-      <div class="h-6 w-80 rounded-sm bg-gray-300"></div>
-      <div class="h-6 w-56 rounded-sm bg-gray-300"></div>
+      <Skeleton class="h-6 w-80" />
+      <Skeleton class="h-6 w-56" />
     </div>
     <div class="flex items-center">
-      <div class="h-6 w-36 rounded-sm bg-gray-300"></div>
+      <Skeleton class="h-6 w-36" />
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { Skeleton } from "@/components/ui/skeleton";
+</script>

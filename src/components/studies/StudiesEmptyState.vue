@@ -1,14 +1,22 @@
 <template>
-  <div class="flex flex-col text-center">
-    <h3 class="text-sm font-semibold text-gray-900">No studies</h3>
-    <p class="mt-1 text-sm text-gray-500">Get started by creating a new study.</p>
-    <div class="mt-6">
-      <BaseButton as="RouterLink" to="/studies/new" :prefixIcon="PlusIcon">Create a new study</BaseButton>
-    </div>
-  </div>
+  <Empty>
+    <EmptyHeader>
+      <EmptyMedia variant="icon">
+        <GraduationCap />
+      </EmptyMedia>
+      <EmptyTitle>No studies</EmptyTitle>
+      <EmptyDescription>Get started by creating a new study.</EmptyDescription>
+    </EmptyHeader>
+    <EmptyContent>
+      <Button as-child>
+        <RouterLink to="/studies/new"><Plus data-icon="inline-start" />Create a new study</RouterLink>
+      </Button>
+    </EmptyContent>
+  </Empty>
 </template>
 
 <script setup lang="ts">
-import { PlusIcon } from "@heroicons/vue/20/solid";
-import BaseButton from "../base/BaseButton.vue";
+import { GraduationCap, Plus } from "@lucide/vue";
+import { Button } from "@/components/ui/button";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 </script>

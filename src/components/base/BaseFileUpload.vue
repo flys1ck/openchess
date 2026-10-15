@@ -1,13 +1,11 @@
 <template>
   <div>
-    <div
-      class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-    >
-      <PhotoIcon class="h-12 w-12 text-gray-400" />
-      <div class="mt-4 flex text-sm leading-6 text-gray-600">
+    <div class="flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-10">
+      <Upload class="text-muted-foreground size-12" />
+      <div class="text-muted-foreground mt-4 flex text-sm leading-6">
         <label
           for="file-upload"
-          class="relative cursor-pointer rounded-md font-semibold text-orange-400 focus-within:ring-2 focus-within:ring-orange-400 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-orange-500"
+          class="text-primary focus-within:ring-ring/50 relative cursor-pointer rounded-md font-semibold focus-within:ring-3 focus-within:outline-hidden hover:underline"
         >
           Upload files
           <input
@@ -23,27 +21,29 @@
         </label>
         <p class="pl-1">or drag and drop</p>
       </div>
-      <p class="text-xs leading-5 text-gray-600">PGN up to 10MB</p>
+      <p class="text-muted-foreground text-xs leading-5">PGN up to 10MB</p>
     </div>
     <template v-if="files?.length">
-      <div class="mt-2 space-x-2">
+      <div class="mt-2 space-x-2 text-sm">
         <span>{{ files.length }} File(s)</span><span>{{ totalUploadSize }}</span>
       </div>
-      <ul class="mt-2 max-h-96 space-y-2 overflow-auto rounded-lg shadow-inner">
-        <li v-for="file in files" :key="file.name" class="flex items-center justify-between rounded-lg bg-gray-100 p-4">
+      <ul class="mt-2 max-h-96 space-y-2 overflow-auto rounded-lg">
+        <li v-for="file in files" :key="file.name" class="bg-muted flex items-center justify-between rounded-lg p-4">
           <div class="flex items-center gap-2">
-            <DocumentIcon class="h-8 w-8 text-orange-400" />
+            <FileText class="text-primary size-8" />
             <div>
               <div class="text-sm font-semibold">{{ file.name }}</div>
-              <div class="text-xs leading-5 text-gray-400">{{ formatFileSize(file.size) }}</div>
+              <div class="text-muted-foreground text-xs leading-5">{{ formatFileSize(file.size) }}</div>
             </div>
           </div>
-          <BaseButton
-            :prefixIcon="XMarkIcon"
+          <Button
             variant="ghost"
+            size="icon"
             :aria-label="`Remove ${file.name} from file upload`"
             @click="removeFile(file.name)"
-          />
+          >
+            <X />
+          </Button>
         </li>
       </ul>
     </template>
@@ -51,11 +51,10 @@
 </template>
 
 <script setup lang="ts">
-import { DocumentIcon } from "@heroicons/vue/24/outline";
-import { PhotoIcon, XMarkIcon } from "@heroicons/vue/24/solid";
+import { FileText, Upload, X } from "@lucide/vue";
 import { formatFileSize } from "@utilities/fileSize";
 import { computed, ref } from "vue";
-import BaseButton from "./BaseButton.vue";
+import { Button } from "@/components/ui/button";
 
 defineProps<{
   accept?: string;

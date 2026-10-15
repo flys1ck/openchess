@@ -8,6 +8,7 @@
     "sql:default",
     "sql:allow-execute",
     "core:default",
+    "mcp-bridge:default",
     "fs:allow-read-file",
     "fs:allow-write-file",
     "fs:allow-read-dir",
@@ -50,7 +51,11 @@
     "dialog:allow-confirm",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://api.chess.com/*" }, { "url": "https://www.chess.com/*" }]
+      "allow": [
+        { "url": "https://api.chess.com/*" },
+        { "url": "https://www.chess.com/*" },
+        { "url": "https://lichess.org/*" }
+      ]
     }
   ]
 }

@@ -2,18 +2,16 @@
   <BaseContainer>
     <BaseSectionHeading heading="Studies">
       <template #actions>
-        <BaseButton as="RouterLink" to="/studies/new" variant="primary">Create new study</BaseButton>
+        <Button as-child>
+          <RouterLink to="/studies/new">Create new study</RouterLink>
+        </Button>
       </template>
     </BaseSectionHeading>
     <Suspense>
       <StudyList />
       <template #fallback>
         <div class="space-y-4">
-          <StudyCardSkeleton />
-          <StudyCardSkeleton />
-          <StudyCardSkeleton />
-          <StudyCardSkeleton />
-          <StudyCardSkeleton />
+          <StudyCardSkeleton v-for="index in 5" :key="index" />
         </div>
       </template>
     </Suspense>
@@ -21,13 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import StudyList from "@components/studies/StudyList.vue";
-import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { GraduationCap } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { Button } from "@/components/ui/button";
 
 definePage({
   meta: {
@@ -38,7 +36,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },

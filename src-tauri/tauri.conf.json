@@ -50,7 +50,7 @@
     }
   },
   "app": {
-    "withGlobalTauri": false,
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,

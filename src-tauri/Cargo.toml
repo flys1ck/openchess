@@ -6,7 +6,7 @@ authors = ["you"]
 license = ""
 repository = ""
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.90"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -24,13 +24,15 @@ vampirc-uci = "0.11.1"
 pgn-reader = "0.23.0"
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
-tauri-plugin-deep-link = "2"
+# Workaround for tauri-apps/plugins-workspace#3710 until 2.6.3 (OCS-54).
+tauri-plugin-deep-link = "=2.6.1"
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
 tauri-plugin-opener = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-http = "2"
+tauri-plugin-mcp-bridge = "0.13.1"
 
 [dependencies.tauri-plugin-sql]
 features = ["sqlite"]

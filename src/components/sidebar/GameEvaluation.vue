@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col border-b border-gray-200">
+  <div class="flex flex-col border-b">
     <div class="flex items-center gap-2 p-2">
       <span class="flex w-16 items-center justify-center font-medium">
         {{ multiPvInfo.length > 0 ? multiPvInfo[0].evaluatedScore : "-" }}
@@ -8,27 +8,27 @@
         <span class="text-sm">{{ engineName }}</span>
         <div class="flex gap-4">
           <div class="flex flex-col text-xs">
-            <span class="font-thin tracking-widest text-gray-500 uppercase">Depth</span>
+            <span class="text-muted-foreground font-thin tracking-widest uppercase">Depth</span>
             <span>{{ depth }} / {{ computedDepth }}</span>
           </div>
           <div class="flex flex-col text-xs">
-            <span class="font-thin tracking-widest text-gray-500 uppercase">Nodes/s</span>
+            <span class="text-muted-foreground font-thin tracking-widest uppercase">Nodes/s</span>
             <span>{{ nodesPerSecond }}</span>
           </div>
         </div>
       </div>
-      <BaseSwitch v-model="isEvaluationEnabled" />
+      <Switch v-model="isEvaluationEnabled" aria-label="Toggle engine evaluation" />
     </div>
-    <div class="flex h-1 flex-col" :class="isEvaluationEnabled ? 'bg-orange-100' : 'bg-transparent'">
+    <div class="flex h-1 flex-col" :class="isEvaluationEnabled ? 'bg-primary/15' : 'bg-transparent'">
       <span
         v-show="isEvaluationEnabled"
-        class="h-full origin-left bg-orange-300 transition-transform duration-500 ease-out"
+        class="bg-primary/60 h-full origin-left transition-transform duration-500 ease-out"
         :class="{ 'animate-pulse': isEvaluating }"
         :style="`transform: scaleX(${depth / computedDepth})`"
       ></span>
     </div>
-    <ol v-if="multiPvInfo.length" class="divide-y divide-gray-200 border-t border-gray-200">
-      <li v-for="info in multiPvInfo" :key="info.id" class="line-clamp-1 p-1 text-sm text-gray-700">
+    <ol v-if="multiPvInfo.length" class="divide-y border-t">
+      <li v-for="info in multiPvInfo" :key="info.id" class="text-muted-foreground line-clamp-1 p-1 text-sm">
         <span class="inline-block w-10 text-end font-medium">{{ info.evaluatedScore }}</span>
         <span class="ml-2">{{ getMovesStringFromUci(info.principleVariation, fen) }}</span>
       </li>
@@ -43,7 +43,7 @@ import { getMovesStringFromUci } from "@utilities/moves";
 import { Key } from "chessground/types";
 import { storeToRefs } from "pinia";
 import { Ref, computed, onUnmounted, watch } from "vue";
-import BaseSwitch from "../base/BaseSwitch.vue";
+import { Switch } from "@/components/ui/switch";
 
 const props = defineProps<{
   fen: Ref<string>;

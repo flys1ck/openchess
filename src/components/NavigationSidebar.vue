@@ -1,38 +1,59 @@
 <template>
-  <div class="flex shrink-0 flex-col border-r border-gray-300 bg-gray-200">
-    <!-- Navigation -->
-    <div class="mt-10 flex grow flex-col justify-between">
-      <nav class="flex flex-1 flex-col gap-2 p-2">
-        <RouterLink v-for="{ icon, text, to } in navigationItems" :to="to" :key="to" v-slot="{ isActive }">
-          <div
-            class="flex flex-col items-center gap-1 overflow-hidden rounded-lg p-2 transition-colors"
-            :class="
-              isRouteActive(to, isActive) ? 'bg-gray-300 text-gray-800 shadow-inner' : 'text-gray-600 hover:bg-gray-300'
-            "
-          >
-            <Component
-              :is="icon"
-              class="h-6 w-6"
-              :class="isRouteActive(to, isActive) ? 'text-orange-400' : 'text-gray-400'"
-            />
-            <span class="text-xs">{{ text }}</span>
-          </div>
-        </RouterLink>
-      </nav>
-      <span class="text-center text-[0.5rem] text-gray-600">v{{ appVersion }}</span>
-    </div>
-  </div>
+  <Sidebar>
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" as-child tooltip="OpenChess">
+            <RouterLink to="/analysis/">
+              <img :src="appLogo" alt="" class="size-8 rounded-lg" />
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-medium">OpenChess</span>
+                <span class="text-muted-foreground truncate text-xs">v{{ appVersion }}</span>
+              </div>
+            </RouterLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem v-for="{ icon, text, to } in navigationItems" :key="to">
+              <SidebarMenuButton as-child :is-active="isItemActive(to)" :tooltip="text">
+                <RouterLink :to="to">
+                  <Component :is="icon" />
+                  <span>{{ text }}</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+  </Sidebar>
 </template>
 
 <script setup lang="ts">
+import appLogo from "@assets/images/logo.png";
 import { navigationItems } from "@data/navigationItems";
 import { getVersion } from "@tauri-apps/api/app";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
 const route = useRoute();
-function isRouteActive(to: string, isActive: boolean) {
-  return route.path.startsWith(to) || isActive;
+function isItemActive(to: string) {
+  return route.path.startsWith(to) || route.matched.some((record) => record.path === to);
 }
 
 const appVersion = ref("");

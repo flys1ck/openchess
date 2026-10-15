@@ -2,8 +2,8 @@
   <BaseContainer>
     <BaseSectionHeading heading="Games on Chess.com">
       <template #actions>
-        <BaseButton variant="secondary" :prefix-icon="ArrowPathIcon" @click="chessDotComGameList?.refresh"
-          >Refresh</BaseButton
+        <Button variant="outline" @click="chessDotComGameList?.refresh"
+          ><RefreshCw data-icon="inline-start" />Refresh</Button
         >
       </template>
     </BaseSectionHeading>
@@ -23,15 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import ChessDotComGameList from "@components/games/ChessDotComGameList.vue";
 import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
-import { ArrowPathIcon } from "@heroicons/vue/24/outline";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { GraduationCap, RefreshCw } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { ref } from "vue";
+import { Button } from "@/components/ui/button";
 
 definePage({
   meta: {
@@ -42,7 +41,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Games",
     to: "/games/",
   },
