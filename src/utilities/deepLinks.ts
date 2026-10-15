@@ -1,6 +1,16 @@
 import { getCurrent, onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import type { Router } from "vue-router";
 
+export function parseOAuthCallback(url: string): URLSearchParams | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== "oauth") return null;
+    return parsed.searchParams;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Maps an OpenChess deep link to an in-app route.
  *

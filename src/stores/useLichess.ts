@@ -2,6 +2,7 @@ import { useSetting } from "@composables/useSetting";
 import { client, explorerClient, getMyProfile, obtainAccessToken, revokeAccessToken } from "@flys1ck/lichess-client";
 import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { parseOAuthCallback } from "@utilities/deepLinks";
 import { defineStore } from "pinia";
 import { computed, type Ref } from "vue";
 import { toast } from "vue-sonner";
@@ -9,6 +10,7 @@ import { toast } from "vue-sonner";
 const LICHESS_CLIENT_ID = "openchess";
 const LICHESS_OAUTH_URL = "https://lichess.org/oauth";
 const LICHESS_REDIRECT_URI = "com.openchess.dev://oauth/callback";
+const LICHESS_OAUTH_TIMEOUT_MS = 3 * 60 * 1000;
 
 async function generatePkce(): Promise<{ verifier: string; challenge: string }> {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
@@ -54,23 +56,24 @@ export const useLichess = defineStore("lichess", () => {
       });
 
       const callbackPromise = new Promise<URLSearchParams>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error("Timed out waiting for Lichess authorization"));
+        }, LICHESS_OAUTH_TIMEOUT_MS);
+
         onOpenUrl((urls) => {
-          const url = urls[0];
-          if (!url) {
-            reject(new Error("No callback URL received"));
-            return;
-          }
-          try {
-            resolve(new URLSearchParams(new URL(url).search));
-          } catch {
-            reject(new Error("Invalid callback URL"));
-          }
+          const params = urls[0] ? parseOAuthCallback(urls[0]) : null;
+          if (params) resolve(params);
         })
           .then((unlisten) => {
-            // Unlisten after first callback
-            void callbackPromise.finally(() => unlisten());
+            void callbackPromise.finally(() => {
+              clearTimeout(timeoutId);
+              unlisten();
+            });
           })
-          .catch(reject);
+          .catch((error) => {
+            clearTimeout(timeoutId);
+            reject(error);
+          });
       });
 
       await openUrl(`${LICHESS_OAUTH_URL}?${params}`);
