@@ -99,3 +99,11 @@ bunx tauri-mcp driver-session start --port 9223 --json
 - Text selectors can match more than one control (nav vs in-page). Pass `--nth` or a CSS selector.
 - JPEG screenshots with `--max-width 1200` and `--call-timeout 20000` are more reliable than PNG (PNG often times out).
 - Cursor may also expose `@hypothesi/tauri-mcp-server` via `.cursor/mcp.json`. If those tools are not in the session namespace, use this CLI. Do not add browser-only stubs so a normal tab can load the app.
+
+## Cursor Cloud specific instructions
+
+- Tauri’s Ubuntu packages are on the image: `libwebkit2gtk-4.1-dev`, `libayatana-appindicator3-dev`, `webkit2gtk-driver`, `xvfb`, `libxdo-dev`, `libssl-dev`, `librsvg2-dev`, and `patchelf`. Bun 1.3.11 is `/usr/local/bin/bun`. Rust stable (newer than the `rust-version` 1.90 pin) is on `/usr/local/cargo/bin`.
+- `bun install` builds `better-sqlite3` with `node-gyp`. `/exec-daemon/node` is Node 22.14 and has no `zlib.createZstdDecompress`, so that build fails when it is the `node` on `PATH`. Node 22.23 is linked at `/usr/local/cargo/bin/node`, which this environment’s `PATH` searches first. Keep that link.
+- Stockfish is not in git. Install uses `STOCKFISH_VERSION=19` (`scripts/downloadStockfish.ts`) and copies the binary to `src-tauri/bin/stockfish-<host triple>` (`scripts/generateTargetTriple.ts`). `bun tauri dev` needs that sidecar; the UI shows the engine name only after the sidecar answers `uci`.
+- Drive the desktop app, not a browser tab. `bun tauri dev` needs a working `DISPLAY` (the image has one; otherwise `Xvfb`). The default window is 800×600 and the board renders at 128px until the window is larger (about 1280×800). `libEGL` DRI3 warnings are expected; WebKit still paints.
+- Chessground ignores untrusted events and click-only automation. Board moves and the Reka engine switch need a real pointer (`xdotool` or computer use). Sidebar `<a>` links accept `webview-interact` clicks. Evaluation stays at depth 0 until the Stockfish switch is turned on.
