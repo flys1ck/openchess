@@ -7,20 +7,23 @@
       </template>
       <template #form>
         <form @submit.prevent="onSubmit">
-          <BaseInputGroup class="mt-2" label="Name" v-model="studyFormData.name" />
-          <div class="mt-4">
-            <BaseInputLabel html-for="description">Description</BaseInputLabel>
-            <div class="mt-2">
-              <BaseTextarea id="description" name="about" rows="3" v-model="studyFormData.description"></BaseTextarea>
+          <FieldGroup>
+            <Field>
+              <FieldLabel for="study-name">Name</FieldLabel>
+              <Input id="study-name" name="name" spellcheck="false" v-model="studyFormData.name" />
+            </Field>
+            <Field>
+              <FieldLabel for="study-description">Description</FieldLabel>
+              <Textarea id="study-description" name="description" rows="3" v-model="studyFormData.description" />
+            </Field>
+            <div>
+              <Button type="submit">Save</Button>
             </div>
-          </div>
-          <div class="mt-8">
-            <BaseButton type="submit">Save</BaseButton>
-          </div>
+          </FieldGroup>
         </form>
       </template>
     </BaseSettingsSection>
-    <hr class="my-8" />
+    <Separator class="my-8" />
     <BaseSettingsSection heading="Delete study">
       <template #description>
         This action is not reversible. All information related to the study
@@ -29,7 +32,7 @@
       </template>
       <template #form>
         <form class="flex items-start" @submit.prevent="deleteStudy">
-          <BaseButton type="submit" variant="danger">Yes, delete this study</BaseButton>
+          <Button type="submit" variant="destructive">Yes, delete this study</Button>
         </form>
       </template>
     </BaseSettingsSection>
@@ -37,20 +40,21 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseInputGroup from "@components/base/BaseInputGroup.vue";
-import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
-import BaseTextarea from "@components/base/BaseTextarea.vue";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { GraduationCap } from "@lucide/vue";
 import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { useToasts } from "@stores/useToasts";
 import { Insertable } from "kysely";
 import { reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { Studies } from "@/database";
 import { EditableStudy } from "@/types";
 
@@ -64,20 +68,19 @@ const studyFormData = reactive<EditableStudy>({
   description: study.value.description ?? "",
 });
 
-const { addToast } = useToasts();
 async function onSubmit() {
   // TODO check all requests for constraint failure
   const query = db.updateTable("studies").set(studyFormData).where("id", "=", Number(route.params.studyId)).compile();
   const result = await execute(query);
 
   if (!result) return;
-  addToast({ heading: `Study updated` });
+  toast.success("Study updated");
 }
 
 async function deleteStudy() {
   const query = db.deleteFrom("studies").where("id", "=", Number(route.params.studyId)).compile();
   await execute(query);
-  addToast({ heading: `Study ${study.value?.name} deleted` });
+  toast.success(`Study ${study.value?.name} deleted`);
   router.push("/studies");
 }
 
@@ -90,7 +93,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },

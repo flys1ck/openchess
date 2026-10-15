@@ -2,13 +2,13 @@
   <template v-if="node.move">
     <!-- white's move -->
     <template v-if="node.ply % 2 === 1">
-      <span class="col-span-2 flex items-center justify-end border-r border-gray-200 py-0.5 pr-2 text-sm font-thin">
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
+        :class="node.id === activeNodeId ? 'bg-primary/30' : 'hover:bg-muted'"
         @click="$emit('nodeselect', node)"
       >
         {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
@@ -21,14 +21,14 @@
         node.ply % 2 === 0
       "
     >
-      <span class="col-span-2 flex items-center justify-end border-r border-gray-200 py-0.5 pr-2 text-sm font-thin">
+      <span class="col-span-2 flex items-center justify-end border-r py-0.5 pr-2 text-sm font-thin">
         {{ moveNumber }}
       </span>
-      <span class="col-span-7 pl-4 text-gray-500">...</span>
+      <span class="text-muted-foreground col-span-7 pl-4">...</span>
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
+        :class="node.id === activeNodeId ? 'bg-primary/30' : 'hover:bg-muted'"
         @click="$emit('nodeselect', node)"
       >
         {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
@@ -39,7 +39,7 @@
       <button
         :data-node-id="node.id"
         class="col-span-7 py-0.5 pl-4 text-left font-light"
-        :class="node.id === activeNodeId ? 'bg-orange-300' : 'hover:bg-gray-200'"
+        :class="node.id === activeNodeId ? 'bg-primary/30' : 'hover:bg-muted'"
         @click="$emit('nodeselect', node)"
       >
         {{ node.move.san }}<span v-if="resolvedAnnotation">{{ resolvedAnnotation }}</span>
@@ -49,10 +49,12 @@
   <template v-if="node.comment || node.previousPosition?.variations.length">
     <span
       v-if="(node.comment || node.previousPosition?.variations.length) && node.ply % 2 === 1"
-      class="col-span-7 pl-4 text-gray-500"
+      class="text-muted-foreground col-span-7 pl-4"
       >{{ node.nextPosition && "..." }}</span
     >
-    <div class="relative col-span-full bg-gray-100 p-2 text-xs wrap-break-word text-gray-700 shadow-inner 2xl:text-sm">
+    <div
+      class="bg-muted text-muted-foreground relative col-span-full p-2 text-xs wrap-break-word shadow-inner 2xl:text-sm"
+    >
       <span
         class="absolute inset-y-0"
         :class="[
@@ -60,7 +62,7 @@
             'left-0 border-l-4': node.move?.piece.color === 'white',
             'right-0 border-r-4': node.move?.piece.color === 'black',
           },
-          node.id === activeNodeId ? 'border-orange-300' : 'border-gray-300',
+          node.id === activeNodeId ? 'border-primary/60' : 'border-border',
         ]"
         aria-hidden
       />

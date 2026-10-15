@@ -5,22 +5,17 @@
       <ul role="list" class="space-y-4">
         <li v-for="study in studies" :key="study.id">
           <div class="flex items-baseline justify-between gap-4 text-sm">
-            <span class="truncate text-gray-900">{{ study.name }}</span>
-            <span class="shrink-0 text-gray-500">{{ formatFileSize(study.size_bytes) }}</span>
+            <span class="truncate">{{ study.name }}</span>
+            <span class="text-muted-foreground shrink-0">{{ formatFileSize(study.size_bytes) }}</span>
           </div>
-          <div class="mt-1 h-2 overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
-            <div
-              class="h-full min-w-1 rounded-full bg-gray-300"
-              :style="{ width: `${getBarWidth(study.size_bytes)}%` }"
-            />
-          </div>
+          <Progress class="mt-1 h-2" :model-value="getBarWidth(study.size_bytes)" aria-hidden="true" />
         </li>
       </ul>
     </figure>
-    <p v-else class="text-sm text-gray-500">Create a study to see its stored content size.</p>
-    <dl class="flex items-baseline justify-between gap-4 rounded-lg bg-gray-50 py-3 text-sm font-medium">
-      <dt class="text-gray-700">Total database size</dt>
-      <dd class="text-gray-900">{{ formatFileSize(databaseSize) }}</dd>
+    <p v-else class="text-muted-foreground text-sm">Create a study to see its stored content size.</p>
+    <dl class="flex items-baseline justify-between gap-4 rounded-lg py-3 text-sm font-medium">
+      <dt class="text-muted-foreground">Total database size</dt>
+      <dd>{{ formatFileSize(databaseSize) }}</dd>
     </dl>
   </div>
 </template>
@@ -29,6 +24,7 @@
 import { db, select } from "@services/database";
 import { formatFileSize } from "@utilities/fileSize";
 import { sql } from "kysely";
+import { Progress } from "@/components/ui/progress";
 
 interface StudyStorage {
   id: number;

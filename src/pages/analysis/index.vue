@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { GraduationCap } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 
 const game = useGame();
@@ -21,7 +21,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Analysis",
     to: "/analysis/",
   },

@@ -1,16 +1,16 @@
 <template>
-  <BaseTooltip>
-    <template #trigger>
+  <Tooltip>
+    <TooltipTrigger as-child>
       <time :datetime="isoString" v-bind="$attrs">{{ formattedRelativeDate }}</time>
-    </template>
-    {{ formattedDate }}
-  </BaseTooltip>
+    </TooltipTrigger>
+    <TooltipContent>{{ formattedDate }}</TooltipContent>
+  </Tooltip>
 </template>
 
 <script setup lang="ts">
-import BaseTooltip from "@components/base/BaseTooltip.vue";
 import { format, formatDistance } from "date-fns";
 import { computed } from "vue";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 defineOptions({ inheritAttrs: false });
 

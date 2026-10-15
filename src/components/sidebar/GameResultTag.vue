@@ -1,9 +1,10 @@
 <template>
-  <span class="rounded-sm border border-gray-200 px-2 py-0.5 text-xs" :class="resultTagClasses">{{ resultText }}</span>
+  <Badge variant="outline" class="rounded-sm font-normal" :class="resultTagClasses">{{ resultText }}</Badge>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { Badge } from "@/components/ui/badge";
 
 const props = defineProps<{
   result: "white" | "black" | null;

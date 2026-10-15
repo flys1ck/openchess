@@ -1,5 +1,5 @@
 <template>
-  <div class="flex shrink-0 flex-col border-r border-gray-300 bg-gray-200">
+  <div class="border-sidebar-border bg-sidebar text-sidebar-foreground flex shrink-0 flex-col border-r">
     <!-- Navigation -->
     <div class="mt-10 flex grow flex-col justify-between">
       <nav class="flex flex-1 flex-col gap-2 p-2">
@@ -7,19 +7,17 @@
           <div
             class="flex flex-col items-center gap-1 overflow-hidden rounded-lg p-2 transition-colors"
             :class="
-              isRouteActive(to, isActive) ? 'bg-gray-300 text-gray-800 shadow-inner' : 'text-gray-600 hover:bg-gray-300'
+              isRouteActive(to, isActive)
+                ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                : 'text-muted-foreground hover:bg-muted hover:text-sidebar-foreground'
             "
           >
-            <Component
-              :is="icon"
-              class="h-6 w-6"
-              :class="isRouteActive(to, isActive) ? 'text-orange-400' : 'text-gray-400'"
-            />
+            <Component :is="icon" class="size-6" />
             <span class="text-xs">{{ text }}</span>
           </div>
         </RouterLink>
       </nav>
-      <span class="text-center text-[0.5rem] text-gray-600">v{{ appVersion }}</span>
+      <span class="text-muted-foreground text-center text-[0.5rem]">v{{ appVersion }}</span>
     </div>
   </div>
 </template>

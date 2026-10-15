@@ -1,24 +1,26 @@
 <template>
   <ul class="space-y-2">
-    <BaseCard v-for="line in lines" :key="line.id" as="li" class="relative p-4">
-      <RouterLink
-        class="font-medium"
-        :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"
-      >
-        <span class="absolute inset-0" aria-hidden />
-        {{ line.name }}</RouterLink
-      >
-      <p class="mt-2 text-sm text-gray-400">{{ line.moves }}</p>
-    </BaseCard>
+    <li v-for="line in lines" :key="line.id">
+      <Card class="hover:bg-muted/50 relative gap-2 p-4 transition-colors">
+        <RouterLink
+          class="font-medium"
+          :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"
+        >
+          <span class="absolute inset-0" aria-hidden />
+          {{ line.name }}</RouterLink
+        >
+        <p class="text-muted-foreground text-sm">{{ line.moves }}</p>
+      </Card>
+    </li>
   </ul>
 </template>
 
 <script setup lang="ts">
-import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { GraduationCap } from "@lucide/vue";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router";
-import BaseCard from "../base/BaseCard.vue";
+import { Card } from "@/components/ui/card";
 
 // TODO: move route param to chapter (props)
 const route = useRoute("/studies/[studyId]/chapters/[chapterId]/");
@@ -41,7 +43,7 @@ const [chapter, lines] = await Promise.all([selectFirst(chapterQuery), select(li
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },

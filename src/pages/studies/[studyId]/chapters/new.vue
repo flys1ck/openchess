@@ -1,53 +1,47 @@
 <template>
   <BaseContainer>
     <BaseSectionHeading heading="New Chapters" />
-    <form class="space-y-4" @submit.prevent="onSubmit">
-      <div>
-        <BaseInputLabel htmlFor="chapter-name" class="block text-sm leading-6 font-medium text-gray-900"
-          >Chapter Header</BaseInputLabel
-        >
-        <select id="chapter-name" v-model="chapterHeader">
-          <option value="White">White</option>
-          <option value="Black">Black</option>
-        </select>
-      </div>
-      <div>
-        <BaseInputLabel htmlFor="line-name" class="block text-sm leading-6 font-medium text-gray-900"
-          >Line Header</BaseInputLabel
-        >
-        <select id="line-name" v-model="lineHeader">
-          <option value="">Leave blank</option>
-          <option value="White">White</option>
-          <option value="Black">Black</option>
-        </select>
-      </div>
-      <div>
-        <BaseInputLabel htmlFor="line-orientation" class="block text-sm leading-6 font-medium text-gray-900"
-          >Line Orientation</BaseInputLabel
-        >
-        <select id="line-orientation" v-model="lineOrientation">
-          <option value="white">White</option>
-          <option value="black">Black</option>
-        </select>
-      </div>
-      <div>
-        <BaseInputLabel htmlFor="cover-photo" class="block text-sm leading-6 font-medium text-gray-900"
-          >PGNs</BaseInputLabel
-        >
-        <BaseFileUpload v-model="files" :multiple="true" accept=".pgn" />
-      </div>
-      <BaseButton type="submit" class="mt-8">Upload</BaseButton>
+    <form @submit.prevent="onSubmit">
+      <FieldGroup>
+        <Field>
+          <FieldLabel for="chapter-name">Chapter Header</FieldLabel>
+          <NativeSelect id="chapter-name" v-model="chapterHeader">
+            <NativeSelectOption value="White">White</NativeSelectOption>
+            <NativeSelectOption value="Black">Black</NativeSelectOption>
+          </NativeSelect>
+        </Field>
+        <Field>
+          <FieldLabel for="line-name">Line Header</FieldLabel>
+          <NativeSelect id="line-name" v-model="lineHeader">
+            <NativeSelectOption value="">Leave blank</NativeSelectOption>
+            <NativeSelectOption value="White">White</NativeSelectOption>
+            <NativeSelectOption value="Black">Black</NativeSelectOption>
+          </NativeSelect>
+        </Field>
+        <Field>
+          <FieldLabel for="line-orientation">Line Orientation</FieldLabel>
+          <NativeSelect id="line-orientation" v-model="lineOrientation">
+            <NativeSelectOption value="white">White</NativeSelectOption>
+            <NativeSelectOption value="black">Black</NativeSelectOption>
+          </NativeSelect>
+        </Field>
+        <Field>
+          <FieldLabel for="file-upload">PGNs</FieldLabel>
+          <BaseFileUpload v-model="files" :multiple="true" accept=".pgn" />
+        </Field>
+        <div class="mt-4">
+          <Button type="submit">Upload</Button>
+        </div>
+      </FieldGroup>
     </form>
   </BaseContainer>
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
-import BaseInputLabel from "@components/base/BaseInputLabel.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { GraduationCap } from "@lucide/vue";
 import { db, execute, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { getPositionKey } from "@utilities/move";
@@ -57,6 +51,9 @@ import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
 import { parseSan } from "chessops/san";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 
 const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
@@ -207,7 +204,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },

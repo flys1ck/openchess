@@ -10,7 +10,7 @@
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
 import { exportOneGame } from "@flys1ck/lichess-client";
-import { AcademicCapIcon } from "@heroicons/vue/24/solid";
+import { GraduationCap } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
 import { parsePgn, type PgnNodeData, type Game as PgnGame } from "chessops/pgn";
@@ -36,7 +36,7 @@ async function loadGame(gameId: string) {
 
   setBreadcrumbs([
     {
-      icon: AcademicCapIcon,
+      icon: GraduationCap,
       name: "Games",
       to: "/games/",
     },

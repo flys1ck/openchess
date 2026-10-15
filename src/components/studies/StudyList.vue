@@ -2,31 +2,33 @@
   <div v-if="studies" class="flex">
     <StudiesEmptyState v-if="!studies.length" />
     <ul v-else role="list" class="grow space-y-4">
-      <BaseCard v-for="study in studies" :key="study.id" as="li" class="relative flex justify-between gap-x-6 p-6">
-        <div>
-          <div class="flex items-start gap-x-3">
-            <RouterLink :to="`/studies/${study.id}`" class="text-sm leading-6 font-semibold text-gray-900">
-              <span class="absolute inset-0" />
-              {{ study.name }}
-            </RouterLink>
+      <li v-for="study in studies" :key="study.id">
+        <Card class="hover:bg-muted/50 relative flex-row justify-between gap-x-6 p-6 transition-colors">
+          <div>
+            <div class="flex items-start gap-x-3">
+              <RouterLink :to="`/studies/${study.id}`" class="text-sm leading-6 font-semibold">
+                <span class="absolute inset-0" />
+                {{ study.name }}
+              </RouterLink>
+            </div>
+            <div class="text-muted-foreground mt-1 flex items-center gap-x-2 text-xs leading-5">
+              <p class="whitespace-nowrap">
+                Created
+                <BaseTime :date="new Date(study.created_at)" />
+              </p>
+            </div>
           </div>
-          <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
-            <p class="whitespace-nowrap">
-              Created
-              <BaseTime :date="new Date(study.created_at)" />
-            </p>
-          </div>
-        </div>
-      </BaseCard>
+        </Card>
+      </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
-import BaseCard from "@components/base/BaseCard.vue";
 import BaseTime from "@components/base/BaseTime.vue";
 import { db, select } from "@services/database";
 import { ref } from "vue";
+import { Card } from "@/components/ui/card";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
 
 const query = db.selectFrom("studies").selectAll().compile();

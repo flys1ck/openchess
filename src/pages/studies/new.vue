@@ -2,39 +2,37 @@
   <BaseContainer>
     <BaseSectionHeading heading="New Study" />
     <form @submit.prevent="onSubmit">
-      <div class="space-y-12">
-        <div class="border-b border-gray-900/10 pb-12">
-          <BaseInputGroup class="mt-2" label="Name" v-model="studyFormData.name" />
-          <div class="mt-2">
-            <div class="col-span-full">
-              <label for="about" class="block text-sm leading-6 font-medium text-gray-900">Description</label>
-              <div class="mt-2">
-                <BaseTextarea id="about" name="about" rows="3" v-model="studyFormData.description"></BaseTextarea>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <FieldGroup class="border-b pb-12">
+        <Field>
+          <FieldLabel for="study-name">Name</FieldLabel>
+          <Input id="study-name" name="name" spellcheck="false" v-model="studyFormData.name" />
+        </Field>
+        <Field>
+          <FieldLabel for="study-description">Description</FieldLabel>
+          <Textarea id="study-description" name="description" rows="3" v-model="studyFormData.description" />
+        </Field>
+      </FieldGroup>
       <div class="mt-6 flex items-center justify-end gap-x-6">
-        <BaseButton variant="secondary" @click="$router.push('/studies')">Cancel</BaseButton>
-        <BaseButton type="submit">Save</BaseButton>
+        <Button variant="outline" @click="$router.push('/studies')">Cancel</Button>
+        <Button type="submit">Save</Button>
       </div>
     </form>
   </BaseContainer>
 </template>
 
 <script setup lang="ts">
-import BaseButton from "@components/base/BaseButton.vue";
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseInputGroup from "@components/base/BaseInputGroup.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
-import BaseTextarea from "@components/base/BaseTextarea.vue";
-import { AcademicCapIcon } from "@heroicons/vue/20/solid";
+import { GraduationCap } from "@lucide/vue";
 import { db, execute } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { useToasts } from "@stores/useToasts";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { EditableStudy } from "@/types";
 
 definePage({
@@ -46,7 +44,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   {
-    icon: AcademicCapIcon,
+    icon: GraduationCap,
     name: "Studies",
     to: "/studies/",
   },
@@ -62,14 +60,13 @@ const studyFormData = reactive<EditableStudy>({
   description: "",
 });
 
-const { addToast } = useToasts();
 async function onSubmit() {
   // TODO check all requests for constraint failure
   const query = db.insertInto("studies").values(studyFormData).compile();
   const result = await execute(query);
 
   if (!result) return;
-  addToast({ heading: `Study ${studyFormData.name} created` });
+  toast.success(`Study ${studyFormData.name} created`);
   router.push(`/studies/${result.lastInsertId}`);
 }
 </script>

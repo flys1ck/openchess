@@ -3,8 +3,8 @@
   <button
     v-if="node.move"
     :data-node-id="node.id"
-    class="relative inline-flex gap-0.5 rounded-sm border px-px font-bold text-orange-400"
-    :class="node.id === activeNodeId ? 'border-orange-300 bg-orange-50' : 'border-transparent hover:bg-gray-200'"
+    class="text-primary relative inline-flex gap-0.5 rounded-sm border px-px font-bold"
+    :class="node.id === activeNodeId ? 'border-primary/60 bg-primary/10' : 'hover:bg-muted border-transparent'"
     @click="$emit('nodeselect', node)"
   >
     <span v-if="node.previousPosition?.variations.length || node.ply % 2 === 1">{{ moveNumber }}. </span>
@@ -19,14 +19,14 @@
     :variation-depth="variationDepth"
     @nodeselect="(node) => $emit('nodeselect', node)"
   />
-  <div v-if="node.variations.length" class="relative border-l-2 border-gray-400 pl-1">
+  <div v-if="node.variations.length" class="border-muted-foreground/50 relative border-l-2 pl-1">
     <span
       v-if="variationDepth !== 1"
-      class="absolute top-0 left-0 inline-block w-2.5 shrink-0 -translate-x-full border-t-2 border-gray-400"
+      class="border-muted-foreground/50 absolute top-0 left-0 inline-block w-2.5 shrink-0 -translate-x-full border-t-2"
       aria-hidden="true"
     />
     <div class="flex -translate-x-1.5 items-start gap-0.5">
-      <span class="inline-block w-2 shrink-0 translate-y-2 border-t-2 border-gray-400" aria-hidden="true" />
+      <span class="border-muted-foreground/50 inline-block w-2 shrink-0 translate-y-2 border-t-2" aria-hidden="true" />
       <div class="inline-block">
         <GameTreeVariationItem
           v-if="node.nextPosition"
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div v-for="variation in node.variations" :key="variation.id" class="flex -translate-x-1.5 items-start gap-0.5">
-      <span class="inline-block w-2 shrink-0 translate-y-2 border-t-2 border-gray-400" aria-hidden="true" />
+      <span class="border-muted-foreground/50 inline-block w-2 shrink-0 translate-y-2 border-t-2" aria-hidden="true" />
       <div>
         <GameTreeVariationItem
           :node="variation"

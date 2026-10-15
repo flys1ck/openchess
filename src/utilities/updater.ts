@@ -1,7 +1,7 @@
-import { useToasts } from "@stores/useToasts";
 import { confirm } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check } from "@tauri-apps/plugin-updater";
+import { toast } from "vue-sonner";
 
 export async function checkForAppUpdate(): Promise<void> {
   let update;
@@ -24,8 +24,7 @@ export async function checkForAppUpdate(): Promise<void> {
     await update.downloadAndInstall();
     await relaunch();
   } catch (error) {
-    useToasts().addToast({
-      heading: "Update failed",
+    toast.error("Update failed", {
       description: error instanceof Error ? error.message : "An unexpected error occurred",
     });
   }

@@ -1,6 +1,6 @@
 <template>
   <main class="flex grow overflow-hidden">
-    <div class="flex grow flex-col items-center bg-gray-100 p-4">
+    <div class="bg-muted flex grow flex-col items-center p-4">
       <GameChessboard class="aspect-square max-h-full max-w-full grow" :game="game" :orientation="orientation" />
     </div>
     <GameContextSidebar :game="game" />
