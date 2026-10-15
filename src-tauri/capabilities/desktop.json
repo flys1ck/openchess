@@ -51,7 +51,11 @@
     "dialog:allow-confirm",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://api.chess.com/*" }, { "url": "https://www.chess.com/*" }]
+      "allow": [
+        { "url": "https://api.chess.com/*" },
+        { "url": "https://www.chess.com/*" },
+        { "url": "https://lichess.org/*" }
+      ]
     }
   ]
 }
