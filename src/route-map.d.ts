@@ -104,15 +104,15 @@ declare module 'vue-router/auto-routes' {
     '/studies/[studyId]/chapters/[chapterId]/': RouteRecordInfo<
       '/studies/[studyId]/chapters/[chapterId]/',
       '/studies/:studyId/chapters/:chapterId',
-      { studyId: ParamValue<true>, chapterId: ParamValue<true> },
-      { studyId: ParamValue<false>, chapterId: ParamValue<false> },
+      { chapterId: ParamValue<true>, studyId: ParamValue<true> },
+      { chapterId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
     '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]': RouteRecordInfo<
       '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]',
       '/studies/:studyId/chapters/:chapterId/lines/:lineId',
-      { studyId: ParamValue<true>, chapterId: ParamValue<true>, lineId: ParamValue<true> },
-      { studyId: ParamValue<false>, chapterId: ParamValue<false>, lineId: ParamValue<false> },
+      { chapterId: ParamValue<true>, lineId: ParamValue<true>, studyId: ParamValue<true> },
+      { chapterId: ParamValue<false>, lineId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
     '/studies/[studyId]/chapters/new': RouteRecordInfo<

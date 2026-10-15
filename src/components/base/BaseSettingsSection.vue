@@ -18,7 +18,7 @@ defineProps<{
 }>();
 
 defineSlots<{
-  description?: void;
-  form: void;
+  description?: () => unknown;
+  form: () => unknown;
 }>();
 </script>
