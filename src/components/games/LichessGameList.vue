@@ -1,44 +1,49 @@
 <template>
-  <ul class="space-y-4">
-    <GameCard v-for="game in normalizedGames" :key="game.id" :to="`/games/lichess/${game.id}`" :game="game" />
-  </ul>
+  <div>
+    <ul class="space-y-4">
+      <GameCard v-for="game in normalizedGames" :key="game.id" :to="`/games/lichess/${game.id}`" :game="game" />
+    </ul>
+    <Button v-if="hasMore" variant="outline" class="mt-4" :disabled="isLoadingMore" @click="loadMore">
+      <Spinner v-if="isLoadingMore" data-icon="inline-start" />
+      Load more
+    </Button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import GameCard from "@components/games/GameCard.vue";
 import { exportGamesOfAuser, type GameJson } from "@flys1ck/lichess-client";
 import { useLichess } from "@stores/useLichess";
+import { parseLichessGamesNdjson } from "@utilities/lichessGames";
 import { normalizeLichessGame } from "@utilities/normalizer";
-import { computed, shallowRef } from "vue";
+import { computed, ref, shallowRef } from "vue";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 defineExpose({ refresh });
 
+const LICHESS_GAMES_PAGE_SIZE = 20;
+
 const lichess = useLichess();
 
-async function fetchGames(): Promise<GameJson[]> {
+async function fetchGames(until?: number): Promise<GameJson[]> {
   const response = await exportGamesOfAuser({
     path: { username: lichess.username },
-    query: { max: 5, opening: true },
+    query: {
+      max: LICHESS_GAMES_PAGE_SIZE,
+      opening: true,
+      ...(until === undefined ? {} : { until }),
+    },
     parseAs: "text",
     headers: { Accept: "application/x-ndjson" },
   });
 
-  const text = (response.data as string) ?? "";
-  if (!text) return [];
-
-  try {
-    const parsed = JSON.parse(text) as unknown;
-    if (Array.isArray(parsed)) return parsed as GameJson[];
-  } catch {}
-
-  return text
-    .trimEnd()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => JSON.parse(line) as GameJson);
+  return parseLichessGamesNdjson((response.data as string) ?? "");
 }
 
 const games = shallowRef<GameJson[]>(await fetchGames());
+const hasMore = ref(games.value.length >= LICHESS_GAMES_PAGE_SIZE);
+const isLoadingMore = ref(false);
 
 const normalizedGames = computed(() => {
   return games.value.map((game) => {
@@ -47,6 +52,23 @@ const normalizedGames = computed(() => {
 });
 
 async function refresh() {
-  games.value = await fetchGames();
+  const fetched = await fetchGames();
+  games.value = fetched;
+  hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
+}
+
+async function loadMore() {
+  const lastGame = games.value.at(-1);
+  if (!lastGame) return;
+
+  isLoadingMore.value = true;
+  try {
+    const fetched = await fetchGames(lastGame.createdAt);
+    const loadedIds = new Set(games.value.map((game) => game.id));
+    games.value = [...games.value, ...fetched.filter((game) => !loadedIds.has(game.id))];
+    hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
+  } finally {
+    isLoadingMore.value = false;
+  }
 }
 </script>
