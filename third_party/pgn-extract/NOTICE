@@ -1,0 +1,11 @@
+pgn-extract 26-04
+Copyright (C) 1994-2026 David J. Barnes
+
+This program is free software under the GNU General Public License
+version 3 or later. See COPYING in this directory and:
+
+https://www.cs.kent.ac.uk/people/staff/djb/pgn-extract/
+https://github.com/kentdjb/pgn-extract
+
+OpenChess ships pgn-extract as a separate sidecar binary. The C sources
+are not compiled into the OpenChess process.

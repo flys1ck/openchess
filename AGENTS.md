@@ -64,7 +64,7 @@ Kysely provides type-safe query building. Types are generated from the SQLite sc
 
 ## Development Notes
 
-- **Stockfish binary**: Downloaded separately via `bun run scripts/downloadStockfish.ts`. Required for `tauri dev` / `tauri build`.
+- **Sidecar binaries**: Stockfish via `bun run scripts/downloadStockfish.ts` and pgn-extract via `bun run scripts/downloadPgnExtract.ts`, then `bun run scripts/generateTargetTriple.ts`. Required for `tauri dev` / `tauri build`.
 - **Linear**: Issues are tracked in Linear (project prefix `OCS-`). Branch names follow `OCS-<number>-description` convention based on recent commits.
 
 ## Tauri MCP

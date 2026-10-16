@@ -45,6 +45,7 @@ import { GraduationCap } from "@lucide/vue";
 import { db, execute, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { getPositionKey } from "@utilities/move";
+import { repairPgn } from "@utilities/pgnExtract";
 import { NormalMove, makeSquare } from "chessops";
 import { makeFen } from "chessops/fen";
 import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
@@ -68,7 +69,9 @@ function onSubmit() {
   files.value.forEach((file) => {
     const fileReader = new FileReader();
     fileReader.addEventListener("load", (e) => {
-      processPgn(e.target?.result as string);
+      void processPgn(e.target?.result as string).catch((error: unknown) => {
+        console.error(error);
+      });
     });
     fileReader.readAsText(file);
   });
@@ -76,7 +79,7 @@ function onSubmit() {
 
 // TODO: will currently only work with mainline
 async function processPgn(pgn: string) {
-  const games = parsePgn(pgn);
+  const games = parsePgn(await repairPgn(pgn));
   for (const game of games) {
     const pos = startingPosition(game.headers).unwrap();
     const headers = game.headers;

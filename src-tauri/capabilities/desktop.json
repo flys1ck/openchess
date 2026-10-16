@@ -11,6 +11,9 @@
     "mcp-bridge:default",
     "fs:allow-read-file",
     "fs:allow-write-file",
+    "fs:allow-write-text-file",
+    "fs:allow-temp-write",
+    "fs:allow-temp-read",
     "fs:allow-read-dir",
     "fs:allow-copy-file",
     "fs:allow-mkdir",
@@ -20,7 +23,27 @@
     "fs:allow-exists",
     {
       "identifier": "fs:scope",
-      "allow": ["$LOCALDATA/*"]
+      "allow": ["$LOCALDATA/*", "$TEMP/*"]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "bin/pgn-extract",
+          "sidecar": true,
+          "args": [
+            "--quiet",
+            "--keepbroken",
+            "--fixtagstrings",
+            "--fixresulttags",
+            "--nestedcomments",
+            "--lichesscommentfix",
+            "--addfencastling",
+            "--allownullmoves",
+            { "validator": ".*\\.pgn" }
+          ]
+        }
+      ]
     },
     {
       "identifier": "shell:allow-spawn",

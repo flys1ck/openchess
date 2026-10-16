@@ -7,6 +7,7 @@ on:
 
 env:
   STOCKFISH_VERSION: 19
+  PGN_EXTRACT_VERSION: 26-04
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,6 +26,29 @@ jobs:
       - run: bun run lint:check
       - run: bun run types:check
       - run: bun run test:unit --run
+
+  pgn-extract-tests:
+    name: pgn-extract Official Tests
+    runs-on: ubuntu-22.04
+    env:
+      TARGET_TRIPLE: x86_64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        name: Setup Bun
+      - run: bun install --frozen-lockfile
+      - uses: actions/cache@v5
+        id: pgn-extract-cache
+        with:
+          path: |
+            external/pgn-extract
+            external/pgn-extract-src
+          key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}-x86_64-unknown-linux-gnu
+      - name: Install pgn-extract
+        run: bun run scripts/downloadPgnExtract.ts
+        if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
+      - name: Run official repair tests
+        run: bun run scripts/testPgnExtract.ts
 
   build:
     name: Build
@@ -62,6 +86,17 @@ jobs:
       - name: Install Stockfish
         run: bun run scripts/downloadStockfish.ts
         if: steps.stockfish-cache.outputs.cache-hit != 'true'
+      - uses: actions/cache@v5
+        id: pgn-extract-cache
+        with:
+          path: |
+            external/pgn-extract
+            external/pgn-extract.exe
+            external/pgn-extract-src
+          key: pgn-extract-${{ env.PGN_EXTRACT_VERSION }}-${{ matrix.targetTriple }}
+      - name: Install pgn-extract
+        run: bun run scripts/downloadPgnExtract.ts
+        if: steps.pgn-extract-cache.outputs.cache-hit != 'true'
       - name: Generate Target Triple
         run: |
           mkdir src-tauri/bin
