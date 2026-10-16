@@ -26,6 +26,29 @@ jobs:
       - run: bun run types:check
       - run: bun run test:unit --run
 
+  rust-tests:
+    name: Rust Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev libsqlite3-dev
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Run Rust tests
+        working-directory: src-tauri
+        run: cargo test
+      - name: Run Clippy
+        working-directory: src-tauri
+        run: cargo clippy -- -D warnings
+
   build:
     name: Build
     needs: [frontend-checks]
