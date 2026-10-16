@@ -2,14 +2,25 @@
   <ul class="space-y-2">
     <li v-for="line in lines" :key="line.id">
       <Card class="hover:bg-muted/50 relative gap-2 p-4 transition-colors">
-        <RouterLink
-          class="font-medium"
-          :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"
-        >
-          <span class="absolute inset-0" aria-hidden />
-          {{ line.name }}</RouterLink
-        >
-        <p class="text-muted-foreground text-sm">{{ line.moves }}</p>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <RouterLink
+              class="font-medium"
+              :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}`"
+            >
+              <span class="absolute inset-0" aria-hidden />
+              {{ line.name }}
+            </RouterLink>
+            <p class="text-muted-foreground text-sm">{{ line.moves }}</p>
+          </div>
+          <Button as-child size="sm" class="relative z-10">
+            <RouterLink
+              :to="`/studies/${route.params.studyId}/chapters/${route.params.chapterId}/lines/${line.id}/learn`"
+            >
+              Learn
+            </RouterLink>
+          </Button>
+        </div>
       </Card>
     </li>
   </ul>
@@ -20,6 +31,7 @@ import { GraduationCap } from "@lucide/vue";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 // TODO: move route param to chapter (props)

@@ -33,11 +33,18 @@ const props = withDefaults(
   defineProps<{
     game: ReturnType<typeof useGame>;
     orientation?: "white" | "black";
+    allowNavigation?: boolean;
+    movableColor?: "white" | "black" | "none";
   }>(),
   {
     orientation: "white",
+    allowNavigation: true,
   }
 );
+
+const emit = defineEmits<{
+  ready: [];
+}>();
 
 const chessboardRef = ref<HTMLDivElement>();
 const boardContainerRef = ref<HTMLElement | null>(null);
@@ -62,56 +69,60 @@ const promotionBoardStyle = computed(() => {
   };
 });
 
-function toPreviousMove() {
-  props.game.toPreviousMove((node) => {
-    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
-  });
-}
-
-function toNextMove() {
-  props.game.toNextMove((node) => {
-    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
-  });
-}
-
-function toFirstMove() {
-  props.game.toFirstMove(() => {
-    document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
-  });
-}
-
-function toLastMove() {
-  props.game.toLastMove((node) => {
-    document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
-  });
-}
-
-onKeyStroke("ArrowLeft", toPreviousMove);
-onKeyStroke("ArrowRight", toNextMove);
-onKeyStroke("ArrowUp", (e) => {
-  e.preventDefault();
-  toFirstMove();
-});
-onKeyStroke("ArrowDown", (e) => {
-  e.preventDefault();
-  toLastMove();
-});
-onKeyStroke("f", props.game.toggleOrientation);
-useEventListener(chessboardRef, "wheel", (e: WheelEvent) => {
-  const { deltaY } = e;
-  if (deltaY < 0) {
-    toPreviousMove();
-  } else {
-    toNextMove();
+if (props.allowNavigation) {
+  function toPreviousMove() {
+    props.game.toPreviousMove((node) => {
+      document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+    });
   }
-});
 
-onMounted(async () => {
+  function toNextMove() {
+    props.game.toNextMove((node) => {
+      document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+    });
+  }
+
+  function toFirstMove() {
+    props.game.toFirstMove(() => {
+      document.querySelector(`[data-node-id]`)?.scrollIntoView({ block: "center" });
+    });
+  }
+
+  function toLastMove() {
+    props.game.toLastMove((node) => {
+      document.querySelector(`[data-node-id="${node.id}"]`)?.scrollIntoView({ block: "center" });
+    });
+  }
+
+  onKeyStroke("ArrowLeft", toPreviousMove);
+  onKeyStroke("ArrowRight", toNextMove);
+  onKeyStroke("ArrowUp", (e) => {
+    e.preventDefault();
+    toFirstMove();
+  });
+  onKeyStroke("ArrowDown", (e) => {
+    e.preventDefault();
+    toLastMove();
+  });
+  onKeyStroke("f", props.game.toggleOrientation);
+  useEventListener(chessboardRef, "wheel", (e: WheelEvent) => {
+    const { deltaY } = e;
+    if (deltaY < 0) {
+      toPreviousMove();
+    } else {
+      toNextMove();
+    }
+  });
+}
+
+onMounted(() => {
   if (!chessboardRef.value) return;
   props.game.initializeBoard(chessboardRef.value, {
     orientation: props.orientation,
+    movableColor: props.movableColor,
   });
   boardContainerRef.value = chessboardRef.value.querySelector("cg-container");
+  emit("ready");
 });
 
 watch(

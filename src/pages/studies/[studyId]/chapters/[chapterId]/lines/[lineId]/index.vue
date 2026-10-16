@@ -19,7 +19,7 @@ definePage({
 
 const { setBreadcrumbs } = useBreadcrumbs();
 
-const route = useRoute("/studies/[studyId]/chapters/[chapterId]/lines/[lineId]");
+const route = useRoute("/studies/[studyId]/chapters/[chapterId]/lines/[lineId]/");
 const game = useGame();
 
 watch(

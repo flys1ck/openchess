@@ -1,7 +1,7 @@
-import { Position, useChessground } from "@composables/useChessground";
+import { MovableColor, Position, useChessground } from "@composables/useChessground";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
-import { getPossibleMoves, isPromotion } from "@utilities/move";
+import { fixCastlingDestination, getPossibleMoves, isPromotion } from "@utilities/move";
 import { DrawShape } from "chessground/draw";
 import { Color, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
@@ -13,11 +13,25 @@ import { CSSProperties, ref, shallowRef } from "vue";
 
 export type PromotionPiece = "queen" | "rook" | "bishop" | "knight";
 
+export interface InitializeBoardOptions {
+  orientation?: "white" | "black";
+  movableColor?: MovableColor;
+}
+
+export interface GameMoveConfig {
+  movableColor?: MovableColor;
+  moveGuard?: (source: Key, destination: Key) => boolean;
+  onMovePlayed?: () => void;
+}
+
 export function useGame() {
   let pos = Chess.default();
   let board: ReturnType<typeof useChessground> | undefined;
   const tree = useGameTree();
   const fen = ref(makeFen(pos.toSetup()));
+  let movableColor: MovableColor | undefined;
+  let moveGuard: ((source: Key, destination: Key) => boolean) | undefined;
+  let onMovePlayed: (() => void) | undefined;
 
   // TODO: promotion to own composable
   const isPromoting = ref(false);
@@ -32,7 +46,8 @@ export function useGame() {
   let temporaryShapes: DrawShape[] = [];
   let persistentShapes: DrawShape[] = [];
 
-  function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
+  function initializeBoard(element: HTMLElement, options?: InitializeBoardOptions) {
+    if (options?.movableColor !== undefined) movableColor = options.movableColor;
     const position = {
       fen: fen.value,
       turnColor: pos.turn,
@@ -43,7 +58,22 @@ export function useGame() {
       orientation: options?.orientation,
       position,
       onMove: processMove,
+      movableColor,
     });
+  }
+
+  function configureMoves(options: GameMoveConfig) {
+    if (options.movableColor !== undefined) movableColor = options.movableColor;
+    if (options.moveGuard) moveGuard = options.moveGuard;
+    if (options.onMovePlayed) onMovePlayed = options.onMovePlayed;
+    board?.setMovableColor(movableColor);
+    board?.setTurn(fen.value, pos.turn);
+  }
+
+  function setMovableColor(color: MovableColor | undefined) {
+    movableColor = color;
+    board?.setMovableColor(color);
+    board?.setTurn(fen.value, pos.turn);
   }
 
   function createNewGame() {
@@ -109,30 +139,33 @@ export function useGame() {
     if (cb) cb(node);
   }
 
+  function restorePosition() {
+    const node = tree.activeNode.value;
+    const lastMove = node?.move && ([node.move.source, node.move.destination] as Key[]);
+    board?.setPosition({
+      fen: fen.value,
+      turnColor: pos.turn,
+      lastMove,
+      isCheck: pos.isCheck(),
+    });
+  }
+
   function processMove(source: Key, destination: Key, options?: { promotionPiece?: PromotionPiece }) {
     if (source === "a0" || destination === "a0") return;
 
+    const from = parseSquare(source);
+    if (from === undefined) return;
+
     // fix lichess sending UCI for castling as `e1h1, `e1a1` (adheres to chess960 option for chess engines)
-    const sourcePieceRole = pos.board.getRole(parseSquare(source));
-    let fixedDestination = destination;
-    const uci = `${source}${destination}`;
-    if (sourcePieceRole === "king" && (uci === "e1a1" || uci === "e1h1" || uci === "e8a8" || uci === "e8h8")) {
-      switch (uci) {
-        case "e1a1":
-          fixedDestination = "c1";
-          break;
-        case "e1h1":
-          fixedDestination = "g1";
-          break;
-        case "e8a8":
-          fixedDestination = "c8";
-          break;
-        case "e8h8":
-          fixedDestination = "g8";
-          break;
-      }
+    const sourcePieceRole = pos.board.getRole(from);
+    const fixedDestination = fixCastlingDestination(source, destination, sourcePieceRole);
+    if (moveGuard && !moveGuard(source, fixedDestination)) {
+      restorePosition();
+      return;
     }
-    const targetPieceRole = pos.board.getRole(parseSquare(fixedDestination));
+    const to = parseSquare(fixedDestination);
+    if (to === undefined) return;
+    const targetPieceRole = pos.board.getRole(to);
 
     const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
@@ -144,8 +177,8 @@ export function useGame() {
 
     // handle promotion
     const san = makeSanAndPlay(pos, {
-      from: parseSquare(source),
-      to: parseSquare(fixedDestination),
+      from,
+      to,
       promotion: options?.promotionPiece,
     });
     const isEnPassant = sourcePieceRole === "pawn" && targetPieceRole === undefined && source[0] !== destination[0];
@@ -175,6 +208,7 @@ export function useGame() {
       piece: piece,
     };
     tree.addNode(fen.value, { move: nodeMove });
+    onMovePlayed?.();
   }
 
   // TODO try to do it without turn color (can be inferred by the square)
@@ -276,6 +310,8 @@ export function useGame() {
     promotionColor,
     promotionStyles,
     initializeBoard,
+    configureMoves,
+    setMovableColor,
     createNewGame,
     cancelPromotion,
     promote,
