@@ -9,7 +9,11 @@
     </BaseSectionHeading>
     <Suspense>
       <LineList class="mt-4 grow" />
-      <template #fallback>TODO LOADIN...</template>
+      <template #fallback>
+        <div class="mt-4 space-y-4">
+          <StudyCardSkeleton v-for="index in 5" :key="index" />
+        </div>
+      </template>
     </Suspense>
   </BaseContainer>
 </template>
@@ -18,6 +22,7 @@
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import LineList from "@components/lines/LineList.vue";
+import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import { Button } from "@/components/ui/button";
 
 definePage({

@@ -61,12 +61,22 @@ const studyFormData = reactive<EditableStudy>({
 });
 
 async function onSubmit() {
-  // TODO check all requests for constraint failure
-  const query = db.insertInto("studies").values(studyFormData).compile();
-  const result = await execute(query);
+  try {
+    const query = db.insertInto("studies").values(studyFormData).compile();
+    const result = await execute(query);
 
-  if (!result) return;
-  toast.success(`Study ${studyFormData.name} created`);
-  router.push(`/studies/${result.lastInsertId}`);
+    if (!result) return;
+    toast.success(`Study ${studyFormData.name} created`);
+    router.push(`/studies/${result.lastInsertId}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/UNIQUE constraint failed: studies\.name/i.test(message)) {
+      toast.error("A study with this name already exists");
+      return;
+    }
+    toast.error("Failed to create study", {
+      description: error instanceof Error ? error.message : "An unexpected error occurred",
+    });
+  }
 }
 </script>
