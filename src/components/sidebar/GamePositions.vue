@@ -14,14 +14,14 @@
             class="hover:bg-primary/15 flex w-full justify-between px-4 py-0.5 text-sm"
             @click="
               () => {
-                game.playMove(position.source, position.destination);
+                game.playMove(position.source as Key, position.destination as Key);
                 game.setAutoShapes([], 'temporary');
               }
             "
             @pointermove="
               () =>
                 game.setAutoShapes(
-                  [{ brush: 'paleBlue', orig: position.source, dest: position.destination }],
+                  [{ brush: 'paleBlue', orig: position.source as Key, dest: position.destination as Key }],
                   'temporary'
                 )
             "
@@ -41,7 +41,11 @@
             :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${line.ply}`"
             class="hover:bg-primary/15 flex flex-col px-4 py-2"
             @pointermove="
-              () => game.setAutoShapes([{ brush: 'paleBlue', orig: line.source, dest: line.destination }], 'temporary')
+              () =>
+                game.setAutoShapes(
+                  [{ brush: 'paleBlue', orig: line.source as Key, dest: line.destination as Key }],
+                  'temporary'
+                )
             "
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
             @click="() => $emit('lineClick')"
@@ -160,7 +164,9 @@ import { db, select } from "@services/database";
 import { roundToFixed } from "@utilities/math";
 import { getPositionKey } from "@utilities/move";
 import { Key } from "chessground/types";
+import type { Selectable } from "kysely";
 import { shallowRef, watchEffect } from "vue";
+import type { Chapters, Lines, Positions, Studies } from "@/database";
 
 type MoveStatistics = {
   moveTotal: number;
@@ -168,6 +174,17 @@ type MoveStatistics = {
   whiteWinPercentage: number;
   blackWinPercentage: number;
   drawPercentage: number;
+};
+type StudyMoveInPosition = Pick<Selectable<Positions>, "source" | "destination" | "san"> & {
+  line_count: number;
+};
+type StudyLineWithPosition = Pick<Selectable<Positions>, "source" | "destination" | "ply"> & {
+  study_id: Selectable<Studies>["id"];
+  study_name: Selectable<Studies>["name"];
+  chapter_id: Selectable<Chapters>["id"];
+  chapter_name: Selectable<Chapters>["name"];
+  line_id: Selectable<Lines>["id"];
+  line_name: Selectable<Lines>["name"];
 };
 
 const props = defineProps<{
@@ -177,8 +194,8 @@ defineEmits<{
   lineClick: [];
 }>();
 
-const positions = shallowRef<any[]>([]);
-const lines = shallowRef<any[]>([]);
+const positions = shallowRef<StudyMoveInPosition[]>([]);
+const lines = shallowRef<StudyLineWithPosition[]>([]);
 const totalMasterMoves = shallowRef(0);
 const masterGames = shallowRef<OpeningExplorerMasters["topGames"]>([]);
 type MasterMove = OpeningExplorerMasters["moves"][number] & MoveStatistics;
