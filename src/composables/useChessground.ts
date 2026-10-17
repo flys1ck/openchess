@@ -3,6 +3,8 @@ import { Chessground } from "chessground";
 import { DrawShape } from "chessground/draw";
 import { Color, Dests, Key, Piece } from "chessground/types";
 
+export type MovableColor = Color | "none";
+
 export interface Position {
   fen: string;
   turnColor: Color;
@@ -15,21 +17,31 @@ interface UseChessgroundOptions {
   orientation?: "white" | "black";
   position: Position;
   onMove?: (source: Key, destination: Key) => void;
+  movableColor?: MovableColor;
 }
 
 export function useChessground(element: HTMLElement, options: UseChessgroundOptions) {
   const orientation = options.orientation ?? "white";
+  let lockedMovable = options.movableColor;
+
+  function movableFor(fen: string, turnColor: Color) {
+    if (lockedMovable === "none" || (lockedMovable !== undefined && lockedMovable !== turnColor)) {
+      return { color: undefined, dests: new Map() as Dests, free: false };
+    }
+    return {
+      color: lockedMovable ?? turnColor,
+      dests: getPossibleMoves(fen),
+      free: false,
+    };
+  }
+
   const chessground = Chessground(element, {
     orientation: orientation,
     fen: options.position.fen,
     turnColor: options.position.turnColor,
     lastMove: options.position.lastMove,
     check: options.position.isCheck,
-    movable: {
-      color: options.position.turnColor,
-      dests: getPossibleMoves(options.position.fen),
-      free: false,
-    },
+    movable: movableFor(options.position.fen, options.position.turnColor),
     events: {
       move: options.onMove,
     },
@@ -41,11 +53,7 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
       turnColor: position.turnColor,
       lastMove: position.lastMove,
       check: position.isCheck,
-      movable: {
-        color: position.turnColor,
-        dests: getPossibleMoves(position.fen),
-        free: false,
-      },
+      movable: movableFor(position.fen, position.turnColor),
     });
   }
 
@@ -63,11 +71,12 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
   function setTurn(fen: string, color: Color) {
     chessground.set({
       turnColor: color,
-      movable: {
-        color: color,
-        dests: getPossibleMoves(fen),
-      },
+      movable: movableFor(fen, color),
     });
+  }
+
+  function setMovableColor(color: MovableColor | undefined) {
+    lockedMovable = color;
   }
 
   function setCheck() {
@@ -110,6 +119,7 @@ export function useChessground(element: HTMLElement, options: UseChessgroundOpti
     toggleOrientation,
     appendChildToContainer,
     setTurn,
+    setMovableColor,
     setPiece,
     setCheck,
   };
