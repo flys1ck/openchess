@@ -1,0 +1,24 @@
+---
+paths:
+  - "**/*.{ts,tsx,js,jsx,vue}"
+---
+
+# One-Liner If Statements
+
+When an `if` body is a single simple statement (e.g. `return`, `throw`, `break`, `continue`, or one assignment/call), write it on one line without braces.
+
+```typescript
+// ❌ BAD
+if (/^\/analysis\/game\/live\/\d+/i.test(locationLike.pathname)) {
+  return true;
+}
+
+// ✅ GOOD
+if (/^\/analysis\/game\/live\/\d+/i.test(locationLike.pathname)) return true;
+```
+
+Keep braces and a multi-line body when:
+
+- The body has more than one statement
+- The condition or statement is long enough that a single line hurts readability
+- Nested control flow or comments belong inside the branch
