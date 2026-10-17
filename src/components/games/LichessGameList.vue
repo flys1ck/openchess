@@ -17,6 +17,7 @@ import { useLichess } from "@stores/useLichess";
 import { parseLichessGamesNdjson } from "@utilities/lichessGames";
 import { normalizeLichessGame } from "@utilities/normalizer";
 import { computed, ref, shallowRef } from "vue";
+import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -37,6 +38,7 @@ async function fetchGames(until?: number): Promise<GameJson[]> {
     parseAs: "text",
     headers: { Accept: "application/x-ndjson" },
   });
+  if (response.error) throw new Error(`Lichess responded with ${response.response.status}`);
 
   return parseLichessGamesNdjson((response.data as string) ?? "");
 }
@@ -66,6 +68,10 @@ async function loadMore() {
     const fetched = await fetchGames(lastGame.createdAt);
     games.value = [...games.value, ...fetched];
     hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
+  } catch {
+    toast.error("Couldn't load more games", {
+      description: "Check your connection and try again.",
+    });
   } finally {
     isLoadingMore.value = false;
   }
