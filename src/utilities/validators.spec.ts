@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { isFEN } from "./validators";
 
-const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-const ILLEGAL_CASTLING_FEN = "rnb1QNnr/2k5/8/ppPp1P2/8/7p/PPP1PP1P/RNB1KB1R w KQ - 0 1";
-
 describe("isFEN", () => {
   it("should accept the starting position", () => {
-    expect(isFEN(STARTING_FEN)).toBe(true);
+    expect(isFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")).toBe(true);
   });
 
   it("should accept a parseable position with illegal castling rights", () => {
-    expect(isFEN(ILLEGAL_CASTLING_FEN)).toBe(true);
+    expect(isFEN("rnb1QNnr/2k5/8/ppPp1P2/8/7p/PPP1PP1P/RNB1KB1R w KQ - 0 1")).toBe(true);
   });
 
   it("should reject invalid strings", () => {
