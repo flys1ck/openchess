@@ -64,8 +64,7 @@ async function loadMore() {
   isLoadingMore.value = true;
   try {
     const fetched = await fetchGames(lastGame.createdAt);
-    const loadedIds = new Set(games.value.map((game) => game.id));
-    games.value = [...games.value, ...fetched.filter((game) => !loadedIds.has(game.id))];
+    games.value = [...games.value, ...fetched];
     hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
   } finally {
     isLoadingMore.value = false;
