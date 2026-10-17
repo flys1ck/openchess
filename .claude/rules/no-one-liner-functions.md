@@ -3,7 +3,6 @@ paths:
   - "**/*.{ts,tsx,js,jsx}"
 ---
 
-
 # No One-Liner Functions
 
 Do not extract a named function when the body is a single expression with no meaningful reuse or abstraction.

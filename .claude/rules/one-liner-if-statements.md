@@ -3,7 +3,6 @@ paths:
   - "**/*.{ts,tsx,js,jsx}"
 ---
 
-
 # One-Liner If Statements
 
 When an `if` body is a single simple statement (e.g. `return`, `throw`, `break`, `continue`, or one assignment/call), write it on one line without braces.
