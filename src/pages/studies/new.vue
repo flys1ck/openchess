@@ -74,8 +74,8 @@ async function onSubmit() {
       toast.error("A study with this name already exists");
       return;
     }
-    toast.error("Failed to create study", {
-      description: error instanceof Error ? error.message : "An unexpected error occurred",
+    toast.error("Couldn't create study", {
+      description: "Please try again.",
     });
   }
 }
