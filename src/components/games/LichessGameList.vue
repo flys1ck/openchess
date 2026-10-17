@@ -14,7 +14,6 @@
 import GameCard from "@components/games/GameCard.vue";
 import { exportGamesOfAuser, type GameJson } from "@flys1ck/lichess-client";
 import { useLichess } from "@stores/useLichess";
-import { parseLichessGamesNdjson } from "@utilities/lichessGames";
 import { normalizeLichessGame } from "@utilities/normalizer";
 import { computed, ref, shallowRef } from "vue";
 import { toast } from "vue-sonner";
@@ -40,7 +39,10 @@ async function fetchGames(until?: number): Promise<GameJson[]> {
   });
   if (response.error) throw new Error(`Lichess responded with ${response.response.status}`);
 
-  return parseLichessGamesNdjson((response.data as string) ?? "");
+  return ((response.data as string) ?? "")
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as GameJson);
 }
 
 const games = shallowRef<GameJson[]>(await fetchGames());
