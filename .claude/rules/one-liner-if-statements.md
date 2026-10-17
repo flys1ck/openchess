@@ -1,6 +1,6 @@
 ---
 paths:
-  - "**/*.{ts,tsx,js,jsx}"
+  - "**/*.{ts,tsx,js,jsx,vue}"
 ---
 
 # One-Liner If Statements

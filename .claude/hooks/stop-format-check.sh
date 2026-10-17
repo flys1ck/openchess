@@ -14,7 +14,7 @@ files=$({ git diff --name-only HEAD; git ls-files --others --exclude-standard; }
 [ -z "$files" ] && exit 0
 
 # shellcheck disable=SC2086
-if ! out=$(echo "$files" | tr '\n' '\0' | xargs -0 bunx oxfmt --check 2>&1); then
+if ! out=$(echo "$files" | tr '\n' '\0' | xargs -0 bunx oxfmt --check --no-error-on-unmatched-pattern 2>&1); then
   {
     echo "Unformatted files (CI runs fmt:check). Run \`bunx oxfmt <file>\` on each, then finish:"
     echo "$out"
