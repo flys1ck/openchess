@@ -25,15 +25,16 @@ sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webki
 bun install
 ```
 
-**2. Download Stockfish and generate Tauri binary sidecar**
+**2. Download sidecars and generate Tauri binary names**
 
-The Stockfish binary is not committed to the repository. Download it for your platform:
+Stockfish and pgn-extract are not committed to the repository. Download or build them for your platform:
 
 ```bash
 bun run scripts/downloadStockfish.ts
+bun run scripts/downloadPgnExtract.ts
 ```
 
-This places the binary in `external/stockfish/`. It only needs to be run once (or when the Stockfish version changes). Tauri requires the binary to be named with a target triple suffix. Run:
+Stockfish is fetched as a prebuilt. pgn-extract is compiled from the 26-04 source on macOS and Linux (`make` / a C compiler are required) and downloaded as the official 64-bit exe on Windows. Both land in `external/`. Run this once, or again when a sidecar version changes. Tauri requires each binary to be named with a target triple suffix:
 
 ```bash
 bun run scripts/generateTargetTriple.ts
@@ -45,19 +46,28 @@ bun run scripts/generateTargetTriple.ts
 bun tauri dev
 ```
 
-## Updating Stockfish
+## Updating sidecars
 
-Find new Stockfish releases on the [official Stockfish releases page](https://github.com/official-stockfish/Stockfish/releases). Set `STOCKFISH_VERSION` to the release number in your local environment, then run:
+Find new Stockfish releases on the [official Stockfish releases page](https://github.com/official-stockfish/Stockfish/releases). pgn-extract releases are listed on [David Barnes' pgn-extract page](https://www.cs.kent.ac.uk/people/staff/djb/pgn-extract/). Set `STOCKFISH_VERSION` and/or `PGN_EXTRACT_VERSION` in your local environment, then run:
 
 ```bash
 bun run scripts/downloadStockfish.ts
+bun run scripts/downloadPgnExtract.ts
 bun run scripts/generateTargetTriple.ts
 ```
 
-First script downloads the platform-appropriate Stockfish archive into `external/stockfish/`. The second regenerates the Tauri sidecar in `src-tauri/bin/`. Restart `bun tauri dev` after updating the binary. If the app still uses the previous binary, remove the debug build before restarting:
+The download scripts place binaries in `external/`. `generateTargetTriple.ts` copies them to `src-tauri/bin/` with the host (or `TARGET_TRIPLE`) suffix. Restart `bun tauri dev` after updating a binary. If the app still uses the previous binary, remove the debug build before restarting:
 
 ```bash
 rm -rf src-tauri/target/debug
+```
+
+pgn-extract is GPL-3.0. OpenChess ships it as a separate sidecar; see [`third_party/pgn-extract/NOTICE`](third_party/pgn-extract/NOTICE) and [`third_party/pgn-extract/COPYING`](third_party/pgn-extract/COPYING).
+
+To run the official pgn-extract repair/normalize oracles against the local sidecar:
+
+```bash
+bun run scripts/testPgnExtract.ts
 ```
 
 ## Code Quality
@@ -94,11 +104,12 @@ Creates a **draft** GitHub release named `OpenChess v<version>` with auto-genera
 
 ### Required environment variables
 
-| Secret                               | Purpose                      |
-| ------------------------------------ | ---------------------------- |
-| `STOCKFISH_VERSION`                  | Stockfish version            |
-| `TAURI_SIGNING_PRIVATE_KEY`          | Signs update artifacts       |
-| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for the signing key |
+| Secret                               | Purpose                       |
+| ------------------------------------ | ----------------------------- |
+| `STOCKFISH_VERSION`                  | Stockfish version             |
+| `PGN_EXTRACT_VERSION`                | pgn-extract version (`26-04`) |
+| `TAURI_SIGNING_PRIVATE_KEY`          | Signs update artifacts        |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Password for the signing key  |
 
 ## IDE Setup
 
