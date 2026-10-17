@@ -8,9 +8,16 @@
       <template #form>
         <form @submit.prevent="onSubmit">
           <FieldGroup>
-            <Field>
+            <Field :data-invalid="!!nameError">
               <FieldLabel for="study-name">Name</FieldLabel>
-              <Input id="study-name" name="name" spellcheck="false" v-model="studyFormData.name" />
+              <Input
+                id="study-name"
+                name="name"
+                spellcheck="false"
+                :aria-invalid="!!nameError"
+                v-model="studyFormData.name"
+              />
+              <FieldError v-if="nameError">{{ nameError }}</FieldError>
             </Field>
             <Field>
               <FieldLabel for="study-description">Description</FieldLabel>
@@ -51,7 +58,7 @@ import { reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,20 +74,27 @@ const studyFormData = reactive<EditableStudy>({
   name: study.value.name,
   description: study.value.description ?? "",
 });
+const nameError = ref<string>();
 
 async function onSubmit() {
   try {
+    const existingStudy = await selectFirst(
+      db
+        .selectFrom("studies")
+        .select("id")
+        .where("name", "=", studyFormData.name)
+        .where("id", "!=", Number(route.params.studyId))
+        .compile()
+    );
+    nameError.value = existingStudy ? "A study with this name already exists" : undefined;
+    if (nameError.value) return;
+
     const query = db.updateTable("studies").set(studyFormData).where("id", "=", Number(route.params.studyId)).compile();
     const result = await execute(query);
 
     if (!result) return;
     toast.success("Study updated");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (/UNIQUE constraint failed: studies\.name/i.test(message)) {
-      toast.error("A study with this name already exists");
-      return;
-    }
+  } catch {
     toast.error("Couldn't update study", {
       description: "Please try again.",
     });

@@ -3,9 +3,16 @@
     <BaseSectionHeading heading="New Study" />
     <form @submit.prevent="onSubmit">
       <FieldGroup class="border-b pb-12">
-        <Field>
+        <Field :data-invalid="!!nameError">
           <FieldLabel for="study-name">Name</FieldLabel>
-          <Input id="study-name" name="name" spellcheck="false" v-model="studyFormData.name" />
+          <Input
+            id="study-name"
+            name="name"
+            spellcheck="false"
+            :aria-invalid="!!nameError"
+            v-model="studyFormData.name"
+          />
+          <FieldError v-if="nameError">{{ nameError }}</FieldError>
         </Field>
         <Field>
           <FieldLabel for="study-description">Description</FieldLabel>
@@ -24,13 +31,13 @@
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import { GraduationCap } from "@lucide/vue";
-import { db, execute } from "@services/database";
+import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EditableStudy } from "@/types";
@@ -59,21 +66,23 @@ const studyFormData = reactive<EditableStudy>({
   name: "",
   description: "",
 });
+const nameError = ref<string>();
 
 async function onSubmit() {
   try {
+    const existingStudy = await selectFirst(
+      db.selectFrom("studies").select("id").where("name", "=", studyFormData.name).compile()
+    );
+    nameError.value = existingStudy ? "A study with this name already exists" : undefined;
+    if (nameError.value) return;
+
     const query = db.insertInto("studies").values(studyFormData).compile();
     const result = await execute(query);
 
     if (!result) return;
     toast.success(`Study ${studyFormData.name} created`);
     router.push(`/studies/${result.lastInsertId}`);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (/UNIQUE constraint failed: studies\.name/i.test(message)) {
-      toast.error("A study with this name already exists");
-      return;
-    }
+  } catch {
     toast.error("Couldn't create study", {
       description: "Please try again.",
     });
