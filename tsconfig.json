@@ -18,7 +18,6 @@
       "@composables/*": ["./src/composables/*"],
       "@data/*": ["./src/data/*"],
       "@modules/*": ["./src/modules/*"],
-      "@schemas/*": ["./src/schemas/*"],
       "@services/*": ["./src/services/*"],
       "@stores/*": ["./src/stores/*"],
       "@utilities/*": ["./src/utilities/*"],

@@ -15,7 +15,7 @@ bun tauri dev            # Start full Tauri app with hot-reload
 bun run build            # TypeScript check + Vite build
 bun tauri build          # Full desktop app build
 
-# Code quality (run all before committing)
+# Code quality (run fmt, lint and types:check before committing; fmt and lint also cover workspace packages)
 bun run fmt              # Format with oxfmt
 bun run fmt:check        # Check formatting only
 bun run lint             # Lint with oxlint (auto-fix)
@@ -42,14 +42,14 @@ bun run db:gen:types     # Regenerate TypeScript types from SQLite schema
   - `useEvaluation` — real-time Stockfish evaluation via Tauri events
   - `useSetting` — persists individual settings to the SQLite database
 - `stores/` — Pinia stores for cross-component state: `useLichess`, `useChessDotCom`, `useSettings`, `useBreadcrumbs`.
-- `services/` — API clients: `lichess.ts`, `chessdotcom.ts`, `database.ts` (Kysely wrapper).
-- `schemas/` — Zod schemas for runtime validation of Lichess and Chess.com API responses.
+- `services/` — `chessdotcom.ts` (Chess.com API client), `database.ts` (Kysely wrapper). The Lichess API client is the `@flys1ck/lichess-client` workspace package (`packages/lichess-client`, generated from OpenAPI).
 - `utilities/` — Pure helper functions (move generation, PGN parsing, audio, validation).
-- Path aliases: `@components`, `@services`, `@stores`, `@composables`, `@utilities`, `@schemas`, `@assets` — defined in `tsconfig.json`.
+- Path aliases: `@components`, `@services`, `@stores`, `@composables`, `@utilities`, `@assets`, `@data`, `@modules`, and `@/` for `src/` — defined in `tsconfig.json`.
 
 ### Backend (`src-tauri/`)
 
-- `main.rs` — Tauri setup: registers plugins (SQL, updater, shell), runs migrations, initializes state.
+- `main.rs` — Tauri setup: registers plugins (SQL, updater, shell, deep-link, single-instance, http, fs, dialog, opener, process, window-state, and the MCP bridge in dev), runs migrations, initializes state.
+- `database.rs` — Diesel database helpers.
 - `migrations/` — Diesel SQL migrations. Run automatically on app start.
 
 ### Frontend ↔ Backend Communication
@@ -98,4 +98,4 @@ bunx tauri-mcp driver-session start --port 9223 --json
 - Prefer `webview-execute-js` for measured styles and `data-slot` dumps; use `webview-interact` for real clicks (Reka often ignores a synthetic `.click()`).
 - Text selectors can match more than one control (nav vs in-page). Pass `--nth` or a CSS selector.
 - JPEG screenshots with `--max-width 1200` and `--call-timeout 20000` are more reliable than PNG (PNG often times out).
-- Cursor may also expose `@hypothesi/tauri-mcp-server` via `.cursor/mcp.json`. If those tools are not in the session namespace, use this CLI. Do not add browser-only stubs so a normal tab can load the app.
+- `@hypothesi/tauri-mcp-server` is configured in `.mcp.json` (Claude Code) and `.cursor/mcp.json` (Cursor). If those tools are not in the session namespace, use this CLI. Do not add browser-only stubs so a normal tab can load the app.

@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "tauri": {
+      "command": "bunx",
+      "args": [
+        "@hypothesi/tauri-mcp-server"
+      ]
+    },
+    "shadcnVue": {
+      "command": "bunx",
+      "args": [
+        "shadcn-vue@latest",
+        "mcp"
+      ]
+    }
+  }
+}
