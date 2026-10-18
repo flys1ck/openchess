@@ -67,7 +67,6 @@ Kysely provides type-safe query building. Types are generated from the SQLite sc
 - **Stockfish binary**: Downloaded separately via `bun run scripts/downloadStockfish.ts`. Required for `tauri dev` / `tauri build`.
 - **Issues**: Tracked in GitHub Issues. Older commits and branches use an `OCS-<number>` prefix from the previous Linear setup; do not use it for new work.
 - **Branches**: `<type>/<short-description>`, e.g. `fix/promotion-overlay-flipped`. No issue number in the branch name.
-- **PR descriptions**: Problem, Change, Verification. Include before/after screenshots for UI changes. Link the issue with `Closes #<number>` so GitHub closes it on merge.
 
 ## Tauri MCP
 
