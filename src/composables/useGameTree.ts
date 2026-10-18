@@ -2,7 +2,7 @@ import { formatComment } from "@utilities/comment";
 import { toSAN } from "@utilities/move";
 import { Key, Piece } from "chessground/types";
 import { NormalMove, Position, makeSquare } from "chessops";
-import { makeFen } from "chessops/fen";
+import { makeFen, parseFen } from "chessops/fen";
 import { ChildNode, PgnNodeData, parsePgn, startingPosition } from "chessops/pgn";
 import { parseSan } from "chessops/san";
 import { computed, ref } from "vue";
@@ -55,11 +55,11 @@ export function useGameTree() {
    * @returns Newly added node
    */
   function addNode(fen: string, options?: AddMoveOptions, force: boolean = false): PositionNode {
-    const nodeId = window.crypto.randomUUID();
+    const nodeId = crypto.randomUUID();
     const newNode: PositionNode = {
       id: nodeId,
       fen,
-      ply: activeNode.value ? activeNode.value.ply + 1 : 0,
+      ply: activeNode.value ? activeNode.value.ply + 1 : startingPly(fen),
       move: options && options.move,
       previousPosition: activeNode.value,
       comment: options && options.comment,
@@ -116,6 +116,7 @@ export function useGameTree() {
       const isNullMove = child.data.san === "--";
       const move = parseSan(position, child.data.san) as NormalMove | undefined;
       if ((!isNullMove && !move) || (isNullMove && !previousMove)) return; //illegal move
+      const color = position.turn;
       if (!isNullMove) position.play(move!);
       const fen = makeFen(position.toSetup());
       const node = addNode(
@@ -129,7 +130,7 @@ export function useGameTree() {
             isCheck: child.data.san.includes("+"),
             piece: {
               role: isNullMove ? pos.board.getRole(previousMove!.from)! : pos.board.getRole(move!.from)!,
-              color: pos.turn,
+              color,
               promoted: isNullMove ? !!previousMove!.promotion : !!move!.promotion,
             },
             annotations: child.data.nags,
@@ -184,4 +185,9 @@ export function useGameTree() {
     reset,
     fromPgn,
   };
+}
+
+function startingPly(fen: string) {
+  const setup = parseFen(fen).unwrap();
+  return (setup.fullmoves - 1) * 2 + (setup.turn === "black" ? 1 : 0);
 }

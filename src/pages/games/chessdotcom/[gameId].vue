@@ -25,8 +25,7 @@ const { setBreadcrumbs } = useBreadcrumbs();
 async function loadGame(gameId: string) {
   const gameInfo = (await chessDotCom.client.getGameByUuid(gameId))!;
 
-  game.createNewGame();
-  game.tree.fromPgn(gameInfo.pgn);
+  game.loadPgn(gameInfo.pgn);
   parsedGame.value = parsePgn(gameInfo.pgn);
 
   setBreadcrumbs([
