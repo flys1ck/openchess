@@ -99,7 +99,8 @@ async function processPgn(pgn: string) {
     const chapterQueryResult = await execute(chapterQuery);
 
     let chapterId: number;
-    if (chapterQueryResult.rowsAffected === 0 && !chapterQueryResult.lastInsertId) {
+    // lastInsertId is stale when the insert was skipped by the conflict clause
+    if (chapterQueryResult.rowsAffected === 0) {
       const chapterQuery = db
         .selectFrom("chapters")
         .select("id")
