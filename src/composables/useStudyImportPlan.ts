@@ -5,7 +5,12 @@ import { computed, reactive, ref, shallowRef, watch } from "vue";
 export function useStudyImportPlan() {
   const files = ref<File[]>([]);
   const games = shallowRef<Game<PgnNodeData>[]>([]);
-  const settings = reactive<ImportSettings>({ chapterHeader: "", lineHeader: "", orientation: "white" });
+  const settings = reactive<ImportSettings>({
+    chapterHeader: "",
+    lineHeader: "",
+    orientation: "white",
+    splitVariations: false,
+  });
 
   watch(files, async (selectedFiles) => {
     const pgns = await Promise.all(selectedFiles.map((file) => file.text()));

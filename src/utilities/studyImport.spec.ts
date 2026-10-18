@@ -2,7 +2,12 @@ import { parsePgn } from "chessops/pgn";
 import { describe, expect, it } from "vitest";
 import { ImportSettings, buildImportPlan, collectHeaders, suggestImportHeaders } from "./studyImport";
 
-const settings: ImportSettings = { chapterHeader: "White", lineHeader: "Black", orientation: "black" };
+const settings: ImportSettings = {
+  chapterHeader: "White",
+  lineHeader: "Black",
+  orientation: "black",
+  splitVariations: false,
+};
 
 function game(headers: Record<string, string>, moves: string) {
   const tags = Object.entries(headers)
@@ -191,5 +196,75 @@ describe("buildImportPlan", () => {
 
     expect(plan.warnings).toEqual(["Skipped game 1: invalid starting position"]);
     expect(plan.chapters[0].lines.map((line) => line.name)).toEqual(["Good"]);
+  });
+});
+
+describe("buildImportPlan with splitVariations", () => {
+  const splitSettings = { ...settings, splitVariations: true };
+  const lineNames = (pgn: string, overrides: Partial<ImportSettings> = {}) =>
+    buildImportPlan(parsePgn(pgn), { ...splitSettings, ...overrides }).chapters.map((chapter) =>
+      chapter.lines.map((line) => line.name)
+    );
+
+  it("should create one line per variation in PGN order", () => {
+    const pgn = game(
+      { White: "Chapter", Black: "QGD" },
+      "1. d4 d5 2. c4 (2. Nf3 Nf6 (2... c5) 3. g3) (2. Bf4) e6 3. Nc3 (3. Nf3)"
+    );
+
+    expect(lineNames(pgn)).toEqual([["QGD", "QGD · 2.Nf3", "QGD · 2.Nf3 2...c5", "QGD · 2.Bf4", "QGD · 3.Nf3"]]);
+  });
+
+  it("should index each variation as its own mainline", () => {
+    const pgn = game({ White: "Chapter", Black: "QGD" }, "1. d4 d5 2. c4 (2. Nf3 { Quieter } Nf6) e6");
+
+    const [main, sideline] = buildImportPlan(parsePgn(pgn), splitSettings).chapters[0].lines;
+
+    expect(main).toMatchObject({ moves: "d4 d5 c4 e6", warnings: [] });
+    expect(sideline).toMatchObject({ moves: "d4 d5 Nf3 Nf6", warnings: [] });
+    expect(sideline.positions.map((position) => position.ply)).toEqual([0, 1, 2, 3]);
+    expect(sideline.pgn).toContain("2. Nf3 { Quieter } Nf6");
+    expect(sideline.pgn).not.toContain("c4");
+  });
+
+  it("should merge a move that is listed twice at the same point", () => {
+    const pgn = game({ White: "Chapter", Black: "Line" }, "1. e4 (1. d4 d5) (1. d4 { Again } Nf6) e5");
+
+    const lines = buildImportPlan(parsePgn(pgn), splitSettings).chapters[0].lines;
+
+    expect(lines.map((line) => [line.name, line.moves])).toEqual([
+      ["Line", "e4 e5"],
+      ["Line · 1.d4", "d4 d5"],
+      ["Line · 1.d4 1...Nf6", "d4 Nf6"],
+    ]);
+    expect(lines.flatMap((line) => line.warnings)).toEqual([]);
+    expect(lines[2].pgn).toContain("{ Again }");
+  });
+
+  it("should number moves from the FEN header", () => {
+    const fen = "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 3 3";
+    const pgn = game({ White: "Chapter", Black: "Italian", SetUp: "1", FEN: fen }, "3... Nf6 (3... Bc5 4. c3) 4. d4");
+
+    expect(lineNames(pgn)).toEqual([["Italian", "Italian · 3...Bc5"]]);
+  });
+
+  it("should keep a game without variations as a single line", () => {
+    expect(lineNames(game({ White: "Chapter", Black: "Line" }, "1. e4 e5"))).toEqual([["Line"]]);
+    expect(lineNames(game({ White: "Chapter", Black: "Empty" }, ""))).toEqual([["Empty"]]);
+  });
+
+  it("should give all variations of a game the same generated name without a line header", () => {
+    const pgn =
+      game({ White: "Chapter", Black: "A" }, "1. e4 (1. d4) e5") + game({ White: "Chapter", Black: "B" }, "1. c4");
+
+    expect(lineNames(pgn, { lineHeader: "" })).toEqual([["Line 1", "Line 1 · 1.d4", "Line 2"]]);
+  });
+
+  it("should warn only on the variation with an illegal move", () => {
+    const pgn = game({ White: "Chapter", Black: "Line" }, "1. e4 (1. d4 d5 2. Ke4) e5");
+
+    const lines = buildImportPlan(parsePgn(pgn), splitSettings).chapters[0].lines;
+
+    expect(lines.map((line) => line.warnings)).toEqual([[], ["Stops at ply 2: Ke4 is not a legal move"]]);
   });
 });
