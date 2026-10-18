@@ -28,7 +28,7 @@ const chapterQuery = db
   .selectFrom("chapters")
   .selectAll()
   .where("study", "=", Number(route.params.studyId))
-  .orderBy("created_at")
+  .orderBy("id")
   .compile();
 
 const [study, chapters] = await Promise.all([selectFirst(studyQuery), select(chapterQuery)]);
