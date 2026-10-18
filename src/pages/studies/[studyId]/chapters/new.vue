@@ -44,11 +44,8 @@ import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import { GraduationCap } from "@lucide/vue";
 import { db, execute, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { getPositionKey } from "@utilities/move";
-import { NormalMove, makeSquare } from "chessops";
-import { makeFen } from "chessops/fen";
-import { makePgn, parsePgn, startingPosition } from "chessops/pgn";
-import { parseSan } from "chessops/san";
+import { ImportPlan, Orientation, buildImportPlan } from "@utilities/studyImport";
+import { parsePgn } from "chessops/pgn";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { Button } from "@/components/ui/button";
@@ -59,39 +56,30 @@ const route = useRoute("/studies/[studyId]/chapters/new");
 const files = ref<File[]>([]);
 const chapterHeader = ref("White");
 const lineHeader = ref("Black");
-const lineOrientation = ref("white");
+const lineOrientation = ref<Orientation>("white");
 
 const query = db.selectFrom("studies").select(["id", "name"]).where("id", "=", Number(route.params.studyId)).compile();
 const study = await selectFirst(query);
 
-function onSubmit() {
-  files.value.forEach((file) => {
-    const fileReader = new FileReader();
-    fileReader.addEventListener("load", (e) => {
-      processPgn(e.target?.result as string);
-    });
-    fileReader.readAsText(file);
-  });
+async function onSubmit() {
+  const pgns = await Promise.all(files.value.map((file) => file.text()));
+  const plan = buildImportPlan(
+    pgns.flatMap((pgn) => parsePgn(pgn)),
+    {
+      chapterHeader: chapterHeader.value,
+      lineHeader: lineHeader.value,
+      orientation: lineOrientation.value,
+    }
+  );
+  await persistPlan(plan);
 }
 
-// TODO: will currently only work with mainline
-async function processPgn(pgn: string) {
-  const games = parsePgn(pgn);
-  for (const game of games) {
-    const pos = startingPosition(game.headers).unwrap();
-    const headers = game.headers;
-    const chapterName = headers.get(chapterHeader.value) ?? "";
-    const lineName = headers.get(lineHeader.value) ?? "";
-
-    let moves = "";
-    for (const node of game.moves.mainline()) {
-      moves = `${moves} ${node.san}`;
-    }
-
+async function persistPlan(plan: ImportPlan) {
+  for (const chapter of plan.chapters) {
     const chapterQuery = db
       .insertInto("chapters")
       .values({
-        name: chapterName,
+        name: chapter.name,
         study: Number(route.params.studyId),
       })
       .onConflict((oc) => oc.columns(["study", "name"]).doNothing())
@@ -104,7 +92,7 @@ async function processPgn(pgn: string) {
         .selectFrom("chapters")
         .select("id")
         .where("study", "=", Number(route.params.studyId))
-        .where("name", "=", chapterName)
+        .where("name", "=", chapter.name)
         .compile();
       chapterId = (await selectFirst(chapterQuery)).id;
     } else {
@@ -112,87 +100,62 @@ async function processPgn(pgn: string) {
       chapterId = chapterQueryResult.lastInsertId;
     }
 
-    const lineQuery = db
-      .insertInto("lines")
-      .values({
-        chapter: chapterId,
-        name: lineName,
-        pgn: makePgn(game),
-        moves,
-        orientation: lineOrientation.value,
-      })
-      .compile();
-    const lineQueryResult = await execute(lineQuery);
-
-    let lineId: number;
-    if (lineQueryResult.rowsAffected === 0) {
+    for (const line of chapter.lines) {
       const lineQuery = db
-        .selectFrom("lines")
-        .select("id")
-        .where("chapter", "=", chapterId)
-        .where("name", "=", lineName)
-        .compile();
-      lineId = (await selectFirst(lineQuery)).id;
-    } else {
-      if (!lineQueryResult.lastInsertId) throw new Error("Insert succeeded but no lastInsertId returned");
-      lineId = lineQueryResult.lastInsertId;
-    }
-
-    const positions = [];
-    for (const node of game.moves.mainline()) {
-      const move = parseSan(pos, node.san) as NormalMove;
-      if (!move) {
-        console.error("mainline includes illegal moves");
-        break;
-      }
-      const fen = makeFen(pos.toSetup());
-      positions.push({
-        position_key: getPositionKey(fen),
-        ply: positions.length,
-        halfmove_clock: pos.halfmoves,
-        fullmove_number: pos.fullmoves,
-        source: makeSquare(move.from),
-        destination: makeSquare(move.to),
-        san: node.san,
-        line: lineId,
-      });
-      pos.play(move);
-    }
-
-    if (positions.length === 0) continue;
-    const positionKeys = [...new Set(positions.map((position) => position.position_key))];
-    const chessPositionsQuery = db
-      .insertInto("chess_positions")
-      .values(positionKeys.map((position_key) => ({ position_key })))
-      .onConflict((oc) => oc.column("position_key").doNothing())
-      .compile();
-    await execute(chessPositionsQuery);
-
-    const storedChessPositionsQuery = db
-      .selectFrom("chess_positions")
-      .select(["id", "position_key"])
-      .where("position_key", "in", positionKeys)
-      .compile();
-    const storedChessPositions = await select(storedChessPositionsQuery);
-    const chessPositionIds = new Map(
-      storedChessPositions.map((position) => [position.position_key, position.id] as const)
-    );
-
-    const positionsQuery = db
-      .insertInto("positions")
-      .values(
-        positions.map(({ position_key, ...position }) => {
-          const chessPosition = chessPositionIds.get(position_key);
-          if (chessPosition === undefined) throw new Error(`Position key was not stored: ${position_key}`);
-          return {
-            ...position,
-            chess_position: chessPosition,
-          };
+        .insertInto("lines")
+        .values({
+          chapter: chapterId,
+          name: line.name,
+          pgn: line.pgn,
+          moves: line.moves,
+          orientation: line.orientation,
         })
-      )
-      .onConflict((oc) => oc.columns(["line", "ply"]).doNothing())
-      .compile();
-    await execute(positionsQuery);
+        .compile();
+      const lineQueryResult = await execute(lineQuery);
+      const lineId = lineQueryResult.lastInsertId;
+      if (!lineId) throw new Error("Insert succeeded but no lastInsertId returned");
+
+      if (line.positions.length === 0) continue;
+      const positionKeys = [...new Set(line.positions.map((position) => position.positionKey))];
+      const chessPositionsQuery = db
+        .insertInto("chess_positions")
+        .values(positionKeys.map((position_key) => ({ position_key })))
+        .onConflict((oc) => oc.column("position_key").doNothing())
+        .compile();
+      await execute(chessPositionsQuery);
+
+      const storedChessPositionsQuery = db
+        .selectFrom("chess_positions")
+        .select(["id", "position_key"])
+        .where("position_key", "in", positionKeys)
+        .compile();
+      const storedChessPositions = await select(storedChessPositionsQuery);
+      const chessPositionIds = new Map(
+        storedChessPositions.map((position) => [position.position_key, position.id] as const)
+      );
+
+      const positionsQuery = db
+        .insertInto("positions")
+        .values(
+          line.positions.map((position) => {
+            const chessPosition = chessPositionIds.get(position.positionKey);
+            if (chessPosition === undefined) throw new Error(`Position key was not stored: ${position.positionKey}`);
+            return {
+              chess_position: chessPosition,
+              line: lineId,
+              ply: position.ply,
+              halfmove_clock: position.halfmoveClock,
+              fullmove_number: position.fullmoveNumber,
+              source: position.source,
+              destination: position.destination,
+              san: position.san,
+            };
+          })
+        )
+        .onConflict((oc) => oc.columns(["line", "ply"]).doNothing())
+        .compile();
+      await execute(positionsQuery);
+    }
   }
 }
 
