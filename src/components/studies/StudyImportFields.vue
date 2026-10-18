@@ -28,6 +28,13 @@
         <NativeSelectOption value="black">Black</NativeSelectOption>
       </NativeSelect>
     </Field>
+    <Field orientation="horizontal">
+      <FieldContent>
+        <FieldLabel for="split-variations">One line per variation</FieldLabel>
+        <FieldDescription>Import every sideline as its own line instead of only the main line.</FieldDescription>
+      </FieldContent>
+      <Switch id="split-variations" v-model="settings.splitVariations" />
+    </Field>
   </template>
   <StudyImportPreview v-if="plan" :plan="plan" :existing-lines="existingLines" />
 </template>
@@ -35,8 +42,9 @@
 <script setup lang="ts">
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import { HeaderSummary, ImportPlan, ImportSettings } from "@utilities/studyImport";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldContent, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { Switch } from "@/components/ui/switch";
 import StudyImportPreview from "./StudyImportPreview.vue";
 
 defineProps<{

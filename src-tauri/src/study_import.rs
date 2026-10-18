@@ -434,6 +434,34 @@ mod tests {
     }
 
     #[test]
+    fn imports_sideline_moves_from_the_same_ply() {
+        let mut connection = migrated_connection();
+        let mut main = line("Main", &[("start", "d4"), ("after d4", "d5")]);
+        main.positions.push(PlannedPosition {
+            ply: 1,
+            san: "Nf6".to_owned(),
+            ..line("Sideline", &[("after d4", "Nf6")]).positions.remove(0)
+        });
+        let plan = ImportPlan {
+            chapters: vec![chapter("Chapter", vec![main])],
+        };
+
+        import_plan(&mut connection, &new_study("Repertoire"), &plan, |_| {}).expect("import");
+
+        assert_eq!(
+            count(&mut connection, "select count(*) as count from positions"),
+            3
+        );
+        assert_eq!(
+            count(
+                &mut connection,
+                "select count(*) as count from chess_positions"
+            ),
+            2
+        );
+    }
+
+    #[test]
     fn merges_into_an_existing_study_without_touching_other_studies() {
         let mut connection = migrated_connection();
         let shared_plan = ImportPlan {

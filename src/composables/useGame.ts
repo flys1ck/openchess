@@ -1,7 +1,7 @@
 import { Position, useChessground } from "@composables/useChessground";
 import { ChessMove, PositionNode, useGameTree } from "@composables/useGameTree";
 import { playAudio } from "@utilities/audio";
-import { getPossibleMoves, isPromotion } from "@utilities/move";
+import { getPositionKey, getPossibleMoves, isPromotion } from "@utilities/move";
 import { DrawShape } from "chessground/draw";
 import { Color, Key, Piece } from "chessground/types";
 import { key2pos } from "chessground/util";
@@ -234,16 +234,14 @@ export function useGame() {
     tree.setActiveNode(node);
   }
 
-  function setActivePositionByPlyCount(plyCount: number) {
-    if (!tree.root.value) return;
-    let currentNode = tree.root.value;
-    while (currentNode.nextPosition !== undefined) {
-      if (currentNode.ply === plyCount) {
-        setActivePosition(currentNode);
-        return;
-      }
-      currentNode = currentNode.nextPosition;
-    }
+  function setActivePositionByKey(positionKey: string) {
+    const find = (node: PositionNode | undefined): PositionNode | undefined => {
+      if (!node) return undefined;
+      if (getPositionKey(node.fen) === positionKey) return node;
+      return find(node.nextPosition) ?? node.variations.map(find).find((match) => match);
+    };
+    const node = find(tree.root.value);
+    if (node) setActivePosition(node);
   }
 
   function toggleOrientation() {
@@ -280,7 +278,7 @@ export function useGame() {
     cancelPromotion,
     promote,
     setActivePosition,
-    setActivePositionByPlyCount,
+    setActivePositionByKey,
     toggleOrientation,
     setOrientation,
     playMove,

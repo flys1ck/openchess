@@ -38,7 +38,7 @@
       <ul class="divide-y">
         <li v-for="line in lines" :key="line.line_id">
           <RouterLink
-            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${line.ply}`"
+            :to="`/studies/${line.study_id}/chapters/${line.chapter_id}/lines/${line.line_id}/#${encodeURIComponent(line.position_key)}`"
             class="hover:bg-primary/15 flex flex-col px-4 py-2"
             @pointermove="
               () =>
@@ -167,7 +167,7 @@ import { getPositionKey } from "@utilities/move";
 import { Key } from "chessground/types";
 import type { Selectable } from "kysely";
 import { computed, shallowRef, watchEffect } from "vue";
-import type { Chapters, Lines, Positions, Studies } from "@/database";
+import type { Chapters, ChessPositions, Lines, Positions, Studies } from "@/database";
 
 type MoveStatistics = {
   moveTotal: number;
@@ -179,7 +179,8 @@ type MoveStatistics = {
 type StudyMoveInPosition = Pick<Selectable<Positions>, "source" | "destination" | "san"> & {
   line_count: number;
 };
-type StudyLineWithPosition = Pick<Selectable<Positions>, "source" | "destination" | "ply"> & {
+type StudyLineWithPosition = Pick<Selectable<Positions>, "source" | "destination"> & {
+  position_key: Selectable<ChessPositions>["position_key"];
   study_id: Selectable<Studies>["id"];
   study_name: Selectable<Studies>["name"];
   chapter_id: Selectable<Chapters>["id"];
@@ -243,7 +244,7 @@ watchEffect(async () => {
     .select([
       "positions.source",
       "positions.destination",
-      "positions.ply",
+      "chess_positions.position_key",
       "studies.id as study_id",
       "studies.name as study_name",
       "chapters.id as chapter_id",
@@ -252,6 +253,8 @@ watchEffect(async () => {
       "lines.name as line_name",
     ])
     .where("chess_positions.position_key", "=", positionKey)
+    // A line can play several moves from this position once its sidelines are indexed
+    .groupBy("lines.id")
     .limit(10)
     .compile();
 
