@@ -1,10 +1,14 @@
 <template>
   <div>
+    <div v-if="isPending" class="space-y-4">
+      <StudyCardSkeleton v-for="index in 5" :key="index" />
+    </div>
+    <p v-else-if="error" class="text-muted-foreground p-4 text-sm">Couldn't load games from Lichess.</p>
     <ul class="space-y-4">
       <GameCard v-for="game in normalizedGames" :key="game.id" :to="`/games/lichess/${game.id}`" :game="game" />
     </ul>
-    <Button v-if="hasMore" variant="outline" class="mt-4" :disabled="isLoadingMore" @click="loadMore">
-      <Spinner v-if="isLoadingMore" data-icon="inline-start" />
+    <Button v-if="hasNextPage" variant="outline" class="mt-4" :disabled="isFetchingNextPage" @click="loadMore">
+      <Spinner v-if="isFetchingNextPage" data-icon="inline-start" />
       Load more
     </Button>
   </div>
@@ -12,21 +16,21 @@
 
 <script setup lang="ts">
 import GameCard from "@components/games/GameCard.vue";
+import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import { exportGamesOfAuser, type GameJson } from "@flys1ck/lichess-client";
 import { useLichess } from "@stores/useLichess";
+import { useInfiniteQuery } from "@tanstack/vue-query";
 import { normalizeLichessGame } from "@utilities/normalizer";
-import { computed, ref, shallowRef } from "vue";
+import { computed } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-
-defineExpose({ refresh });
 
 const LICHESS_GAMES_PAGE_SIZE = 20;
 
 const lichess = useLichess();
 
-async function fetchGames(until?: number): Promise<GameJson[]> {
+async function fetchGames(until: number | undefined, signal: AbortSignal): Promise<GameJson[]> {
   const response = await exportGamesOfAuser({
     path: { username: lichess.username },
     query: {
@@ -36,6 +40,7 @@ async function fetchGames(until?: number): Promise<GameJson[]> {
     },
     parseAs: "text",
     headers: { Accept: "application/x-ndjson" },
+    signal,
   });
   if (response.error) throw new Error(`Lichess responded with ${response.response.status}`);
 
@@ -45,37 +50,27 @@ async function fetchGames(until?: number): Promise<GameJson[]> {
     .map((line) => JSON.parse(line) as GameJson);
 }
 
-const games = shallowRef<GameJson[]>(await fetchGames());
-const hasMore = ref(games.value.length >= LICHESS_GAMES_PAGE_SIZE);
-const isLoadingMore = ref(false);
+const { data, error, isPending, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery({
+  queryKey: ["lichess", "games", computed(() => lichess.username)],
+  queryFn: ({ pageParam, signal }) => fetchGames(pageParam, signal),
+  initialPageParam: undefined as number | undefined,
+  getNextPageParam: (lastPage) => (lastPage.length >= LICHESS_GAMES_PAGE_SIZE ? lastPage.at(-1)?.createdAt : undefined),
+});
+
+defineExpose({ refresh: () => refetch() });
 
 const normalizedGames = computed(() => {
-  return games.value.map((game) => {
+  return (data.value?.pages.flat() ?? []).map((game) => {
     return normalizeLichessGame(game);
   });
 });
 
-async function refresh() {
-  const fetched = await fetchGames();
-  games.value = fetched;
-  hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
-}
-
 async function loadMore() {
-  const lastGame = games.value.at(-1);
-  if (!lastGame) return;
-
-  isLoadingMore.value = true;
-  try {
-    const fetched = await fetchGames(lastGame.createdAt);
-    games.value = [...games.value, ...fetched];
-    hasMore.value = fetched.length >= LICHESS_GAMES_PAGE_SIZE;
-  } catch {
+  const result = await fetchNextPage();
+  if (result.isFetchNextPageError) {
     toast.error("Couldn't load more games", {
       description: "Check your connection and try again.",
     });
-  } finally {
-    isLoadingMore.value = false;
   }
 }
 </script>

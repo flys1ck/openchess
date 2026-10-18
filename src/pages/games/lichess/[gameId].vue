@@ -14,6 +14,7 @@ import { exportOneGame } from "@flys1ck/lichess-client";
 import { GraduationCap } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
+import { useQueryClient } from "@tanstack/vue-query";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { parsePgn, type PgnNodeData, type Game as PgnGame } from "chessops/pgn";
 import { shallowRef, watch } from "vue";
@@ -22,6 +23,7 @@ import { useRoute } from "vue-router";
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();
 const game = useGame();
+const queryClient = useQueryClient();
 const parsedGame = shallowRef<PgnGame<PgnNodeData>[]>();
 const loadError = shallowRef("");
 const { setBreadcrumbs } = useBreadcrumbs();
@@ -44,7 +46,12 @@ async function fetchLichessGamePgn(gameId: string) {
 
 async function loadGame(gameId: string) {
   try {
-    const lichessGamePgn = await fetchLichessGamePgn(gameId);
+    const lichessGamePgn = await queryClient.fetchQuery({
+      queryKey: ["lichess", "game", gameId],
+      queryFn: () => fetchLichessGamePgn(gameId),
+      // A finished game's PGN never changes.
+      staleTime: Infinity,
+    });
 
     game.createNewGame();
     game.tree.fromPgn(lichessGamePgn);

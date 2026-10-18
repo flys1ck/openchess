@@ -7,9 +7,7 @@
         >
       </template>
     </BaseSectionHeading>
-    <Suspense>
-      <LichessGameList ref="lichessGameList" class="my-4" />
-    </Suspense>
+    <LichessGameList ref="lichessGameList" class="my-4" />
   </BaseContainer>
 </template>
 
