@@ -1,6 +1,6 @@
 import { parsePgn } from "chessops/pgn";
 import { describe, expect, it } from "vitest";
-import { ImportSettings, buildImportPlan, collectHeaders } from "./studyImport";
+import { ImportSettings, buildImportPlan, collectHeaders, suggestImportHeaders } from "./studyImport";
 
 const settings: ImportSettings = { chapterHeader: "White", lineHeader: "Black", orientation: "black" };
 
@@ -46,6 +46,32 @@ describe("collectHeaders", () => {
 
     expect(black?.count).toBe(4);
     expect(black?.samples).toEqual(["A", "B", "C"]);
+  });
+});
+
+describe("suggestImportHeaders", () => {
+  const header = (name: string) => ({ name, count: 1, samples: [] });
+
+  it("should use White as chapter and Black as line for Chessable exports", () => {
+    expect(suggestImportHeaders([header("Event"), header("White"), header("Black")])).toEqual({
+      chapterHeader: "White",
+      lineHeader: "Black",
+    });
+  });
+
+  it("should prefer ChapterName for Lichess study exports", () => {
+    expect(suggestImportHeaders([header("Event"), header("StudyName"), header("ChapterName")])).toEqual({
+      chapterHeader: "ChapterName",
+      lineHeader: "",
+    });
+  });
+
+  it("should fall back to the first header", () => {
+    expect(suggestImportHeaders([header("Opening"), header("ECO")])).toEqual({
+      chapterHeader: "Opening",
+      lineHeader: "",
+    });
+    expect(suggestImportHeaders([])).toEqual({ chapterHeader: "", lineHeader: "" });
   });
 });
 

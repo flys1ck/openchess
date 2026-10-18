@@ -9,9 +9,9 @@
     </BaseSectionHeading>
     <BaseSectionHeading heading="Chapters">
       <template #actions>
-        <Button v-if="studyImport.job" disabled>Create new chapter</Button>
+        <Button v-if="studyImport.job" disabled>Import PGN</Button>
         <Button v-else as-child>
-          <RouterLink :to="`/studies/${route.params.studyId}/chapters/new`">Create new chapter</RouterLink>
+          <RouterLink :to="`/studies/${route.params.studyId}/import`">Import PGN</RouterLink>
         </Button>
       </template>
     </BaseSectionHeading>

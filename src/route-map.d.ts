@@ -115,16 +115,16 @@ declare module 'vue-router/auto-routes' {
       { chapterId: ParamValue<false>, lineId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
-    '/studies/[studyId]/chapters/new': RouteRecordInfo<
-      '/studies/[studyId]/chapters/new',
-      '/studies/:studyId/chapters/new',
+    '/studies/[studyId]/edit': RouteRecordInfo<
+      '/studies/[studyId]/edit',
+      '/studies/:studyId/edit',
       { studyId: ParamValue<true> },
       { studyId: ParamValue<false> },
       | never
     >,
-    '/studies/[studyId]/edit': RouteRecordInfo<
-      '/studies/[studyId]/edit',
-      '/studies/:studyId/edit',
+    '/studies/[studyId]/import': RouteRecordInfo<
+      '/studies/[studyId]/import',
+      '/studies/:studyId/import',
       { studyId: ParamValue<true> },
       { studyId: ParamValue<false> },
       | never
@@ -245,17 +245,17 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | 'lineId'
     }
-    'src/pages/studies/[studyId]/chapters/new.vue': {
+    'src/pages/studies/[studyId]/edit.vue': {
       routes:
-        | '/studies/[studyId]/chapters/new'
+        | '/studies/[studyId]/edit'
       views:
         | never
       pathParamNames:
         | never
     }
-    'src/pages/studies/[studyId]/edit.vue': {
+    'src/pages/studies/[studyId]/import.vue': {
       routes:
-        | '/studies/[studyId]/edit'
+        | '/studies/[studyId]/import'
       views:
         | never
       pathParamNames:

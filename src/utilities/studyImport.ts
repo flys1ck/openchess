@@ -70,6 +70,16 @@ export function collectHeaders(games: Game<PgnNodeData>[]): HeaderSummary[] {
   return [...summaries.values()];
 }
 
+// Lichess study exports name chapters in ChapterName, Chessable exports put the chapter in White and the line in Black
+const PREFERRED_CHAPTER_HEADERS = ["ChapterName", "White", "Event"];
+
+export function suggestImportHeaders(headers: HeaderSummary[]): Pick<ImportSettings, "chapterHeader" | "lineHeader"> {
+  const names = headers.map((header) => header.name);
+  const chapterHeader = PREFERRED_CHAPTER_HEADERS.find((name) => names.includes(name)) ?? names[0] ?? "";
+  const lineHeader = chapterHeader === "White" && names.includes("Black") ? "Black" : "";
+  return { chapterHeader, lineHeader };
+}
+
 export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSettings): ImportPlan {
   const chapters = new Map<string, PlannedChapter>();
   const warnings: string[] = [];
