@@ -60,6 +60,12 @@ export function useGame() {
     tree.addNode(fen.value);
   }
 
+  function loadPgn(pgn: string) {
+    isPromoting.value = false;
+    tree.fromPgn(pgn);
+    if (tree.root.value) setActivePosition(tree.root.value);
+  }
+
   function playMove(source: Key, destination: Key) {
     board?.move(source, destination);
   }
@@ -275,6 +281,7 @@ export function useGame() {
     promotionStyles,
     initializeBoard,
     createNewGame,
+    loadPgn,
     cancelPromotion,
     promote,
     setActivePosition,

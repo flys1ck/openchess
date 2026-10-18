@@ -53,8 +53,7 @@ async function loadGame(gameId: string) {
       staleTime: Infinity,
     });
 
-    game.createNewGame();
-    game.tree.fromPgn(lichessGamePgn);
+    game.loadPgn(lichessGamePgn);
     parsedGame.value = parsePgn(lichessGamePgn);
     loadError.value = "";
 

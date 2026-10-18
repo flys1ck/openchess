@@ -43,7 +43,7 @@ watch(
       .compile();
     selectFirst(lineQuery).then((line) => {
       game.setOrientation(line.orientation as "white" | "black");
-      game.tree.fromPgn(line.pgn);
+      game.loadPgn(line.pgn);
       if (!game.tree.root.value) return;
 
       if (route.hash) game.setActivePositionByKey(decodeURIComponent(route.hash.slice(1)));
