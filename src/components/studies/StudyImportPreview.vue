@@ -51,7 +51,7 @@
                 <span class="truncate">{{ line.name }}</span>
                 <Badge v-if="existingLines?.get(chapter.name)?.has(line.name)" variant="secondary">Replaces</Badge>
                 <span class="text-muted-foreground ml-auto shrink-0 pl-2 text-xs tabular-nums">
-                  {{ line.positions.length ? pluralize(line.positions.length, "ply", "plies") : "No moves" }}
+                  {{ line.positions.length ? pluralize(Math.ceil(line.positions.length / 2), "move") : "No moves" }}
                 </span>
               </div>
               <p
@@ -91,7 +91,7 @@ const replacedCount = computed(() =>
   )
 );
 
-function pluralize(count: number, singular: string, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`;
+function pluralize(count: number, noun: string) {
+  return `${count} ${noun}${count === 1 ? "" : "s"}`;
 }
 </script>

@@ -11,7 +11,6 @@
           {{ header.name }} · {{ header.count }} games
         </NativeSelectOption>
       </NativeSelect>
-      <FieldDescription v-if="chapterSamples">{{ chapterSamples }}</FieldDescription>
     </Field>
     <Field>
       <FieldLabel for="line-header">Line names from</FieldLabel>
@@ -21,7 +20,6 @@
           {{ header.name }} · {{ header.count }} games
         </NativeSelectOption>
       </NativeSelect>
-      <FieldDescription v-if="lineSamples">{{ lineSamples }}</FieldDescription>
     </Field>
     <Field>
       <FieldLabel for="line-orientation">Line orientation</FieldLabel>
@@ -37,24 +35,15 @@
 <script setup lang="ts">
 import BaseFileUpload from "@components/base/BaseFileUpload.vue";
 import { HeaderSummary, ImportPlan, ImportSettings } from "@utilities/studyImport";
-import { computed } from "vue";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import StudyImportPreview from "./StudyImportPreview.vue";
 
-const props = defineProps<{
+defineProps<{
   headers: HeaderSummary[];
   plan?: ImportPlan;
   existingLines?: Map<string, Set<string>>;
 }>();
 const files = defineModel<File[]>("files", { required: true });
 const settings = defineModel<ImportSettings>("settings", { required: true });
-
-const chapterSamples = computed(() => describeSamples(settings.value.chapterHeader));
-const lineSamples = computed(() => describeSamples(settings.value.lineHeader));
-
-function describeSamples(headerName: string) {
-  const samples = props.headers.find((header) => header.name === headerName)?.samples;
-  return samples?.length ? `e.g. ${samples.join(", ")}` : undefined;
-}
 </script>

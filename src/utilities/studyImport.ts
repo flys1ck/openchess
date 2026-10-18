@@ -15,7 +15,6 @@ export interface ImportSettings {
 export interface HeaderSummary {
   name: string;
   count: number;
-  samples: string[];
 }
 
 export interface PlannedPosition {
@@ -47,7 +46,6 @@ export interface ImportPlan {
   warnings: string[];
 }
 
-const MAX_HEADER_SAMPLES = 3;
 // chessops fills absent Seven Tag Roster tags with "?", "????.??.??" or "*"
 const UNKNOWN_HEADER_VALUE = /^[?.*]*$/;
 
@@ -56,15 +54,9 @@ export function collectHeaders(games: Game<PgnNodeData>[]): HeaderSummary[] {
   for (const game of games) {
     for (const [name, value] of game.headers) {
       if (UNKNOWN_HEADER_VALUE.test(value)) continue;
-      let summary = summaries.get(name);
-      if (!summary) {
-        summary = { name, count: 0, samples: [] };
-        summaries.set(name, summary);
-      }
+      const summary = summaries.get(name) ?? { name, count: 0 };
       summary.count++;
-      if (summary.samples.length < MAX_HEADER_SAMPLES && !summary.samples.includes(value)) {
-        summary.samples.push(value);
-      }
+      summaries.set(name, summary);
     }
   }
   return [...summaries.values()];
