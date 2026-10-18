@@ -170,14 +170,11 @@ fn import_line(
     chapter_id: i32,
     line: &PlannedLine,
 ) -> QueryResult<()> {
-    // Positions cascade and the delete_orphaned_chess_position trigger drops keys no other line uses
-    sql_query("delete from lines where chapter = ? and name = ?")
-        .bind::<Integer, _>(chapter_id)
-        .bind::<Text, _>(&line.name)
-        .execute(connection)?;
-
+    // Updating in place keeps the line's id, so a re-imported line keeps its place in the list
     let line_id = sql_query(
         "insert into lines (chapter, name, pgn, moves, orientation) values (?, ?, ?, ?, ?)
+         on conflict (chapter, name) do update set
+            pgn = excluded.pgn, moves = excluded.moves, orientation = excluded.orientation
          returning id",
     )
     .bind::<Integer, _>(chapter_id)
@@ -187,6 +184,11 @@ fn import_line(
     .bind::<Text, _>(&line.orientation)
     .get_result::<Id>(connection)?
     .id;
+
+    // The delete_orphaned_chess_position trigger drops keys no other line uses
+    sql_query("delete from positions where line = ?")
+        .bind::<Integer, _>(line_id)
+        .execute(connection)?;
 
     for position in &line.positions {
         sql_query(
@@ -298,6 +300,14 @@ mod tests {
             .count
     }
 
+    fn line_id(connection: &mut SqliteConnection, name: &str) -> i32 {
+        sql_query("select id from lines where name = ?")
+            .bind::<Text, _>(name)
+            .get_result::<Id>(connection)
+            .expect("line id")
+            .id
+    }
+
     fn line_summaries(connection: &mut SqliteConnection, study_id: i32) -> Vec<LineSummary> {
         sql_query(
             "select chapters.name as chapter, lines.name as line,
@@ -385,6 +395,7 @@ mod tests {
         };
         let study_id = import_plan(&mut connection, &new_study("Repertoire"), &first, |_| {})
             .expect("first import");
+        let original_main_line_id = line_id(&mut connection, "Main");
 
         let second = ImportPlan {
             chapters: vec![chapter(
@@ -407,6 +418,7 @@ mod tests {
                 summary("Chapter", "Other", "c4"),
             ]
         );
+        assert_eq!(line_id(&mut connection, "Main"), original_main_line_id);
         assert_eq!(
             count(&mut connection, "select count(*) as count from chapters"),
             1
