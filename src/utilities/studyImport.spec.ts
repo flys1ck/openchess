@@ -115,38 +115,46 @@ describe("buildImportPlan", () => {
     expect(line.warnings).toEqual(["Stops at ply 1: -- is not a legal move"]);
   });
 
-  it("should warn about missing headers and fall back to empty names", () => {
+  it("should warn about missing headers and fall back to generated line names", () => {
     const games = parsePgn(game({ Event: "Lichess study" }, "1. e4"));
 
     const plan = buildImportPlan(games, settings);
 
     expect(plan.chapters[0].name).toBe("");
-    expect(plan.chapters[0].lines[0].name).toBe("");
+    expect(plan.chapters[0].lines[0].name).toBe("Line 1");
     expect(plan.chapters[0].lines[0].warnings).toEqual([
       'Missing chapter header "White"',
       'Missing line header "Black"',
     ]);
   });
 
-  it("should leave line names blank without a warning when no line header is chosen", () => {
-    const games = parsePgn(game({ White: "Chapter", Black: "Line" }, "1. e4"));
+  it("should name lines after their position in the chapter when no line header is chosen", () => {
+    const games = parsePgn(
+      game({ White: "Chapter 1", Black: "A" }, "1. e4") +
+        game({ White: "Chapter 2", Black: "B" }, "1. d4") +
+        game({ White: "Chapter 1", Black: "C" }, "1. c4")
+    );
 
-    const line = buildImportPlan(games, { ...settings, lineHeader: "" }).chapters[0].lines[0];
+    const chapters = buildImportPlan(games, { ...settings, lineHeader: "" }).chapters;
 
-    expect(line.name).toBe("");
-    expect(line.warnings).toEqual([]);
+    expect(chapters.map((chapter) => chapter.lines.map((line) => line.name))).toEqual([
+      ["Line 1", "Line 2"],
+      ["Line 1"],
+    ]);
+    expect(chapters.flatMap((chapter) => chapter.lines.flatMap((line) => line.warnings))).toEqual([]);
   });
 
-  it("should warn about duplicate line names within a chapter", () => {
+  it("should number duplicate line names within a chapter and warn", () => {
     const games = parsePgn(
-      game({ White: "Chapter", Black: "Same" }, "1. d4") + game({ White: "Chapter", Black: "Same" }, "1. e4")
+      game({ White: "Chapter", Black: "Same" }, "1. d4") +
+        game({ White: "Chapter", Black: "Same (2)" }, "1. c4") +
+        game({ White: "Chapter", Black: "Same" }, "1. e4")
     );
 
     const lines = buildImportPlan(games, settings).chapters[0].lines;
 
-    expect(lines).toHaveLength(2);
-    expect(lines[0].warnings).toEqual([]);
-    expect(lines[1].warnings).toEqual(['Duplicate line name in chapter "Chapter"']);
+    expect(lines.map((line) => line.name)).toEqual(["Same", "Same (2)", "Same (3)"]);
+    expect(lines[2].warnings).toEqual(['Renamed to "Same (3)" because the chapter already has a line with this name']);
   });
 
   it("should start from the FEN header", () => {

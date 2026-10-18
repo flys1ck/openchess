@@ -115,11 +115,16 @@ export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSett
       chapter = { name: chapterName ?? "", lines: [] };
       chapters.set(chapter.name, chapter);
     }
-    if (lineName && chapter.lines.some((line) => line.name === lineName)) {
-      lineWarnings.push(`Duplicate line name in chapter "${chapter.name}"`);
+    // Names are unique per chapter and derived deterministically, so a re-import replaces the same lines
+    const baseName = lineName || `Line ${chapter.lines.length + 1}`;
+    let name = baseName;
+    for (let occurrence = 2; chapter.lines.some((line) => line.name === name); occurrence++) {
+      name = `${baseName} (${occurrence})`;
     }
+    if (name !== baseName)
+      lineWarnings.push(`Renamed to "${name}" because the chapter already has a line with this name`);
     chapter.lines.push({
-      name: lineName ?? "",
+      name,
       pgn: makePgn(game),
       moves: sanMoves.join(" "),
       orientation: settings.orientation,

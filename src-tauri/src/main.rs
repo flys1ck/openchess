@@ -4,10 +4,12 @@
 )]
 
 mod database;
+mod study_import;
 
-use database::{compact_database_if_needed, CompactionOutcome};
+use database::{compact_database_if_needed, CompactionOutcome, MIGRATIONS};
 use diesel::{connection::SimpleConnection, Connection, SqliteConnection};
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use diesel_migrations::MigrationHarness;
+use study_import::DatabasePath;
 use tauri::Manager;
 
 fn main() {
@@ -42,7 +44,6 @@ fn main() {
             });
             let database_path = app_config_path.join("db.sqlite");
 
-            pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
             let database_url = database_path
                 .to_str()
                 .unwrap_or_else(|| panic!("Error convert path {:?} to url", database_path));
@@ -70,8 +71,10 @@ fn main() {
                 Ok(CompactionOutcome::Skipped(_)) => {}
                 Err(error) => eprintln!("Could not compact SQLite database: {error}"),
             }
+            app.manage(DatabasePath(database_path));
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![study_import::import_study])
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
