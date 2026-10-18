@@ -99,7 +99,7 @@ async function processPgn(pgn: string) {
     const chapterQueryResult = await execute(chapterQuery);
 
     let chapterId: number;
-    if (chapterQueryResult.rowsAffected === 0 && !chapterQueryResult.lastInsertId) {
+    if (chapterQueryResult.rowsAffected === 0) {
       const chapterQuery = db
         .selectFrom("chapters")
         .select("id")
