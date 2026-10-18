@@ -108,6 +108,13 @@ declare module 'vue-router/auto-routes' {
       { chapterId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
+    '/studies/[studyId]/chapters/[chapterId]/edit': RouteRecordInfo<
+      '/studies/[studyId]/chapters/[chapterId]/edit',
+      '/studies/:studyId/chapters/:chapterId/edit',
+      { chapterId: ParamValue<true>, studyId: ParamValue<true> },
+      { chapterId: ParamValue<false>, studyId: ParamValue<false> },
+      | never
+    >,
     '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]': RouteRecordInfo<
       '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]',
       '/studies/:studyId/chapters/:chapterId/lines/:lineId',
@@ -232,6 +239,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/studies/[studyId]/chapters/[chapterId]/index.vue': {
       routes:
         | '/studies/[studyId]/chapters/[chapterId]/'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/studies/[studyId]/chapters/[chapterId]/edit.vue': {
+      routes:
+        | '/studies/[studyId]/chapters/[chapterId]/edit'
       views:
         | never
       pathParamNames:
