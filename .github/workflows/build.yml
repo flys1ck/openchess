@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     branches: main
+  # PR runs can only restore caches saved on their own ref or on main, so main
+  # has to build too or every new PR starts with a cold Rust cache.
+  push:
+    branches: main
 
 env:
   STOCKFISH_VERSION: 19
