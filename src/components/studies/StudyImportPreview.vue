@@ -51,7 +51,7 @@
                 <span class="truncate">{{ line.name }}</span>
                 <Badge v-if="existingLines?.get(chapter.name)?.has(line.name)" variant="secondary">Replaces</Badge>
                 <span class="text-muted-foreground ml-auto shrink-0 pl-2 text-xs tabular-nums">
-                  {{ line.positions.length ? pluralize(Math.ceil(line.positions.length / 2), "move") : "No moves" }}
+                  {{ line.positions.length ? pluralize(line.positions.length, "position") : "No moves" }}
                 </span>
               </div>
               <p

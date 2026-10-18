@@ -46,8 +46,7 @@ watch(
       game.tree.fromPgn(line.pgn);
       if (!game.tree.root.value) return;
 
-      const plyCount = parseInt(route.hash.replace("#", ""));
-      game.setActivePositionByPlyCount(plyCount);
+      if (route.hash) game.setActivePositionByKey(decodeURIComponent(route.hash.slice(1)));
 
       // set breadcrumbs
       setBreadcrumbs([

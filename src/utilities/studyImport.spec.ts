@@ -64,7 +64,7 @@ describe("suggestImportHeaders", () => {
 });
 
 describe("buildImportPlan", () => {
-  it("should build chapters, lines and positions from the mainline", () => {
+  it("should build chapters, lines and positions from the mainline and its sidelines", () => {
     const games = parsePgn(game({ White: "Intro", Black: "Main line" }, "1. d4 d5 2. c4 (2. Nf3) e6"));
 
     const plan = buildImportPlan(games, settings);
@@ -75,7 +75,13 @@ describe("buildImportPlan", () => {
     const line = plan.chapters[0].lines[0];
     expect(line).toMatchObject({ name: "Main line", moves: "d4 d5 c4 e6", orientation: "black", warnings: [] });
     expect(line.pgn).toContain("2. c4");
-    expect(line.positions).toHaveLength(4);
+    expect(line.positions.map((position) => [position.ply, position.san])).toEqual([
+      [0, "d4"],
+      [1, "d5"],
+      [2, "c4"],
+      [3, "e6"],
+      [2, "Nf3"],
+    ]);
     expect(line.positions[0]).toEqual({
       positionKey: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -",
       ply: 0,
@@ -86,6 +92,24 @@ describe("buildImportPlan", () => {
       san: "d4",
     });
     expect(line.positions[3]).toMatchObject({ ply: 3, fullmoveNumber: 2, source: "e7", destination: "e6", san: "e6" });
+  });
+
+  it("should index a move once when a line reaches it twice", () => {
+    const games = parsePgn(game({ White: "Chapter", Black: "Line" }, "1. Nf3 Nf6 2. Ng1 Ng8 3. Nf3 (3. d4) Nf6"));
+
+    const line = buildImportPlan(games, settings).chapters[0].lines[0];
+
+    expect(line.positions.map((position) => position.san)).toEqual(["Nf3", "Nf6", "Ng1", "Ng8", "d4"]);
+    expect(line.warnings).toEqual([]);
+  });
+
+  it("should keep indexing the mainline after an illegal move in a sideline", () => {
+    const games = parsePgn(game({ White: "Chapter", Black: "Line" }, "1. d4 (1. Ke2) d5"));
+
+    const line = buildImportPlan(games, settings).chapters[0].lines[0];
+
+    expect(line.positions.map((position) => position.san)).toEqual(["d4", "d5"]);
+    expect(line.warnings).toEqual(["Stops at ply 0: Ke2 is not a legal move"]);
   });
 
   it("should group games with the same chapter name into one chapter", () => {

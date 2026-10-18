@@ -103,28 +103,8 @@ export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSett
     const variations = settings.splitVariations ? splitVariations(game, startResult.value) : [{ name: "", game }];
     for (const variation of variations) {
       const lineWarnings = [...headerWarnings];
-      const sanMoves = [...variation.game.moves.mainline()].map((node) => node.san);
-      const pos = startResult.value.clone();
-      const positions: PlannedPosition[] = [];
-      for (const san of sanMoves) {
-        const move = parseSan(pos, san) as NormalMove | undefined;
-        if (!move) {
-          // Chessable exports text-only lessons as a single null move
-          const isTextOnly = san === "--" && positions.length === 0;
-          if (!isTextOnly) lineWarnings.push(`Stops at ply ${positions.length}: ${san} is not a legal move`);
-          break;
-        }
-        positions.push({
-          positionKey: getPositionKey(makeFen(pos.toSetup())),
-          ply: positions.length,
-          halfmoveClock: pos.halfmoves,
-          fullmoveNumber: pos.fullmoves,
-          source: makeSquare(move.from),
-          destination: makeSquare(move.to),
-          san,
-        });
-        pos.play(move);
-      }
+      const { positions, warnings: positionWarnings } = indexPositions(variation.game.moves, startResult.value);
+      lineWarnings.push(...positionWarnings);
 
       // Names are unique per chapter and derived deterministically, so a re-import replaces the same lines
       const baseName = variation.name ? `${gameName} · ${variation.name}` : gameName;
@@ -137,7 +117,7 @@ export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSett
       chapter.lines.push({
         name,
         pgn: makePgn(variation.game),
-        moves: sanMoves.join(" "),
+        moves: [...variation.game.moves.mainline()].map((node) => node.san).join(" "),
         orientation: settings.orientation,
         positions,
         warnings: lineWarnings,
@@ -146,6 +126,43 @@ export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSett
   });
 
   return { chapters: [...chapters.values()], warnings };
+}
+
+// Sidelines are indexed too, so the position lookup finds lines that only mention a position in a variation
+function indexPositions(root: Node<PgnNodeData>, start: Position) {
+  const positions: PlannedPosition[] = [];
+  const warnings: string[] = [];
+  const indexed = new Set<string>();
+  const visit = (node: Node<PgnNodeData>, pos: Position, ply: number) => {
+    for (const child of node.children) {
+      const san = child.data.san;
+      const move = parseSan(pos, san) as NormalMove | undefined;
+      if (!move) {
+        // Chessable exports text-only lessons as a single null move
+        const isTextOnly = san === "--" && ply === 0;
+        if (!isTextOnly) warnings.push(`Stops at ply ${ply}: ${san} is not a legal move`);
+        continue;
+      }
+      const positionKey = getPositionKey(makeFen(pos.toSetup()));
+      if (!indexed.has(`${positionKey} ${san}`)) {
+        indexed.add(`${positionKey} ${san}`);
+        positions.push({
+          positionKey,
+          ply,
+          halfmoveClock: pos.halfmoves,
+          fullmoveNumber: pos.fullmoves,
+          source: makeSquare(move.from),
+          destination: makeSquare(move.to),
+          san,
+        });
+      }
+      const next = pos.clone();
+      next.play(move);
+      visit(child, next, ply + 1);
+    }
+  };
+  visit(root, start, 0);
+  return { positions, warnings };
 }
 
 interface Variation {
