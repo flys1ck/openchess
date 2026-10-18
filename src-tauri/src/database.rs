@@ -6,7 +6,10 @@ use diesel::{
     sqlite::SqliteConnection,
     QueryableByName, RunQueryDsl,
 };
+use diesel_migrations::{embed_migrations, EmbeddedMigrations};
 use std::{error::Error, fmt};
+
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 const MIN_RECLAIMABLE_BYTES: i128 = 16 * 1024 * 1024;
 const MIN_RECLAIMABLE_PERCENT: i128 = 20;
