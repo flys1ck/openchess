@@ -5,8 +5,14 @@ use diesel::{
     Connection, QueryResult, QueryableByName, RunQueryDsl, SqliteConnection,
 };
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    time::{Duration, Instant},
+};
 use tauri::{ipc::Channel, State};
+
+// A progress bar whose CSS transition restarts on every update never visibly moves
+const PROGRESS_INTERVAL: Duration = Duration::from_millis(100);
 
 pub struct DatabasePath(pub PathBuf);
 
@@ -77,8 +83,13 @@ pub async fn import_study(
     let database_path = database_path.0.clone();
     tauri::async_runtime::spawn_blocking(move || {
         let mut connection = open_connection(&database_path)?;
+        let mut last_sent: Option<Instant> = None;
         import_plan(&mut connection, &target, &plan, |progress| {
-            let _ = on_progress.send(progress);
+            let is_last = progress.imported_lines == progress.total_lines;
+            if is_last || last_sent.is_none_or(|sent| sent.elapsed() >= PROGRESS_INTERVAL) {
+                last_sent = Some(Instant::now());
+                let _ = on_progress.send(progress);
+            }
         })
         .map_err(|error| error.to_string())
     })
