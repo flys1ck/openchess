@@ -36,7 +36,7 @@ const lineQuery = db
   .selectFrom("lines")
   .selectAll()
   .where("chapter", "=", Number(route.params.chapterId))
-  .orderBy("name")
+  .orderBy("id")
   .compile();
 const [chapter, lines] = await Promise.all([selectFirst(chapterQuery), select(lineQuery)]);
 

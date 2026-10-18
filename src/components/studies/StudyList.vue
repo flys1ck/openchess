@@ -31,6 +31,6 @@ import { ref } from "vue";
 import { Card } from "@/components/ui/card";
 import StudiesEmptyState from "./StudiesEmptyState.vue";
 
-const query = db.selectFrom("studies").selectAll().compile();
+const query = db.selectFrom("studies").selectAll().orderBy("id").compile();
 const studies = ref(await select(query));
 </script>
