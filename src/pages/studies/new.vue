@@ -69,18 +69,23 @@ const studyFormData = reactive<EditableStudy>({
 const nameError = ref<string>();
 
 async function onSubmit() {
+  const name = studyFormData.name.trim();
+  nameError.value = name ? undefined : "Name is required";
+  if (nameError.value) return;
+
   try {
-    const existingStudy = await selectFirst(
-      db.selectFrom("studies").select("id").where("name", "=", studyFormData.name).compile()
-    );
+    const existingStudy = await selectFirst(db.selectFrom("studies").select("id").where("name", "=", name).compile());
     nameError.value = existingStudy ? "A study with this name already exists" : undefined;
     if (nameError.value) return;
 
-    const query = db.insertInto("studies").values(studyFormData).compile();
+    const query = db
+      .insertInto("studies")
+      .values({ ...studyFormData, name })
+      .compile();
     const result = await execute(query);
 
     if (!result) return;
-    toast.success(`Study ${studyFormData.name} created`);
+    toast.success(`Study ${name} created`);
     router.push(`/studies/${result.lastInsertId}`);
   } catch {
     toast.error("Couldn't create study", {
