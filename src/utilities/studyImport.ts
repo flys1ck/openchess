@@ -15,7 +15,6 @@ export interface ImportSettings {
 export interface HeaderSummary {
   name: string;
   count: number;
-  samples: string[];
 }
 
 export interface PlannedPosition {
@@ -47,7 +46,6 @@ export interface ImportPlan {
   warnings: string[];
 }
 
-const MAX_HEADER_SAMPLES = 3;
 // chessops fills absent Seven Tag Roster tags with "?", "????.??.??" or "*"
 const UNKNOWN_HEADER_VALUE = /^[?.*]*$/;
 
@@ -56,18 +54,22 @@ export function collectHeaders(games: Game<PgnNodeData>[]): HeaderSummary[] {
   for (const game of games) {
     for (const [name, value] of game.headers) {
       if (UNKNOWN_HEADER_VALUE.test(value)) continue;
-      let summary = summaries.get(name);
-      if (!summary) {
-        summary = { name, count: 0, samples: [] };
-        summaries.set(name, summary);
-      }
+      const summary = summaries.get(name) ?? { name, count: 0 };
       summary.count++;
-      if (summary.samples.length < MAX_HEADER_SAMPLES && !summary.samples.includes(value)) {
-        summary.samples.push(value);
-      }
+      summaries.set(name, summary);
     }
   }
   return [...summaries.values()];
+}
+
+// Lichess study exports name chapters in ChapterName, Chessable exports put the chapter in White and the line in Black
+const PREFERRED_CHAPTER_HEADERS = ["ChapterName", "White", "Event"];
+
+export function suggestImportHeaders(headers: HeaderSummary[]): Pick<ImportSettings, "chapterHeader" | "lineHeader"> {
+  const names = headers.map((header) => header.name);
+  const chapterHeader = PREFERRED_CHAPTER_HEADERS.find((name) => names.includes(name)) ?? names[0] ?? "";
+  const lineHeader = chapterHeader === "White" && names.includes("Black") ? "Black" : "";
+  return { chapterHeader, lineHeader };
 }
 
 export function buildImportPlan(games: Game<PgnNodeData>[], settings: ImportSettings): ImportPlan {

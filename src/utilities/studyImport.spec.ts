@@ -1,6 +1,6 @@
 import { parsePgn } from "chessops/pgn";
 import { describe, expect, it } from "vitest";
-import { ImportSettings, buildImportPlan, collectHeaders } from "./studyImport";
+import { ImportSettings, buildImportPlan, collectHeaders, suggestImportHeaders } from "./studyImport";
 
 const settings: ImportSettings = { chapterHeader: "White", lineHeader: "Black", orientation: "black" };
 
@@ -12,7 +12,7 @@ function game(headers: Record<string, string>, moves: string) {
 }
 
 describe("collectHeaders", () => {
-  it("should list every tag with its count and distinct samples", () => {
+  it("should list every tag with the number of games that have it", () => {
     const games = parsePgn(
       game({ White: "Chapter 1", Black: "Line A" }, "1. d4") +
         game({ White: "Chapter 1", Black: "Line B" }, "1. d4") +
@@ -21,16 +21,8 @@ describe("collectHeaders", () => {
 
     const headers = collectHeaders(games);
 
-    expect(headers.find((header) => header.name === "White")).toEqual({
-      name: "White",
-      count: 3,
-      samples: ["Chapter 1", "Chapter 2"],
-    });
-    expect(headers.find((header) => header.name === "Annotator")).toEqual({
-      name: "Annotator",
-      count: 1,
-      samples: ["Max"],
-    });
+    expect(headers.find((header) => header.name === "White")).toEqual({ name: "White", count: 3 });
+    expect(headers.find((header) => header.name === "Annotator")).toEqual({ name: "Annotator", count: 1 });
   });
 
   it("should ignore placeholder values that chessops fills in", () => {
@@ -38,14 +30,31 @@ describe("collectHeaders", () => {
 
     expect(headers.map((header) => header.name)).toEqual(["Event"]);
   });
+});
 
-  it("should keep at most three samples", () => {
-    const pgn = ["A", "B", "C", "D"].map((name) => game({ Black: name }, "1. d4")).join("");
+describe("suggestImportHeaders", () => {
+  const header = (name: string) => ({ name, count: 1 });
 
-    const black = collectHeaders(parsePgn(pgn)).find((header) => header.name === "Black");
+  it("should use White as chapter and Black as line for Chessable exports", () => {
+    expect(suggestImportHeaders([header("Event"), header("White"), header("Black")])).toEqual({
+      chapterHeader: "White",
+      lineHeader: "Black",
+    });
+  });
 
-    expect(black?.count).toBe(4);
-    expect(black?.samples).toEqual(["A", "B", "C"]);
+  it("should prefer ChapterName for Lichess study exports", () => {
+    expect(suggestImportHeaders([header("Event"), header("StudyName"), header("ChapterName")])).toEqual({
+      chapterHeader: "ChapterName",
+      lineHeader: "",
+    });
+  });
+
+  it("should fall back to the first header", () => {
+    expect(suggestImportHeaders([header("Opening"), header("ECO")])).toEqual({
+      chapterHeader: "Opening",
+      lineHeader: "",
+    });
+    expect(suggestImportHeaders([])).toEqual({ chapterHeader: "", lineHeader: "" });
   });
 });
 
