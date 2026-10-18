@@ -68,6 +68,14 @@ Kysely provides type-safe query building. Types are generated from the SQLite sc
 - **Issues**: Tracked in GitHub Issues. Older commits and branches use an `OCS-<number>` prefix from the previous Linear setup; do not use it for new work.
 - **Branches**: `<type>/<short-description>`, e.g. `fix/promotion-overlay-flipped`. No issue number in the branch name.
 
+## Code Comments
+
+- Default to no comments. Names and structure should carry the meaning.
+- Add a comment only for a non-obvious _why_: a workaround, a constraint from an external API/library, a surprising edge case, or a deliberate trade-off.
+- Never narrate what the code does, restate the function name, or describe the change you just made ("// added X", "// fixed bug").
+- Do not add JSDoc/rustdoc to internal helpers unless the signature alone is ambiguous.
+- Keep existing comments accurate; delete ones your change makes stale.
+
 ## Tauri MCP
 
 Verify UI in the running desktop app, not a browser tab. `http://localhost:1420` needs Tauri (`plugin-sql` `invoke`); the Vite page alone will fail. Do not start `bun tauri dev` if the user already has the app open (single-instance; Vite is pinned to port 1420).
