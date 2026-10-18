@@ -32,57 +32,57 @@ describe("ChessDotComClient", () => {
     fetchMock.mockReset();
   });
 
-  describe("getRecentGamesByPlayer", () => {
-    it("should construct URL with zero-padded month", async () => {
-      const mockResponse = new Response(new Blob([JSON.stringify({ games: [] })]), {
-        status: 200,
-        headers: new Headers(),
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+  describe("getArchivesByPlayer", () => {
+    it("should return archive URLs newest first", async () => {
+      const archives = [
+        "https://api.chess.com/pub/player/testuser/games/2026/08",
+        "https://api.chess.com/pub/player/testuser/games/2026/09",
+      ];
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ archives }), { status: 200 }));
+
+      const client = ChessDotComClient();
+      const result = await client.getArchivesByPlayer("testuser");
+
+      expect(fetchMock).toHaveBeenCalledWith("https://api.chess.com/pub/player/testuser/games/archives");
+      expect(result).toEqual([archives[1], archives[0]]);
+    });
+
+    it("should throw when the request fails", async () => {
+      fetchMock.mockResolvedValue(new Response(null, { status: 404 }));
 
       const client = ChessDotComClient();
 
-      vi.setSystemTime(new Date("2026-04-01T12:00:00Z"));
-      await client.getRecentGamesByPlayer("testuser");
-      vi.useRealTimers();
-
-      expect(fetchMock).toHaveBeenCalledWith("https://api.chess.com/pub/player/testuser/games/2026/04", {
-        headers: new Headers({}),
-      });
+      await expect(client.getArchivesByPlayer("testuser")).rejects.toThrow("404");
     });
+  });
+
+  describe("getGamesByArchive", () => {
+    const archive = "https://api.chess.com/pub/player/testuser/games/2026/09";
 
     it("should return games sorted by end_time descending", async () => {
       const older = gameFixture({ uuid: "old", end_time: 1000 });
       const newer = gameFixture({ uuid: "new", end_time: 2000 });
-
-      const mockResponse = new Response(new Blob([JSON.stringify({ games: [older, newer] })]), {
-        status: 200,
-        headers: new Headers(),
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ games: [older, newer] }), { status: 200 }));
 
       const client = ChessDotComClient();
-      const games = await client.getRecentGamesByPlayer("testuser");
+      const games = await client.getGamesByArchive(archive);
 
-      expect(games[0].uuid).toBe("new");
-      expect(games[1].uuid).toBe("old");
+      expect(games.map((game) => game.uuid)).toEqual(["new", "old"]);
     });
 
-    it("should handle 304 Not Modified and return cached games", async () => {
-      const older = gameFixture({ uuid: "old", end_time: 1000 });
-      const newer = gameFixture({ uuid: "new", end_time: 2000 });
-
-      const mockResponse = new Response(new Blob([JSON.stringify({ games: [older, newer] })]), {
-        status: 200,
-        headers: new Headers(),
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+    it("should revalidate with the ETag and reuse cached games on 304", async () => {
+      const game = gameFixture({ uuid: "cached" });
+      fetchMock.mockResolvedValueOnce(
+        new Response(JSON.stringify({ games: [game] }), { status: 200, headers: { etag: '"abc"' } })
+      );
+      fetchMock.mockResolvedValueOnce(new Response(null, { status: 304 }));
 
       const client = ChessDotComClient();
-      const games = await client.getRecentGamesByPlayer("testuser");
+      await client.getGamesByArchive(archive);
+      const games = await client.getGamesByArchive(archive);
 
-      expect(games[0].uuid).toBe("new");
-      expect(games[1].uuid).toBe("old");
+      expect(fetchMock).toHaveBeenLastCalledWith(archive, { headers: new Headers({ "If-None-Match": '"abc"' }) });
+      expect(games.map((cachedGame) => cachedGame.uuid)).toEqual(["cached"]);
     });
   });
 
@@ -91,14 +91,10 @@ describe("ChessDotComClient", () => {
       const target = gameFixture({ uuid: "target-uuid" });
       const other = gameFixture({ uuid: "other-uuid" });
 
-      const mockResponse = new Response(new Blob([JSON.stringify({ games: [target, other] })]), {
-        status: 200,
-        headers: new Headers(),
-      });
-      fetchMock.mockResolvedValue(mockResponse);
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ games: [target, other] }), { status: 200 }));
 
       const client = ChessDotComClient();
-      await client.getRecentGamesByPlayer("testuser");
+      await client.getGamesByArchive("https://api.chess.com/pub/player/testuser/games/2026/09");
       const result = await client.getGameByUuid("target-uuid");
 
       expect(result?.uuid).toBe("target-uuid");

@@ -61,8 +61,8 @@ interface ChessDotComCallbackGame {
 }
 
 export function ChessDotComClient() {
-  let recentGames: ChessDotComGame[] = [];
-  let recentGamesEtag: string | null = null;
+  const archiveCache = new Map<string, { etag: string | null; games: ChessDotComGame[] }>();
+  let callbackGames: ChessDotComGame[] = [];
 
   async function getPlayer(username: string) {
     const url = `https://api.chess.com/pub/player/${username}`;
@@ -70,23 +70,32 @@ export function ChessDotComClient() {
     return await response.json();
   }
 
-  async function getRecentGamesByPlayer(username: string) {
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const url = `https://api.chess.com/pub/player/${username}/games/${today.getFullYear()}/${month}`;
-    const headers = recentGamesEtag ? new Headers({ "If-None-Match": recentGamesEtag }) : new Headers({});
-    const response = await fetch(url, { headers });
-    if (response.status === 304) return recentGames;
-    const data = (await response.json()) as { games: ChessDotComGame[] };
-    const sortedGames = data.games.sort((a, b) => b.end_time - a.end_time);
+  async function getArchivesByPlayer(username: string) {
+    const response = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
+    if (!response.ok) throw new Error(`Chess.com responded with ${response.status}`);
 
-    recentGamesEtag = response.headers.get("etag");
-    recentGames = sortedGames;
-    return sortedGames;
+    const data = (await response.json()) as { archives: string[] };
+    return data.archives.toReversed();
+  }
+
+  async function getGamesByArchive(url: string) {
+    const cached = archiveCache.get(url);
+    const headers = cached?.etag ? new Headers({ "If-None-Match": cached.etag }) : new Headers({});
+    const response = await fetch(url, { headers });
+    if (response.status === 304 && cached) return cached.games;
+    if (!response.ok) throw new Error(`Chess.com responded with ${response.status}`);
+
+    const data = (await response.json()) as { games: ChessDotComGame[] };
+    const games = data.games.toSorted((a, b) => b.end_time - a.end_time);
+    archiveCache.set(url, { etag: response.headers.get("etag"), games });
+    return games;
   }
 
   async function getGameByUuid(uuid: string) {
-    const cached = recentGames.find((game) => game.uuid === uuid);
+    const cached = [...archiveCache.values()]
+      .flatMap((archive) => archive.games)
+      .concat(callbackGames)
+      .find((game) => game.uuid === uuid);
     if (cached) return cached;
 
     const response = await fetch(`https://www.chess.com/callback/live/game/${uuid}`);
@@ -96,11 +105,11 @@ export function ChessDotComClient() {
     if (!data.game) return null;
 
     const game = mapCallbackGame(data);
-    recentGames = [game, ...recentGames];
+    callbackGames = [game, ...callbackGames];
     return game;
   }
 
-  return { getPlayer, getRecentGamesByPlayer, getGameByUuid };
+  return { getPlayer, getArchivesByPlayer, getGamesByArchive, getGameByUuid };
 }
 
 function mapCallbackGame({ game, players }: ChessDotComCallbackGame): ChessDotComGame {
