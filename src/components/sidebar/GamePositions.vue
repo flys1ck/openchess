@@ -161,11 +161,12 @@ import GameResultTag from "@components/sidebar/GameResultTag.vue";
 import { useGame } from "@composables/useGame";
 import { explorerClient, mastersDatabase, type OpeningExplorerMasters } from "@flys1ck/lichess-client";
 import { db, select } from "@services/database";
+import { keepPreviousData, useQuery } from "@tanstack/vue-query";
 import { roundToFixed } from "@utilities/math";
 import { getPositionKey } from "@utilities/move";
 import { Key } from "chessground/types";
 import type { Selectable } from "kysely";
-import { shallowRef, watchEffect } from "vue";
+import { computed, shallowRef, watchEffect } from "vue";
 import type { Chapters, Lines, Positions, Studies } from "@/database";
 
 type MoveStatistics = {
@@ -196,10 +197,29 @@ defineEmits<{
 
 const positions = shallowRef<StudyMoveInPosition[]>([]);
 const lines = shallowRef<StudyLineWithPosition[]>([]);
-const totalMasterMoves = shallowRef(0);
-const masterGames = shallowRef<OpeningExplorerMasters["topGames"]>([]);
-type MasterMove = OpeningExplorerMasters["moves"][number] & MoveStatistics;
-const masterMoves = shallowRef<MasterMove[]>([]);
+
+const fen = computed(() => props.game.fen.value);
+const { data: masters } = useQuery({
+  queryKey: ["lichess", "masters", fen],
+  queryFn: async ({ signal }) => {
+    const { data, error } = await mastersDatabase({
+      client: explorerClient,
+      query: { fen: fen.value, topGames: 10 },
+      signal,
+    });
+    if (error || !data) throw new Error("Failed to load masters database");
+    return data;
+  },
+  staleTime: Infinity,
+  placeholderData: keepPreviousData,
+});
+const masterGames = computed(() => masters.value?.topGames ?? []);
+const masterMoves = computed(() => {
+  if (!masters.value) return [];
+  const { moves, white, black, draws } = masters.value;
+  const totalMasterMoves = white + black + draws;
+  return moves.map((move) => ({ ...move, ...getMoveStatistics(move, totalMasterMoves) }));
+});
 
 watchEffect(async () => {
   const positionKey = getPositionKey(props.game.fen.value);
@@ -236,19 +256,11 @@ watchEffect(async () => {
     .compile();
 
   lines.value = await select(positionQuery);
-
-  mastersDatabase({ client: explorerClient, query: { fen: props.game.fen.value, topGames: 10 } }).then(({ data }) => {
-    if (!data) return;
-    const { moves, topGames, white, black, draws } = data;
-    totalMasterMoves.value = white + black + draws;
-    masterMoves.value = moves.map((move) => ({ ...move, ...getMoveStatistics(move) }));
-    masterGames.value = topGames;
-  });
 });
 
-function getMoveStatistics(move: OpeningExplorerMasters["moves"][number]): MoveStatistics {
+function getMoveStatistics(move: OpeningExplorerMasters["moves"][number], totalMasterMoves: number): MoveStatistics {
   const moveTotal = roundToFixed(move.white + move.black + move.draws, 0);
-  const playPercentage = roundToFixed((moveTotal * 100) / totalMasterMoves.value, 0);
+  const playPercentage = roundToFixed((moveTotal * 100) / totalMasterMoves, 0);
   const whiteWinPercentage = roundToFixed((move.white * 100) / moveTotal, 0);
   const blackWinPercentage = roundToFixed((move.black * 100) / moveTotal, 0);
   const drawPercentage = roundToFixed((move.draws * 100) / moveTotal, 0);
