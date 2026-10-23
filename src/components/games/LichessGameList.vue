@@ -1,11 +1,18 @@
 <template>
   <div>
     <div v-if="isPending" class="space-y-4">
-      <StudyCardSkeleton v-for="index in 5" :key="index" />
+      <GameCardSkeleton v-for="index in 5" :key="index" />
     </div>
     <p v-else-if="error" class="text-muted-foreground p-4 text-sm">Couldn't load games from Lichess.</p>
+    <p v-else-if="!normalizedGames.length" class="text-muted-foreground p-4 text-sm">No games on Lichess yet.</p>
     <ul class="space-y-4">
-      <GameCard v-for="game in normalizedGames" :key="game.id" :to="`/games/lichess/${game.id}`" :game="game" />
+      <GameCard
+        v-for="game in normalizedGames"
+        :key="game.id"
+        :to="`/games/lichess/${game.id}`"
+        :game="game"
+        :player-color="getPlayerColor(game, lichess.username)"
+      />
     </ul>
     <Button v-if="hasNextPage" variant="outline" class="mt-4" :disabled="isFetchingNextPage" @click="loadMore">
       <Spinner v-if="isFetchingNextPage" data-icon="inline-start" />
@@ -16,11 +23,11 @@
 
 <script setup lang="ts">
 import GameCard from "@components/games/GameCard.vue";
-import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
+import GameCardSkeleton from "@components/games/GameCardSkeleton.vue";
 import { exportGamesOfAuser, type GameJson } from "@flys1ck/lichess-client";
 import { useLichess } from "@stores/useLichess";
 import { useInfiniteQuery } from "@tanstack/vue-query";
-import { normalizeLichessGame } from "@utilities/normalizer";
+import { getPlayerColor, normalizeLichessGame } from "@utilities/normalizer";
 import { computed } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";

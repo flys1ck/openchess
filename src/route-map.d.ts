@@ -52,25 +52,11 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/games/chessdotcom/': RouteRecordInfo<
-      '/games/chessdotcom/',
-      '/games/chessdotcom',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/games/chessdotcom/[gameId]': RouteRecordInfo<
       '/games/chessdotcom/[gameId]',
       '/games/chessdotcom/:gameId',
       { gameId: ParamValue<true> },
       { gameId: ParamValue<false> },
-      | never
-    >,
-    '/games/lichess/': RouteRecordInfo<
-      '/games/lichess/',
-      '/games/lichess',
-      Record<never, never>,
-      Record<never, never>,
       | never
     >,
     '/games/lichess/[gameId]': RouteRecordInfo<
@@ -180,14 +166,6 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/games/chessdotcom/index.vue': {
-      routes:
-        | '/games/chessdotcom/'
-      views:
-        | never
-      pathParamNames:
-        | never
-    }
     'src/pages/games/chessdotcom/[gameId].vue': {
       routes:
         | '/games/chessdotcom/[gameId]'
@@ -195,14 +173,6 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'gameId'
-    }
-    'src/pages/games/lichess/index.vue': {
-      routes:
-        | '/games/lichess/'
-      views:
-        | never
-      pathParamNames:
-        | never
     }
     'src/pages/games/lichess/[gameId].vue': {
       routes:

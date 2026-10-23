@@ -32,7 +32,7 @@ async function loadGame(gameId: string) {
     navigationItems.games,
     {
       name: "Chess.com",
-      to: "/games/chessdotcom/",
+      to: { name: "/games/", query: { source: "chessdotcom" } },
     },
     {
       name: `${parsedGame.value[0].headers.get("White")} vs. ${parsedGame.value[0].headers.get("Black")}`,

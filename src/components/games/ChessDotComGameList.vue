@@ -1,14 +1,21 @@
 <template>
   <div>
     <div v-if="isPending" class="space-y-4">
-      <StudyCardSkeleton v-for="index in 5" :key="index" />
+      <GameCardSkeleton v-for="index in 5" :key="index" />
     </div>
     <p v-else-if="error" class="text-muted-foreground p-4 text-sm">Couldn't load games from Chess.com.</p>
+    <p v-else-if="!months.length" class="text-muted-foreground p-4 text-sm">No games on Chess.com yet.</p>
     <div class="space-y-6">
       <section v-for="month in months" :key="month.archive">
         <h3 class="text-muted-foreground mb-2 text-sm font-medium">{{ month.label }}</h3>
         <ul class="space-y-4">
-          <GameCard v-for="game in month.games" :key="game.id" :to="`/games/chessdotcom/${game.id}`" :game="game" />
+          <GameCard
+            v-for="game in month.games"
+            :key="game.id"
+            :to="`/games/chessdotcom/${game.id}`"
+            :game="game"
+            :player-color="getPlayerColor(game, chessDotCom.username)"
+          />
         </ul>
       </section>
     </div>
@@ -21,10 +28,10 @@
 
 <script setup lang="ts">
 import GameCard from "@components/games/GameCard.vue";
-import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
+import GameCardSkeleton from "@components/games/GameCardSkeleton.vue";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useInfiniteQuery } from "@tanstack/vue-query";
-import { normalizeChessDotComGame } from "@utilities/normalizer";
+import { getPlayerColor, normalizeChessDotComGame } from "@utilities/normalizer";
 import { computed } from "vue";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
