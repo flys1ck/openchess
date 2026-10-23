@@ -10,6 +10,7 @@ All commands use `bun` as the package manager.
 # Development
 bun run dev              # Start Vite dev server (port 1420)
 bun tauri dev            # Start full Tauri app with hot-reload
+bun run dev:worktree     # Same, isolated per git worktree (see Parallel worktrees)
 
 # Building
 bun run build            # TypeScript check + Vite build
@@ -76,15 +77,26 @@ Kysely provides type-safe query building. Types are generated from the SQLite sc
 - Do not add JSDoc/rustdoc to internal helpers unless the signature alone is ambiguous.
 - Keep existing comments accurate; delete ones your change makes stale.
 
+## Parallel worktrees
+
+Parallel PRs each get a git worktree (Claude Code puts them in `.claude/worktrees/`). Start the app there with `bun run dev:worktree`, not `bun tauri dev`. In the main checkout the script deletes the `com.openchess.dev.<worktree-name>` data folders of worktrees that `git worktree list` no longer shows, then runs `bun tauri dev`. In a worktree it does that cleanup too, and:
+
+- sets the identifier to `com.openchess.dev.<worktree-name>`, which gives the worktree its own single-instance lock and app data folder;
+- runs Vite on its own port (from 1421 up, via `VITE_PORT`), and adds the worktree name to the window title;
+- on first run, copies the main checkout's database into that data folder, so the branch's migrations only touch the copy. Delete the copy to seed it again;
+- copies `src-tauri/bin/` (Stockfish sidecar) from the main checkout if it is missing. `.worktreeinclude` already does this for worktrees Claude Code creates.
+
+Worktree builds share Cargo's intermediate files (`CARGO_BUILD_BUILD_DIR`, in the main checkout's `src-tauri/target/worktrees/`). A new worktree only compiles the `openchess` crate, and the binary still lands in its own `src-tauri/target`. Concurrent worktree builds wait for each other (`Blocking waiting for file lock on build directory`); that is expected. Do not add sccache for this: its cache keys include the checkout path, so it barely helps across worktrees.
+
 ## Tauri MCP
 
-Verify UI in the running desktop app, not a browser tab. `http://localhost:1420` needs Tauri (`plugin-sql` `invoke`); the Vite page alone will fail. Do not start `bun tauri dev` if the user already has the app open (single-instance; Vite is pinned to port 1420).
+Verify UI in the running desktop app, not a browser tab. The Vite page alone will fail, because it needs Tauri (`plugin-sql` `invoke`). In a worktree, start your own instance with `bun run dev:worktree`; it does not collide with the user's app. In the main checkout, do not start `bun tauri dev` if the user already has the app open (single-instance; Vite is pinned to port 1420).
 
-The MCP Bridge plugin listens on **port 9223**. Drive it with the `tauri` MCP server (`@hypothesi/tauri-mcp-server`, configured in `.mcp.json` for Claude Code and `.cursor/mcp.json` for Cursor). Its tools appear as `mcp__tauri__*`.
+The MCP Bridge plugin takes the first free port from **9223** up (9223–9322), so every running instance has its own. Read it from the dev log line `MCP Bridge plugin initialized for 'OpenChess' (<identifier>) on 0.0.0.0:<port>`, and check that the identifier is the one for your worktree. Drive it with the `tauri` MCP server (`@hypothesi/tauri-mcp-server`, configured in `.mcp.json` for Claude Code and `.cursor/mcp.json` for Cursor). Its tools appear as `mcp__tauri__*`.
 
-With `bun tauri dev` already running:
+With the app running:
 
-1. Call `driver_session` with `action: "start"` and `port: 9223` (use `status` to check, `stop` to end).
+1. Call `driver_session` with `action: "start"` and the `port` from the log line (use `status` to check, `stop` to end).
 2. Use the `webview_*` tools: `webview_screenshot`, `webview_dom_snapshot`, `webview_find_element`, `webview_interact`, `webview_keyboard`, `webview_execute_js`, `webview_wait_for`.
 3. Use `read_logs` (`source: "console"`) for webview console output, and `ipc_monitor` / `ipc_execute_command` for Tauri IPC.
 

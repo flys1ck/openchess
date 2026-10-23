@@ -45,6 +45,16 @@ bun run scripts/generateTargetTriple.ts
 bun tauri dev
 ```
 
+## Parallel worktrees
+
+To work on several branches at once, give each one a git worktree and start the app there with:
+
+```bash
+bun run dev:worktree
+```
+
+Each worktree gets its own app identifier, Vite port and database (seeded from your main database on first run), so its instance runs next to the app in your main checkout. The script also copies the Stockfish sidecar from the main checkout, and deletes the app data folders of worktrees that no longer exist. In the main checkout it is the same as `bun tauri dev`. Worktrees share Cargo's intermediate build files in `src-tauri/target/worktrees/` of the main checkout, so after the first worktree build a new worktree only compiles the `openchess` crate. Two worktrees compiling at the same moment take turns. `cargo clean` in the main checkout removes the shared files too.
+
 ## Updating Stockfish
 
 Find new Stockfish releases on the [official Stockfish releases page](https://github.com/official-stockfish/Stockfish/releases). Set `STOCKFISH_VERSION` to the release number in your local environment, then run:

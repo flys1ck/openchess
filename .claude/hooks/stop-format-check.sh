@@ -5,7 +5,9 @@
 # stop in a row (stop_hook_active) is always allowed, so this cannot loop.
 input=$(cat)
 [ "$(echo "$input" | jq -r '.stop_hook_active // false')" = "true" ] && exit 0
-cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+# CLAUDE_PROJECT_DIR points at the main checkout even in a worktree session; check the session's own checkout.
+cd "$(echo "$input" | jq -r '.cwd // empty')" 2>/dev/null || cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 0
 
 files=$({ git diff --name-only HEAD; git ls-files --others --exclude-standard; } 2>/dev/null | sort -u |
   grep -E '\.(ts|tsx|js|jsx|vue|json|jsonc|css|md|yml|yaml)$' |

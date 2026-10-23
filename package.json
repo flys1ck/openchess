@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:worktree": "bun run scripts/devWorktree.ts",
     "devtools": "vue-devtools",
     "build": "vue-tsc --noEmit && vite build",
     "tauri": "tauri",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2.12.3",
+    "@types/bun": "^1.4.3",
     "@types/follow-redirects": "^1.14.4",
     "@types/node": "^26.6.5",
     "@types/unzipper": "^0.10.11",
