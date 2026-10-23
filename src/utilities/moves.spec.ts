@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMoveStringFromSan } from "./moves";
+import { getFinalPosition, getMoveStringFromSan } from "./moves";
 
 describe("getMoveStringFromSan", () => {
   it("should return empty string when no moves are provided", () => {
@@ -91,5 +91,18 @@ describe("getMoveStringFromSan", () => {
 
   it("should throw error when invalid FEN is provided", () => {
     expect(() => getMoveStringFromSan(["e4", "e5", "Nf3"], "invalid FEN")).toThrow("ERR_TURN");
+  });
+});
+
+describe("getFinalPosition", () => {
+  it("returns the starting position without moves", () => {
+    expect(getFinalPosition([])).toEqual({ fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" });
+  });
+
+  it("stops at the first move that does not parse", () => {
+    expect(getFinalPosition(["e4", "Ke3", "e5"])).toEqual({
+      fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      lastMove: ["e2", "e4"],
+    });
   });
 });

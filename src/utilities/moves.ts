@@ -1,7 +1,10 @@
+import type { Key } from "chessground/types";
+import type { Rules } from "chessops";
 import { Chess } from "chessops/chess";
-import { INITIAL_BOARD_FEN, parseFen } from "chessops/fen";
-import { makeSanAndPlay } from "chessops/san";
-import { parseUci } from "chessops/util";
+import { INITIAL_BOARD_FEN, INITIAL_FEN, makeFen, parseFen } from "chessops/fen";
+import { makeSanAndPlay, parseSan } from "chessops/san";
+import { makeSquare, parseUci } from "chessops/util";
+import { setupPosition } from "chessops/variant";
 import { UciMove } from "uci-parser-ts";
 import { MaybeRef, unref } from "vue";
 
@@ -52,4 +55,25 @@ export function getMoveStringFromSan(sanMoves: string[], fen?: MaybeRef<string>)
     .trim();
 
   return turn === "white" ? moveString : `${moveCount}... ${moveString}`;
+}
+
+export interface FinalPosition {
+  fen: string;
+  lastMove?: [Key, Key];
+}
+
+/**
+ * Plays SAN moves from a starting fen and returns the position they reach. Stops at the first move that does not parse.
+ */
+export function getFinalPosition(sanMoves: string[], fen = INITIAL_FEN, rules: Rules = "chess"): FinalPosition {
+  const position = setupPosition(rules, parseFen(fen).unwrap()).unwrap();
+  let lastMove: FinalPosition["lastMove"];
+  for (const san of sanMoves) {
+    const move = parseSan(position, san);
+    if (!move) break;
+    position.play(move);
+    lastMove = "from" in move ? [makeSquare(move.from), makeSquare(move.to)] : undefined;
+  }
+
+  return { fen: makeFen(position.toSetup()), lastMove };
 }

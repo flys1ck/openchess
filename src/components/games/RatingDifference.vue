@@ -1,5 +1,13 @@
 <template>
-  <span :class="difference === 0 ? 'text-muted-foreground' : isPositive ? 'text-blue-700' : 'text-red-700'">
+  <span
+    :class="
+      difference === 0
+        ? 'text-muted-foreground'
+        : isPositive
+          ? 'text-emerald-700 dark:text-emerald-400'
+          : 'text-red-700 dark:text-red-400'
+    "
+  >
     {{ formattedDifference }}
   </span>
 </template>
