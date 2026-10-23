@@ -32,7 +32,6 @@ jobs:
 
   build:
     name: Build
-    needs: [frontend-checks]
     strategy:
       matrix:
         include:
@@ -57,7 +56,7 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         uses: awalsh128/cache-apt-pkgs-action@v1.6.3
         with:
-          packages: libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webkit2gtk-driver xvfb
+          packages: libwebkit2gtk-4.1-dev libayatana-appindicator3-dev
           version: ${{ matrix.platform }}-1
       - uses: actions/cache@v5
         id: stockfish-cache
@@ -81,4 +80,5 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          args: --no-bundle
+          # Frontend Checks already runs vue-tsc, so skip the one in `bun run build`.
+          args: --no-bundle --config '{"build":{"beforeBuildCommand":"bunx vite build"}}'
