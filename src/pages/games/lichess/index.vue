@@ -15,7 +15,8 @@
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import LichessGameList from "@components/games/LichessGameList.vue";
-import { GraduationCap, RefreshCw } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
+import { RefreshCw } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
@@ -28,11 +29,7 @@ definePage({
 
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Games",
-    to: "/games/",
-  },
+  navigationItems.games,
   {
     name: "Lichess",
     to: "/games/lichess/",

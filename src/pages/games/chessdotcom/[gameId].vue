@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { parsePgn, type PgnNodeData, type Game as PgnGame } from "chessops/pgn";
@@ -29,11 +29,7 @@ async function loadGame(gameId: string) {
   parsedGame.value = parsePgn(gameInfo.pgn);
 
   setBreadcrumbs([
-    {
-      icon: GraduationCap,
-      name: "Games",
-      to: "/games/",
-    },
+    navigationItems.games,
     {
       name: "Chess.com",
       to: "/games/chessdotcom/",

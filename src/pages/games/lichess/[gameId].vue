@@ -10,8 +10,8 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
+import { navigationItems } from "@data/navigationItems";
 import { exportOneGame } from "@flys1ck/lichess-client";
-import { GraduationCap } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
 import { useQueryClient } from "@tanstack/vue-query";
@@ -58,11 +58,7 @@ async function loadGame(gameId: string) {
     loadError.value = "";
 
     setBreadcrumbs([
-      {
-        icon: GraduationCap,
-        name: "Games",
-        to: "/games/",
-      },
+      navigationItems.games,
       {
         name: "Lichess",
         to: "/games/lichess/",

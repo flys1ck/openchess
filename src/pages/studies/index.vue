@@ -28,7 +28,7 @@ import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import StudyImportProgress from "@components/studies/StudyImportProgress.vue";
 import StudyList from "@components/studies/StudyList.vue";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useStudyImport } from "@stores/useStudyImport";
 import { computed, ref, watch } from "vue";
@@ -49,11 +49,5 @@ definePage({
 });
 
 const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Studies",
-    to: "/studies/",
-  },
-]);
+setBreadcrumbs([navigationItems.studies]);
 </script>

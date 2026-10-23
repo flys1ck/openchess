@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { db, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { watch } from "vue";
@@ -50,11 +50,7 @@ watch(
 
       // set breadcrumbs
       setBreadcrumbs([
-        {
-          icon: GraduationCap,
-          name: "Studies",
-          to: "/studies/",
-        },
+        navigationItems.studies,
         {
           name: line.study_name,
           to: `/studies/${line.study_id}`,
