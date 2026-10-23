@@ -143,8 +143,7 @@ export function useGame() {
     const piece = board?.getPiece(fixedDestination);
     if (!piece) return;
     if (isPromotion(fixedDestination, piece.role)) {
-      const orientation = board?.getOrientation();
-      if (orientation) intentPromotion(fixedDestination, pos.turn, orientation);
+      intentPromotion(fixedDestination, pos.turn);
       return;
     }
 
@@ -184,17 +183,22 @@ export function useGame() {
   }
 
   // TODO try to do it without turn color (can be inferred by the square)
-  function intentPromotion(square: Key, turnColor: Color, orientation: Color) {
+  function intentPromotion(square: Key, turnColor: Color) {
     isPromoting.value = true;
-
     promotionColor.value = turnColor;
-    // TODO: fix styles when flipping board
-    promotionStyles.value = {
-      left: (key2pos(square)[0] * 100) / 8 + "%",
-      top: turnColor === "white" ? "0" : "50%",
-      flexDirection: turnColor === orientation ? "column" : "column-reverse",
-    };
     promotionSquare = square;
+    placePromotion();
+  }
+
+  function placePromotion() {
+    const orientation = board?.getOrientation() ?? "white";
+    const file = key2pos(promotionSquare)[0];
+    const isAtTop = promotionColor.value === orientation;
+    promotionStyles.value = {
+      left: ((orientation === "white" ? file : 7 - file) * 100) / 8 + "%",
+      top: isAtTop ? "0" : "50%",
+      flexDirection: isAtTop ? "column" : "column-reverse",
+    };
   }
 
   function cancelPromotion() {
@@ -252,10 +256,11 @@ export function useGame() {
 
   function toggleOrientation() {
     board?.toggleOrientation();
+    if (isPromoting.value) placePromotion();
   }
 
   function setOrientation(orientation: Color) {
-    if (board?.getOrientation() !== orientation) board?.toggleOrientation();
+    if (board?.getOrientation() !== orientation) toggleOrientation();
   }
 
   function setAutoShapes(shapes: DrawShape[], type: "temporary" | "persistent" = "persistent") {
