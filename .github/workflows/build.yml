@@ -52,11 +52,13 @@ jobs:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
       - run: bun install --frozen-lockfile
+      # Cached because the Ubuntu mirror sometimes serves these packages at ~90 kB/s.
       - name: Install Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webkit2gtk-driver xvfb
+        uses: awalsh128/cache-apt-pkgs-action@v1.6.3
+        with:
+          packages: libwebkit2gtk-4.1-dev libayatana-appindicator3-dev webkit2gtk-driver xvfb
+          version: ${{ matrix.platform }}-1
       - uses: actions/cache@v5
         id: stockfish-cache
         with:
