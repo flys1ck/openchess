@@ -80,18 +80,34 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/studies/[studyId]/': RouteRecordInfo<
-      '/studies/[studyId]/',
+    '/studies/[studyId]/(workspace)': RouteRecordInfo<
+      '/studies/[studyId]/(workspace)',
+      '/studies/:studyId',
+      { studyId: ParamValue<true> },
+      { studyId: ParamValue<false> },
+      | '/studies/[studyId]/(workspace)/'
+      | '/studies/[studyId]/(workspace)/chapters/[chapterId]/'
+      | '/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId]'
+    >,
+    '/studies/[studyId]/(workspace)/': RouteRecordInfo<
+      '/studies/[studyId]/(workspace)/',
       '/studies/:studyId',
       { studyId: ParamValue<true> },
       { studyId: ParamValue<false> },
       | never
     >,
-    '/studies/[studyId]/chapters/[chapterId]/': RouteRecordInfo<
-      '/studies/[studyId]/chapters/[chapterId]/',
+    '/studies/[studyId]/(workspace)/chapters/[chapterId]/': RouteRecordInfo<
+      '/studies/[studyId]/(workspace)/chapters/[chapterId]/',
       '/studies/:studyId/chapters/:chapterId',
       { chapterId: ParamValue<true>, studyId: ParamValue<true> },
       { chapterId: ParamValue<false>, studyId: ParamValue<false> },
+      | never
+    >,
+    '/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId]': RouteRecordInfo<
+      '/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId]',
+      '/studies/:studyId/chapters/:chapterId/lines/:lineId',
+      { chapterId: ParamValue<true>, lineId: ParamValue<true>, studyId: ParamValue<true> },
+      { chapterId: ParamValue<false>, lineId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
     '/studies/[studyId]/chapters/[chapterId]/edit': RouteRecordInfo<
@@ -99,13 +115,6 @@ declare module 'vue-router/auto-routes' {
       '/studies/:studyId/chapters/:chapterId/edit',
       { chapterId: ParamValue<true>, studyId: ParamValue<true> },
       { chapterId: ParamValue<false>, studyId: ParamValue<false> },
-      | never
-    >,
-    '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]': RouteRecordInfo<
-      '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]',
-      '/studies/:studyId/chapters/:chapterId/lines/:lineId',
-      { chapterId: ParamValue<true>, lineId: ParamValue<true>, studyId: ParamValue<true> },
-      { chapterId: ParamValue<false>, lineId: ParamValue<false>, studyId: ParamValue<false> },
       | never
     >,
     '/studies/[studyId]/edit': RouteRecordInfo<
@@ -198,21 +207,40 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/studies/[studyId]/index.vue': {
+    'src/pages/studies/[studyId]/(workspace).vue': {
       routes:
-        | '/studies/[studyId]/'
+        | '/studies/[studyId]/(workspace)'
+        | '/studies/[studyId]/(workspace)/'
+        | '/studies/[studyId]/(workspace)/chapters/[chapterId]/'
+        | '/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId]'
+      views:
+        | 'default'
+      pathParamNames:
+        | never
+    }
+    'src/pages/studies/[studyId]/(workspace)/index.vue': {
+      routes:
+        | '/studies/[studyId]/(workspace)/'
       views:
         | never
       pathParamNames:
         | never
     }
-    'src/pages/studies/[studyId]/chapters/[chapterId]/index.vue': {
+    'src/pages/studies/[studyId]/(workspace)/chapters/[chapterId]/index.vue': {
       routes:
-        | '/studies/[studyId]/chapters/[chapterId]/'
+        | '/studies/[studyId]/(workspace)/chapters/[chapterId]/'
       views:
         | never
       pathParamNames:
         | never
+    }
+    'src/pages/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId].vue': {
+      routes:
+        | '/studies/[studyId]/(workspace)/chapters/[chapterId]/lines/[lineId]'
+      views:
+        | never
+      pathParamNames:
+        | 'lineId'
     }
     'src/pages/studies/[studyId]/chapters/[chapterId]/edit.vue': {
       routes:
@@ -221,14 +249,6 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | never
-    }
-    'src/pages/studies/[studyId]/chapters/[chapterId]/lines/[lineId].vue': {
-      routes:
-        | '/studies/[studyId]/chapters/[chapterId]/lines/[lineId]'
-      views:
-        | never
-      pathParamNames:
-        | 'lineId'
     }
     'src/pages/studies/[studyId]/edit.vue': {
       routes:

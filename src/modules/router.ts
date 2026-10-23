@@ -9,7 +9,8 @@ declare module "vue-router" {
 }
 
 function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
-  if (!route.children) return setupLayouts([route])[0];
+  // A route with its own component is a parent page (e.g. the study workspace): its layout wraps the children too.
+  if (!route.children || route.component) return setupLayouts([route])[0];
 
   for (let i = 0; i < route.children.length; i++) {
     route.children[i] = recursiveLayouts(route.children[i]);
