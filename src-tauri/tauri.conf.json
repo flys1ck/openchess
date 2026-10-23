@@ -53,11 +53,12 @@
     "withGlobalTauri": true,
     "windows": [
       {
+        "center": true,
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
         "title": "OpenChess",
-        "width": 800,
+        "width": 1280,
         "useHttpsScheme": true
       }
     ],

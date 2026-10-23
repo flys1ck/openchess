@@ -42,6 +42,16 @@ fn main() {
                     app_config_path.display()
                 )
             });
+            // Later launches get their size back from the window-state plugin.
+            if !app_config_path
+                .join(tauri_plugin_window_state::DEFAULT_FILENAME)
+                .exists()
+            {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.maximize();
+                }
+            }
+
             let database_path = app_config_path.join("db.sqlite");
 
             let database_url = database_path
