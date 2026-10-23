@@ -1,32 +1,32 @@
-import { FlaskConical, GraduationCap, Settings, Trophy } from "@lucide/vue";
+import { BookOpen, ChessKnight, Settings, Swords } from "@lucide/vue";
 import { Component } from "vue";
 import { RouteNamedMap } from "vue-router/auto-routes";
 
 export interface NavigationItem {
   icon: Component;
-  text: string;
+  name: string;
   to: keyof RouteNamedMap;
 }
 
-export const navigationItems: NavigationItem[] = [
-  {
-    icon: FlaskConical,
-    text: "Analysis",
+export const navigationItems = {
+  analysis: {
+    icon: ChessKnight,
+    name: "Analysis",
     to: "/analysis/",
   },
-  {
-    icon: GraduationCap,
-    text: "Studies",
+  studies: {
+    icon: BookOpen,
+    name: "Studies",
     to: "/studies/",
   },
-  {
-    icon: Trophy,
-    text: "Games",
+  games: {
+    icon: Swords,
+    name: "Games",
     to: "/games/",
   },
-  {
+  settings: {
     icon: Settings,
-    text: "Settings",
+    name: "Settings",
     to: "/settings/",
   },
-];
+} satisfies Record<string, NavigationItem>;

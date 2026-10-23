@@ -72,7 +72,8 @@ import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
-import { BadgeCheck, Settings } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
+import { BadgeCheck } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
@@ -91,13 +92,7 @@ definePage({
 });
 
 const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([
-  {
-    icon: Settings,
-    name: "Settings",
-    to: "/settings/",
-  },
-]);
+setBreadcrumbs([navigationItems.settings]);
 
 const lichess = useLichess();
 const isConnecting = ref(false);

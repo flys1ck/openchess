@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import ChessDotComThumbnail from "@assets/images/chessdotcom.png";
 import OTBThumbnail from "@assets/images/otb.png";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { Card } from "@/components/ui/card";
 
@@ -37,13 +37,7 @@ definePage({
 });
 
 const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Games",
-    to: "/games/",
-  },
-]);
+setBreadcrumbs([navigationItems.games]);
 
 const platforms = [
   {

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import GameMain from "@components/GameMain.vue";
 import { useGame } from "@composables/useGame";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 
 const game = useGame();
@@ -19,11 +19,5 @@ definePage({
 });
 
 const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Analysis",
-    to: "/analysis/",
-  },
-]);
+setBreadcrumbs([navigationItems.analysis]);
 </script>

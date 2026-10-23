@@ -1,10 +1,10 @@
 <template>
-  <Sidebar>
+  <Sidebar collapsible="icon">
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child tooltip="OpenChess">
-            <RouterLink to="/analysis/">
+            <RouterLink :to="navigationItems.analysis.to">
               <img :src="appLogo" alt="" class="size-8 rounded-lg" />
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-medium">OpenChess</span>
@@ -19,11 +19,11 @@
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="{ icon, text, to } in navigationItems" :key="to">
-              <SidebarMenuButton as-child :is-active="isItemActive(to)" :tooltip="text">
+            <SidebarMenuItem v-for="{ icon, name, to } in mainNavigationItems" :key="to">
+              <SidebarMenuButton as-child :is-active="isItemActive(to)" :tooltip="name">
                 <RouterLink :to="to">
                   <Component :is="icon" />
-                  <span>{{ text }}</span>
+                  <span>{{ name }}</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -31,18 +31,35 @@
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            as-child
+            :is-active="isItemActive(navigationItems.settings.to)"
+            :tooltip="navigationItems.settings.name"
+          >
+            <RouterLink :to="navigationItems.settings.to">
+              <Component :is="navigationItems.settings.icon" />
+              <span>{{ navigationItems.settings.name }}</span>
+            </RouterLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
   </Sidebar>
 </template>
 
 <script setup lang="ts">
 import appLogo from "@assets/images/logo.png";
-import { navigationItems } from "@data/navigationItems";
+import { type NavigationItem, navigationItems } from "@data/navigationItems";
 import { getVersion } from "@tauri-apps/api/app";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -51,9 +68,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+const mainNavigationItems = [navigationItems.analysis, navigationItems.studies, navigationItems.games];
+
 const route = useRoute();
-function isItemActive(to: string) {
-  return route.path.startsWith(to) || route.matched.some((record) => record.path === to);
+// Analysis is aliased to "/", so the path alone does not identify it; the route name does.
+function isItemActive(to: NavigationItem["to"]) {
+  return route.name === to || route.path.startsWith(to);
 }
 
 const appVersion = ref("");

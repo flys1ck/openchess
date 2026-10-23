@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useRoute } from "vue-router";
@@ -42,11 +42,7 @@ const [chapter, lines] = await Promise.all([selectFirst(chapterQuery), select(li
 
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Studies",
-    to: "/studies/",
-  },
+  navigationItems.studies,
   {
     name: chapter.study_name,
     to: `/studies/${chapter.study_id}`,

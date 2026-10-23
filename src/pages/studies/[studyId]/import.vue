@@ -26,7 +26,7 @@ import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import StudyImportFields from "@components/studies/StudyImportFields.vue";
 import { useStudyImportPlan } from "@composables/useStudyImportPlan";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useStudyImport } from "@stores/useStudyImport";
@@ -72,11 +72,7 @@ definePage({
 });
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Studies",
-    to: "/studies/",
-  },
+  navigationItems.studies,
   {
     name: study.name,
     to: `/studies/${study.id}`,

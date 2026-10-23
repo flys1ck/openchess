@@ -50,7 +50,7 @@
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
-import { GraduationCap } from "@lucide/vue";
+import { navigationItems } from "@data/navigationItems";
 import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { Insertable } from "kysely";
@@ -124,11 +124,7 @@ definePage({
 
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
-  {
-    icon: GraduationCap,
-    name: "Studies",
-    to: "/studies/",
-  },
+  navigationItems.studies,
   {
     name: study.value.name,
     to: `/studies/${study.value.id}`,
