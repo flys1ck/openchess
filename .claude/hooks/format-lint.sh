@@ -4,7 +4,9 @@
 # lint warnings are added as non-blocking context.
 f=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty')
 [ -f "$f" ] || exit 0
-cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+# Worktrees live inside the main checkout (.claude/worktrees/), and CLAUDE_PROJECT_DIR points at
+# the main checkout. Linting from there makes oxlint treat the worktree's config as a nested one.
+cd "$(git -C "$(dirname "$f")" rev-parse --show-toplevel 2>/dev/null || echo "${CLAUDE_PROJECT_DIR:-.}")" || exit 0
 
 case "$f" in
   */node_modules/* | */src-tauri/target/*) exit 0 ;;
