@@ -1,6 +1,5 @@
 <template>
   <BaseContainer>
-    <BaseSectionHeading heading="Edit Study" />
     <BaseSettingsSection heading="Study information">
       <template #description>
         Update <span class="font-semibold">{{ study?.name }}</span> study information here.
@@ -48,7 +47,6 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import { navigationItems } from "@data/navigationItems";
 import { db, execute, selectFirst } from "@services/database";
@@ -130,7 +128,7 @@ setBreadcrumbs([
     to: `/studies/${study.value.id}`,
   },
   {
-    name: "Edit",
+    name: "Edit study",
     to: `/studies/${study.value.id}/edit`,
   },
 ]);

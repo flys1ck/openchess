@@ -1,6 +1,5 @@
 <template>
   <BaseContainer>
-    <BaseSectionHeading heading="New Study" />
     <form @submit.prevent="onSubmit">
       <FieldGroup class="border-b pb-12">
         <Field :data-invalid="!!nameError">
@@ -36,7 +35,6 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import StudyImportFields from "@components/studies/StudyImportFields.vue";
 import { useStudyImportPlan } from "@composables/useStudyImportPlan";
 import { navigationItems } from "@data/navigationItems";

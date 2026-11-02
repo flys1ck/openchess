@@ -1,24 +1,24 @@
 <template>
   <BaseContainer>
     <Tabs v-model="source" class="gap-0">
-      <BaseSectionHeading heading="Games">
-        <template #actions>
-          <div class="flex items-center gap-2">
-            <TabsList>
-              <TabsTrigger v-for="option in GAME_SOURCES" :key="option.value" :value="option.value" class="px-3">
-                {{ option.name }}
-              </TabsTrigger>
-            </TabsList>
-            <Button v-if="isSourceConnected" variant="outline" @click="refresh">
-              <RefreshCw data-icon="inline-start" />Refresh
-            </Button>
-          </div>
+      <BaseToolbar>
+        <template #start>
+          <TabsList aria-label="Game source">
+            <TabsTrigger v-for="option in GAME_SOURCES" :key="option.value" :value="option.value" class="px-3">
+              {{ option.name }}
+            </TabsTrigger>
+          </TabsList>
         </template>
-      </BaseSectionHeading>
+        <template #end>
+          <Button v-if="isSourceConnected" variant="outline" @click="refresh">
+            <RefreshCw data-icon="inline-start" />Refresh
+          </Button>
+        </template>
+      </BaseToolbar>
       <TabsContent v-for="option in GAME_SOURCES" :key="option.value" :value="option.value">
         <template v-if="isSourceConnected">
-          <LichessGameList v-if="option.value === 'lichess'" ref="lichessGameList" class="my-4" />
-          <ChessDotComGameList v-else ref="chessDotComGameList" class="my-4" />
+          <LichessGameList v-if="option.value === 'lichess'" ref="lichessGameList" />
+          <ChessDotComGameList v-else ref="chessDotComGameList" />
         </template>
         <Empty v-else>
           <EmptyHeader>
@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import BaseToolbar from "@components/base/BaseToolbar.vue";
 import ChessDotComGameList from "@components/games/ChessDotComGameList.vue";
 import LichessGameList from "@components/games/LichessGameList.vue";
 import { navigationItems } from "@data/navigationItems";
