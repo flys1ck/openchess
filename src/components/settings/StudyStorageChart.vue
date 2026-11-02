@@ -1,22 +1,35 @@
 <template>
   <div class="space-y-4">
+    <dl class="flex items-baseline justify-between gap-4 text-sm font-medium">
+      <dt>Total database size</dt>
+      <dd>{{ formatFileSize(databaseSize) }}</dd>
+    </dl>
     <figure v-if="studies.length">
-      <figcaption class="sr-only">Stored content size for each study</figcaption>
+      <figcaption class="sr-only">Share of the database used by each study</figcaption>
       <ul role="list" class="space-y-4">
         <li v-for="study in studies" :key="study.id">
           <div class="flex items-baseline justify-between gap-4 text-sm">
-            <span class="truncate">{{ study.name }}</span>
+            <RouterLink :to="`/studies/${study.id}`" :title="study.name" class="truncate hover:underline">
+              {{ study.name }}
+            </RouterLink>
             <span class="text-muted-foreground shrink-0">{{ formatFileSize(study.size_bytes) }}</span>
           </div>
-          <Progress class="mt-1 h-2" :model-value="getBarWidth(study.size_bytes)" aria-hidden="true" />
+          <div class="bg-muted mt-1 h-2 overflow-hidden rounded-full" aria-hidden="true">
+            <div class="bg-muted-foreground/60 h-full rounded-full" :style="{ width: getBarWidth(study.size_bytes) }" />
+          </div>
+        </li>
+        <li v-if="otherDataSize > 0">
+          <div class="flex items-baseline justify-between gap-4 text-sm">
+            <span class="text-muted-foreground truncate">Indexes and other data</span>
+            <span class="text-muted-foreground shrink-0">{{ formatFileSize(otherDataSize) }}</span>
+          </div>
+          <div class="bg-muted mt-1 h-2 overflow-hidden rounded-full" aria-hidden="true">
+            <div class="bg-muted-foreground/30 h-full rounded-full" :style="{ width: getBarWidth(otherDataSize) }" />
+          </div>
         </li>
       </ul>
     </figure>
     <p v-else class="text-muted-foreground text-sm">Create a study to see its stored content size.</p>
-    <dl class="flex items-baseline justify-between gap-4 rounded-lg py-3 text-sm font-medium">
-      <dt class="text-muted-foreground">Total database size</dt>
-      <dd>{{ formatFileSize(databaseSize) }}</dd>
-    </dl>
   </div>
 </template>
 
@@ -24,7 +37,6 @@
 import { db, select } from "@services/database";
 import { formatFileSize } from "@utilities/fileSize";
 import { sql } from "kysely";
-import { Progress } from "@/components/ui/progress";
 
 interface StudyStorage {
   id: number;
@@ -113,10 +125,12 @@ const studyStorageQuery = sql<StudyStorage>`
 
 const [databaseStorage, studies] = await Promise.all([select(databaseStorageQuery), select(studyStorageQuery)]);
 const databaseSize = databaseStorage[0]?.size_bytes ?? 0;
-const largestStudySize = studies[0]?.size_bytes ?? 0;
+const studiesSize = studies.reduce((total, study) => total + study.size_bytes, 0);
+// Per-study sizes are estimates, so they can add up to more than the database itself
+const otherDataSize = Math.max(databaseSize - studiesSize, 0);
 
 function getBarWidth(size: number) {
-  if (largestStudySize === 0) return 0;
-  return (size / largestStudySize) * 100;
+  if (databaseSize === 0) return "0%";
+  return `${Math.min((size / databaseSize) * 100, 100)}%`;
 }
 </script>
