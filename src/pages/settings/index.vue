@@ -46,6 +46,26 @@
         </form>
       </template>
     </BaseSettingsSection>
+    <!-- Sound -->
+    <BaseSettingsSection heading="Sound">
+      <template #description> Volume of move and capture sounds. </template>
+      <template #form>
+        <Field>
+          <div class="flex items-center justify-between">
+            <Label>Volume</Label>
+            <span class="text-muted-foreground text-sm">{{ settings.soundVolume[0] }}%</span>
+          </div>
+          <!-- Reka emits valueCommit before updating the model on keyboard input -->
+          <Slider
+            :min="0"
+            :max="100"
+            :step="5"
+            v-model="settings.soundVolume"
+            @value-commit="nextTick(() => playAudio('move'))"
+          />
+        </Field>
+      </template>
+    </BaseSettingsSection>
     <!-- Study Storage -->
     <BaseSettingsSection heading="Study Storage">
       <template #description> Local database size by study content. Per-study values are estimates. </template>
@@ -75,12 +95,16 @@ import { BadgeCheck } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
-import { ref } from "vue";
+import { useSettings } from "@stores/useSettings";
+import { playAudio } from "@utilities/audio";
+import { nextTick, ref } from "vue";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
 
 definePage({
@@ -92,6 +116,7 @@ definePage({
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([navigationItems.settings]);
 
+const settings = useSettings();
 const lichess = useLichess();
 const isConnecting = ref(false);
 const isDisconnecting = ref(false);
