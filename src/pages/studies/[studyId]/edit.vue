@@ -114,12 +114,6 @@ async function deleteStudy() {
   router.push("/studies");
 }
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   navigationItems.studies,

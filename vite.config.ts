@@ -1,7 +1,6 @@
 import TailwindCSS from "@tailwindcss/vite";
 import Vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
-import ClientSideLayout from "vite-plugin-vue-layouts";
 import VueRouter from "vue-router/vite";
 
 // https://vitejs.dev/config/
@@ -10,7 +9,6 @@ export default defineConfig({
     VueRouter({
       dts: "src/route-map.d.ts",
     }),
-    ClientSideLayout(),
     Vue({
       script: {
         defineModel: true,

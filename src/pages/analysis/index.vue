@@ -13,9 +13,6 @@ game.createNewGame();
 
 definePage({
   alias: "/",
-  meta: {
-    layout: "breadcrumbs",
-  },
 });
 
 const { setBreadcrumbs } = useBreadcrumbs();

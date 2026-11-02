@@ -28,6 +28,7 @@ import { navigationItems } from "@data/navigationItems";
 import { db, select, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useStudyImport } from "@stores/useStudyImport";
+import { onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
@@ -63,21 +64,19 @@ async function onSubmit() {
   await router.push(`/studies/${study.id}`);
 }
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
 const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([
-  navigationItems.studies,
-  {
-    name: study.name,
-    to: `/studies/${study.id}`,
-  },
-  {
-    name: "Import PGN",
-    to: `/studies/${study.id}/import`,
-  },
-]);
+// After the await above: onMounted skips this if the user navigated away while the study loaded.
+onMounted(() => {
+  setBreadcrumbs([
+    navigationItems.studies,
+    {
+      name: study.name,
+      to: `/studies/${study.id}`,
+    },
+    {
+      name: "Import PGN",
+      to: `/studies/${study.id}/import`,
+    },
+  ]);
+});
 </script>

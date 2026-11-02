@@ -28,7 +28,7 @@ import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import { navigationItems } from "@data/navigationItems";
 import { db, execute, selectFirst } from "@services/database";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
@@ -84,12 +84,6 @@ async function onSubmit() {
   }
 }
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 function updateBreadcrumbs() {
   setBreadcrumbs([
@@ -108,5 +102,6 @@ function updateBreadcrumbs() {
     },
   ]);
 }
-updateBreadcrumbs();
+// After the await above: onMounted skips this if the user navigated away while the chapter loaded.
+onMounted(updateBreadcrumbs);
 </script>

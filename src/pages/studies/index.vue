@@ -42,12 +42,6 @@ watch(isCreatingStudy, (creating) => {
   if (!creating) studyListKey.value++;
 });
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([navigationItems.studies]);
 </script>

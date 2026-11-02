@@ -1,26 +1,9 @@
-import { setupLayouts } from "virtual:generated-layouts";
-import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "vue-router/auto-routes";
-
-declare module "vue-router" {
-  interface RouteMeta {
-    breadcrumb?: string;
-  }
-}
-
-function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
-  // A route with its own component is a parent page (e.g. the study workspace): its layout wraps the children too.
-  if (!route.children || route.component) return setupLayouts([route])[0];
-
-  for (let i = 0; i < route.children.length; i++) {
-    route.children[i] = recursiveLayouts(route.children[i]);
-  }
-  return route;
-}
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: routes.map(recursiveLayouts),
+  routes,
 });
 
 export default router;
