@@ -13,25 +13,27 @@ import { useGame } from "@composables/useGame";
 import { navigationItems } from "@data/navigationItems";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
+import { useStudyOrigin } from "@stores/useStudyOrigin";
 import { parsePgn, type PgnNodeData, type Game as PgnGame } from "chessops/pgn";
 import { shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute("/games/chessdotcom/[gameId]");
 const chessDotCom = useChessDotCom();
-const game = useGame();
+const keptGame = useStudyOrigin().takeGame(route.fullPath);
+const game = keptGame ?? useGame();
 const parsedGame = shallowRef<PgnGame<PgnNodeData>[]>();
 const loadError = shallowRef("");
 const { setBreadcrumbs } = useBreadcrumbs();
 
-async function loadGame(gameId: string) {
+async function loadGame(gameId: string, options?: { keepTree: boolean }) {
   try {
     const gameInfo = await chessDotCom.client.getGameByUuid(gameId);
     // The user can navigate away while this loads, and the next page owns the breadcrumbs by then.
     if (route.params.gameId !== gameId) return;
     if (!gameInfo) throw new Error("Chess.com game not found");
 
-    game.loadPgn(gameInfo.pgn);
+    if (!options?.keepTree) game.loadPgn(gameInfo.pgn);
     parsedGame.value = parsePgn(gameInfo.pgn);
     loadError.value = "";
 
@@ -58,7 +60,7 @@ async function loadGame(gameId: string) {
   }
 }
 
-await loadGame(route.params.gameId as string);
+await loadGame(route.params.gameId as string, { keepTree: keptGame !== undefined });
 
 watch(
   () => route.params.gameId,
