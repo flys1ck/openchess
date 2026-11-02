@@ -1,11 +1,11 @@
 import { useGame } from "@composables/useGame";
-import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { navigationItems } from "@data/navigationItems";
 import { defineStore } from "pinia";
 import { computed, shallowRef } from "vue";
 import { useRouter } from "vue-router";
 
 interface StudyOrigin {
-  name: string;
+  label: string;
   to: string;
   game: ReturnType<typeof useGame>;
 }
@@ -24,12 +24,12 @@ export const useStudyOrigin = defineStore("studyOrigin", () => {
   });
 
   function rememberOrigin(game: StudyOrigin["game"]) {
-    const { path, fullPath } = router.currentRoute.value;
+    const { name, path, fullPath } = router.currentRoute.value;
     // Going from one study line to another keeps the game the user started from.
     if (STUDY_PATH.test(path)) return;
 
-    const name = useBreadcrumbs().breadcrumbs.at(-1)?.name ?? "Back";
-    origin.value = { name, to: fullPath, game };
+    const label = name === navigationItems.analysis.to ? "Back to analysis" : "Back to game";
+    origin.value = { label, to: fullPath, game };
   }
 
   function takeGame(fullPath: string) {

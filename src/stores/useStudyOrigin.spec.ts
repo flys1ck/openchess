@@ -1,5 +1,5 @@
 import { useGame } from "@composables/useGame";
-import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { navigationItems } from "@data/navigationItems";
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
@@ -20,16 +20,15 @@ const fakeGame = { fen: ref("start") } as unknown as ReturnType<typeof useGame>;
 
 let router: Router;
 
-async function openGame() {
-  await router.push(GAME_PATH);
-  useBreadcrumbs().setBreadcrumbs([{ name: "Alice vs. Bob", to: GAME_PATH }]);
-}
-
 beforeEach(async () => {
   setActivePinia(createPinia());
+  const component = { template: "<div />" };
   router = createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: "/:all(.*)", component: { template: "<div />" } }],
+    routes: [
+      { path: "/analysis", alias: "/", name: navigationItems.analysis.to, component },
+      { path: "/:all(.*)", component },
+    ],
   });
   routerHolder.current = router;
   await router.push("/");
@@ -38,18 +37,27 @@ beforeEach(async () => {
 describe("useStudyOrigin", () => {
   it("offers the way back only on study pages", async () => {
     const studyOrigin = useStudyOrigin();
-    await openGame();
+    await router.push(GAME_PATH);
 
     studyOrigin.rememberOrigin(fakeGame);
     expect(studyOrigin.returnLink).toBeUndefined();
 
     await router.push(LINE_PATH);
-    expect(studyOrigin.returnLink).toMatchObject({ name: "Alice vs. Bob", to: GAME_PATH });
+    expect(studyOrigin.returnLink).toMatchObject({ label: "Back to game", to: GAME_PATH });
+  });
+
+  it("names the analysis board when the visit started there", async () => {
+    const studyOrigin = useStudyOrigin();
+
+    studyOrigin.rememberOrigin(fakeGame);
+    await router.push(LINE_PATH);
+
+    expect(studyOrigin.returnLink).toMatchObject({ label: "Back to analysis", to: "/" });
   });
 
   it("keeps the original game when moving between study lines", async () => {
     const studyOrigin = useStudyOrigin();
-    await openGame();
+    await router.push(GAME_PATH);
     studyOrigin.rememberOrigin(fakeGame);
     await router.push(LINE_PATH);
 
@@ -71,7 +79,7 @@ describe("useStudyOrigin", () => {
 
   it("hands the game back once, with its refs intact", async () => {
     const studyOrigin = useStudyOrigin();
-    await openGame();
+    await router.push(GAME_PATH);
     studyOrigin.rememberOrigin(fakeGame);
     await router.push(LINE_PATH);
     await router.push(GAME_PATH);
@@ -85,7 +93,7 @@ describe("useStudyOrigin", () => {
 
   it("does not hand the game to a different page", async () => {
     const studyOrigin = useStudyOrigin();
-    await openGame();
+    await router.push(GAME_PATH);
     studyOrigin.rememberOrigin(fakeGame);
     await router.push(LINE_PATH);
 
@@ -95,7 +103,7 @@ describe("useStudyOrigin", () => {
 
   it("forgets the game when leaving the studies for another page", async () => {
     const studyOrigin = useStudyOrigin();
-    await openGame();
+    await router.push(GAME_PATH);
     studyOrigin.rememberOrigin(fakeGame);
     await router.push(LINE_PATH);
 

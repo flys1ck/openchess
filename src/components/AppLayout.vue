@@ -7,10 +7,10 @@
           <SidebarTrigger class="ml-1" />
           <Separator orientation="vertical" class="mr-2" />
           <template v-if="studyOrigin.returnLink">
-            <Button variant="outline" size="sm" class="max-w-64 shrink-0" as-child>
-              <RouterLink :to="studyOrigin.returnLink.to" :aria-label="`Back to ${studyOrigin.returnLink.name}`">
+            <Button variant="outline" size="sm" class="shrink-0" as-child>
+              <RouterLink :to="studyOrigin.returnLink.to">
                 <ArrowLeft data-icon="inline-start" />
-                <span class="truncate">{{ studyOrigin.returnLink.name }}</span>
+                {{ studyOrigin.returnLink.label }}
               </RouterLink>
             </Button>
             <Separator orientation="vertical" class="mx-2" />
