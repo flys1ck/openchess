@@ -52,6 +52,8 @@ async function loadGame(gameId: string) {
       // A finished game's PGN never changes.
       staleTime: Infinity,
     });
+    // The user can navigate away while this loads, and the next page owns the breadcrumbs by then.
+    if (route.params.gameId !== gameId) return;
 
     game.loadPgn(lichessGamePgn);
     parsedGame.value = parsePgn(lichessGamePgn);
@@ -69,8 +71,11 @@ async function loadGame(gameId: string) {
       },
     ]);
   } catch (error) {
+    if (route.params.gameId !== gameId) return;
+
     parsedGame.value = undefined;
     loadError.value = error instanceof Error ? error.message : "Failed to load Lichess game";
+    setBreadcrumbs([navigationItems.games, { name: "Lichess", to: { name: "/games/", query: { source: "lichess" } } }]);
   }
 }
 
@@ -80,10 +85,4 @@ watch(
   () => route.params.gameId,
   async (gameId) => await loadGame(gameId)
 );
-
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
 </script>

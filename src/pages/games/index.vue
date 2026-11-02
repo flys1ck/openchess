@@ -55,12 +55,6 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([navigationItems.games]);
 

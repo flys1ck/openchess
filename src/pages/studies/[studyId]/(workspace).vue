@@ -32,12 +32,6 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const route = useRoute("/studies/[studyId]/(workspace)");
 const studyId = computed(() => Number(route.params.studyId));
 const chapterId = computed(() => ("chapterId" in route.params ? Number(route.params.chapterId) : undefined));

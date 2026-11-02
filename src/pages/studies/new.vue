@@ -58,12 +58,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EditableStudy } from "@/types";
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([
   navigationItems.studies,

@@ -107,12 +107,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
 
-definePage({
-  meta: {
-    layout: "breadcrumbs",
-  },
-});
-
 const { setBreadcrumbs } = useBreadcrumbs();
 setBreadcrumbs([navigationItems.settings]);
 

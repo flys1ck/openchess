@@ -35,7 +35,7 @@ bun run db:gen:types     # Regenerate TypeScript types from SQLite schema
 
 ### Frontend (`src/`)
 
-- `pages/` — File-based routing. Each `.vue` file maps to a route automatically via `vite-plugin-vue-layouts`.
+- `pages/` — File-based routing. Each `.vue` file maps to a route automatically via `vue-router/vite`. Every page renders inside the app shell, `components/AppLayout.vue`.
 - `composables/` — Core reactive logic lives here. Key composables:
   - `useGame` — active game state and move management
   - `useGameTree` — PGN tree navigation and variation handling
