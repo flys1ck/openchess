@@ -14,6 +14,7 @@ import { navigationItems } from "@data/navigationItems";
 import { exportOneGame } from "@flys1ck/lichess-client";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useLichess } from "@stores/useLichess";
+import { useStudyOrigin } from "@stores/useStudyOrigin";
 import { useQueryClient } from "@tanstack/vue-query";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { parsePgn, type PgnNodeData, type Game as PgnGame } from "chessops/pgn";
@@ -22,7 +23,8 @@ import { useRoute } from "vue-router";
 
 const route = useRoute("/games/lichess/[gameId]");
 const lichess = useLichess();
-const game = useGame();
+const keptGame = useStudyOrigin().takeGame(route.fullPath);
+const game = keptGame ?? useGame();
 const queryClient = useQueryClient();
 const parsedGame = shallowRef<PgnGame<PgnNodeData>[]>();
 const loadError = shallowRef("");
@@ -44,7 +46,7 @@ async function fetchLichessGamePgn(gameId: string) {
   throw new Error(typeof error === "string" ? error : `Failed to load Lichess game (${response?.status ?? "unknown"})`);
 }
 
-async function loadGame(gameId: string) {
+async function loadGame(gameId: string, options?: { keepTree: boolean }) {
   try {
     const lichessGamePgn = await queryClient.fetchQuery({
       queryKey: ["lichess", "game", gameId],
@@ -55,7 +57,7 @@ async function loadGame(gameId: string) {
     // The user can navigate away while this loads, and the next page owns the breadcrumbs by then.
     if (route.params.gameId !== gameId) return;
 
-    game.loadPgn(lichessGamePgn);
+    if (!options?.keepTree) game.loadPgn(lichessGamePgn);
     parsedGame.value = parsePgn(lichessGamePgn);
     loadError.value = "";
 
@@ -79,7 +81,7 @@ async function loadGame(gameId: string) {
   }
 }
 
-await loadGame(route.params.gameId as string);
+await loadGame(route.params.gameId as string, { keepTree: keptGame !== undefined });
 
 watch(
   () => route.params.gameId,

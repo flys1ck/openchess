@@ -48,7 +48,12 @@
                 )
             "
             @pointerleave="() => game.setAutoShapes([], 'temporary')"
-            @click="() => $emit('lineClick')"
+            @click="
+              () => {
+                studyOrigin.rememberOrigin(game);
+                $emit('lineClick');
+              }
+            "
           >
             <span class="text-muted-foreground text-xs">{{ line.study_name }} - {{ line.chapter_name }}</span>
             <span class="text-sm font-medium">{{ line.line_name }}</span>
@@ -161,6 +166,7 @@ import GameResultTag from "@components/sidebar/GameResultTag.vue";
 import { useGame } from "@composables/useGame";
 import { explorerClient, mastersDatabase, type OpeningExplorerMasters } from "@flys1ck/lichess-client";
 import { db, select } from "@services/database";
+import { useStudyOrigin } from "@stores/useStudyOrigin";
 import { keepPreviousData, useQuery } from "@tanstack/vue-query";
 import { roundToFixed } from "@utilities/math";
 import { getPositionKey } from "@utilities/move";
@@ -196,6 +202,7 @@ defineEmits<{
   lineClick: [];
 }>();
 
+const studyOrigin = useStudyOrigin();
 const positions = shallowRef<StudyMoveInPosition[]>([]);
 const lines = shallowRef<StudyLineWithPosition[]>([]);
 

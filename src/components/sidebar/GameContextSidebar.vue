@@ -12,7 +12,8 @@
     <!-- Game Tab -->
     <TabsContent value="Game" class="flex grow flex-col justify-between overflow-hidden text-base" :tabindex="-1">
       <!-- Engine evaluation -->
-      <Suspense>
+      <!-- The evaluation takes room from the move list once it resolves, so scrolling any earlier would miss. -->
+      <Suspense @resolve="scrollToActiveMove">
         <GameEvaluation :fen="game.fen" @update:bestmoves="setBestMoveArrows" />
       </Suspense>
       <!-- Move history -->
@@ -171,6 +172,11 @@ const settings = useSettings();
 
 const TABS = ["Game", "Positions", "Settings"];
 const selectedTab = ref("Game");
+
+function scrollToActiveMove() {
+  const activeNodeId = props.game.tree.activeNode.value?.id;
+  document.querySelector(`[data-node-id="${activeNodeId}"]`)?.scrollIntoView({ block: "center" });
+}
 
 function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {
   const shapes: DrawShape[] = bestMoves.map((bestMove, i) => ({

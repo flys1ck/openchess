@@ -6,6 +6,15 @@
         <header class="flex h-12 shrink-0 items-center gap-2 border-b px-2 transition-[width,height] ease-linear">
           <SidebarTrigger class="ml-1" />
           <Separator orientation="vertical" class="mr-2" />
+          <template v-if="studyOrigin.returnLink">
+            <Button variant="outline" size="sm" class="shrink-0" as-child>
+              <RouterLink :to="studyOrigin.returnLink.to">
+                <ArrowLeft data-icon="inline-start" />
+                {{ studyOrigin.returnLink.label }}
+              </RouterLink>
+            </Button>
+            <Separator orientation="vertical" class="mx-2" />
+          </template>
           <Breadcrumb>
             <BreadcrumbList>
               <template v-for="(breadcrumb, i) in breadcrumbsStore.breadcrumbs" :key="breadcrumb.name">
@@ -43,7 +52,9 @@
 
 <script setup lang="ts">
 import NavigationSidebar from "@components/NavigationSidebar.vue";
+import { ArrowLeft } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
+import { useStudyOrigin } from "@stores/useStudyOrigin";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -52,8 +63,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const breadcrumbsStore = useBreadcrumbs();
+const studyOrigin = useStudyOrigin();
 </script>

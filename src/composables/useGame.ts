@@ -33,14 +33,21 @@ export function useGame() {
   let persistentShapes: DrawShape[] = [];
 
   function initializeBoard(element: HTMLElement, options?: { orientation: "white" | "black" }) {
+    // A game kept while visiting a study comes back on a new board: nothing is hovered, evaluated or mid-promotion any more.
+    temporaryShapes = [];
+    persistentShapes = [];
+    isPromoting.value = false;
+
+    const activeMove = tree.activeNode.value?.move;
     const position = {
       fen: fen.value,
       turnColor: pos.turn,
+      lastMove: activeMove && [activeMove.source, activeMove.destination],
       possibleMoves: getPossibleMoves(fen.value),
       isCheck: pos.isCheck(),
     };
     board = useChessground(element, {
-      orientation: options?.orientation,
+      orientation: board?.getOrientation() ?? options?.orientation,
       position,
       onMove: processMove,
     });
