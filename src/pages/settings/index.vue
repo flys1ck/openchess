@@ -1,71 +1,64 @@
 <template>
-  <BaseContainer class="space-y-8">
-    <!-- Lichess Account -->
-    <BaseSettingsSection heading="Lichess Account">
-      <template #description> Connect your Lichess account to access your games and profile. </template>
+  <BaseContainer>
+    <!-- Accounts -->
+    <BaseSettingsSection heading="Accounts">
+      <template #description> Connect your accounts to browse and analyze your games. </template>
       <template #form>
-        <div v-if="lichess.isConnected" class="flex items-center justify-between gap-4">
-          <p class="text-muted-foreground flex items-center gap-1 text-sm">
-            <BadgeCheck class="size-4 text-blue-500" />
-            Connected as {{ lichess.username }}
-          </p>
-          <Button variant="destructive" :disabled="isDisconnecting" @click="handleDisconnect">Disconnect</Button>
+        <div class="space-y-6">
+          <AccountStatusRow name="Lichess" :username="lichess.isConnected ? lichess.username : undefined">
+            <Button v-if="lichess.isConnected" variant="outline" :disabled="isDisconnecting" @click="handleDisconnect">
+              Disconnect
+            </Button>
+            <Button v-else :disabled="isConnecting" @click="handleConnect">
+              <Spinner v-if="isConnecting" data-icon="inline-start" />
+              {{ isConnecting ? "Connecting..." : "Connect" }}
+            </Button>
+          </AccountStatusRow>
+          <AccountStatusRow v-if="chessdotcom.username" name="Chess.com" :username="chessdotcom.username">
+            <Button variant="outline" @click="chessdotcom.username = ''">Disconnect</Button>
+          </AccountStatusRow>
+          <form v-else @submit.prevent="connectChessdotcom">
+            <Field :data-invalid="chessdotcomUsernameErrors.length > 0 || undefined">
+              <FieldLabel for="chessdotcom-username">Chess.com username</FieldLabel>
+              <div class="flex items-start gap-2">
+                <Input
+                  id="chessdotcom-username"
+                  name="chessdotcom-username"
+                  class="grow"
+                  spellcheck="false"
+                  :aria-invalid="chessdotcomUsernameErrors.length > 0 || undefined"
+                  v-model.trim="chessdotcomUsernameInput"
+                />
+                <Button type="submit" :disabled="isValidatingChessdotcomUsername">
+                  <Spinner v-if="isValidatingChessdotcomUsername" data-icon="inline-start" />
+                  Connect
+                </Button>
+              </div>
+              <FieldError :errors="chessdotcomUsernameErrors" />
+              <FieldDescription>No sign-in needed. Your public games are loaded by username.</FieldDescription>
+            </Field>
+          </form>
         </div>
-        <Button v-else :disabled="isConnecting" @click="handleConnect">
-          <Spinner v-if="isConnecting" data-icon="inline-start" />
-          {{ isConnecting ? "Connecting..." : "Connect with Lichess" }}
-        </Button>
       </template>
     </BaseSettingsSection>
-    <!-- Chess.com Username -->
-    <BaseSettingsSection heading="Chess.com Username">
-      <template #description> Integrate your Chess.com account with your username. </template>
-      <template #form>
-        <form @submit.prevent="saveChessdotcomUsername">
-          <Field :data-invalid="chessdotcomUsernameErrors.length > 0 || undefined">
-            <FieldLabel for="chessdotcom-username">Chess.com Username</FieldLabel>
-            <div class="flex items-start gap-2">
-              <Input
-                id="chessdotcom-username"
-                name="chessdotcom-username"
-                class="grow"
-                spellcheck="false"
-                :aria-invalid="chessdotcomUsernameErrors.length > 0 || undefined"
-                v-model.trim="chessdotcomUsernameInput"
-              />
-              <Button variant="outline" type="submit" :disabled="isValidatingChessdotcomUsername">
-                <Spinner v-if="isValidatingChessdotcomUsername" data-icon="inline-start" />
-                Save
-              </Button>
-            </div>
-            <FieldError :errors="chessdotcomUsernameErrors" />
-            <FieldDescription v-if="chessdotcom.username" class="flex items-center gap-1">
-              <BadgeCheck class="size-4 text-blue-500" />Connected to {{ chessdotcom.username }}
-            </FieldDescription>
-          </Field>
-        </form>
-      </template>
-    </BaseSettingsSection>
+    <Separator class="my-8" />
     <!-- Sound -->
     <BaseSettingsSection heading="Sound">
       <template #description> Volume of move and capture sounds. </template>
       <template #form>
-        <Field>
-          <div class="flex items-center justify-between">
-            <Label>Volume</Label>
-            <span class="text-muted-foreground text-sm">{{ settings.soundVolume[0] }}%</span>
-          </div>
-          <!-- Reka emits valueCommit before updating the model on keyboard input -->
-          <Slider
-            :min="0"
-            :max="100"
-            :step="5"
-            v-model="settings.soundVolume"
-            @value-commit="nextTick(() => playAudio('move'))"
-          />
-        </Field>
+        <!-- Reka emits valueCommit before updating the model on keyboard input -->
+        <BaseSliderField
+          label="Volume"
+          unit="%"
+          :min="0"
+          :max="100"
+          :step="5"
+          v-model="settings.soundVolume"
+          @value-commit="nextTick(() => playAudio('move'))"
+        />
       </template>
     </BaseSettingsSection>
+    <Separator class="my-8" />
     <!-- Study Storage -->
     <BaseSettingsSection heading="Study Storage">
       <template #description> Local database size by study content. Per-study values are estimates. </template>
@@ -74,9 +67,10 @@
           <StudyStorageChart />
           <template #fallback>
             <div class="space-y-4" aria-label="Loading study storage">
+              <Skeleton class="h-5" />
               <div v-for="index in 3" :key="index" class="space-y-2">
                 <Skeleton class="h-4 w-1/3" />
-                <Skeleton class="h-1 rounded-full" />
+                <Skeleton class="h-2 rounded-full" />
               </div>
             </div>
           </template>
@@ -89,9 +83,10 @@
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
+import BaseSliderField from "@components/base/BaseSliderField.vue";
+import AccountStatusRow from "@components/settings/AccountStatusRow.vue";
 import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
 import { navigationItems } from "@data/navigationItems";
-import { BadgeCheck } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
@@ -102,9 +97,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
 
 definePage({
@@ -144,23 +138,26 @@ async function handleDisconnect() {
 const chessdotcom = useChessDotCom();
 const chessdotcomUsernameSchema = z
   .string()
-  .min(1)
-  .regex(/^[A-Za-z0-9]+$/, "Username must contain only alphanumeric characters.");
+  .min(1, "Enter your Chess.com username.")
+  .regex(/^[A-Za-z0-9_-]+$/, "Usernames can only contain letters, numbers, underscores and hyphens.");
 const chessdotcomUsernameInput = ref(chessdotcom.username);
 const chessdotcomUsernameErrors = ref<string[]>([]);
 const isValidatingChessdotcomUsername = ref(false);
 
-async function saveChessdotcomUsername() {
+async function connectChessdotcom() {
   const result = chessdotcomUsernameSchema.safeParse(chessdotcomUsernameInput.value);
   if (!result.success) {
-    chessdotcomUsernameErrors.value = result.error.issues.map((issue) => issue.message);
+    // An empty value fails both rules, and only the first message is useful
+    chessdotcomUsernameErrors.value = result.error.issues.slice(0, 1).map((issue) => issue.message);
     return;
   }
 
   isValidatingChessdotcomUsername.value = true;
   try {
     const isValid = await chessdotcom.validateAndSetUsername(result.data);
-    chessdotcomUsernameErrors.value = isValid ? [] : ["Username not valid."];
+    chessdotcomUsernameErrors.value = isValid ? [] : ["No Chess.com player has this username."];
+  } catch {
+    chessdotcomUsernameErrors.value = ["Could not reach Chess.com. Try again."];
   } finally {
     isValidatingChessdotcomUsername.value = false;
   }

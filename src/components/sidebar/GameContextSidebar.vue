@@ -26,7 +26,17 @@
             />
           </div>
         </div>
-        <div class="flex flex-col gap-2 border-t p-4">
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center border-t p-4">
+          <div>
+            <Tooltip v-if="showNewGame">
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon-sm" aria-label="New game" @click="game.createNewGame">
+                  <Plus />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>New game</TooltipContent>
+            </Tooltip>
+          </div>
           <div class="flex items-center justify-center gap-4">
             <Tooltip>
               <TooltipTrigger as-child>
@@ -97,6 +107,19 @@
               </TooltipContent>
             </Tooltip>
           </div>
+          <div class="flex justify-end">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon-sm" aria-label="Flip board" @click="game.toggleOrientation">
+                  <FlipVertical2 />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Flip board
+                <Kbd>f</Kbd>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       </template>
     </TabsContent>
@@ -104,39 +127,10 @@
     <TabsContent value="Positions" class="flex grow flex-col overflow-hidden text-base">
       <GamePositions :game="game" @line-click="selectedTab = 'Game'" />
     </TabsContent>
-    <!-- Settings Tab -->
-    <TabsContent value="Settings" class="text-base">
-      <BaseSidebarSectionHeading heading="Game & Board" />
-      <div class="flex flex-col gap-2 p-4">
-        <Button variant="outline" @click="game.createNewGame">New Game</Button>
-        <Button variant="outline" @click="game.toggleOrientation">
-          Toggle Orientation
-          <Kbd>f</Kbd>
-        </Button>
-      </div>
-      <BaseSidebarSectionHeading class="mt-2" heading="Engine" />
-      <FieldGroup class="gap-4 p-4">
-        <Field>
-          <div class="flex items-center justify-between">
-            <Label>Multiple Lines</Label>
-            <span class="text-muted-foreground text-sm">{{ settings.engineLines[0] }}</span>
-          </div>
-          <Slider :min="1" :max="5" v-model="settings.engineLines" />
-        </Field>
-        <Field>
-          <div class="flex items-center justify-between">
-            <Label>Depth</Label>
-            <span class="text-muted-foreground text-sm">{{ settings.engineDepth[0] }}</span>
-          </div>
-          <Slider :min="1" :max="100" v-model="settings.engineDepth" />
-        </Field>
-      </FieldGroup>
-    </TabsContent>
   </Tabs>
 </template>
 
 <script setup lang="ts">
-import BaseSidebarSectionHeading from "@components/base/BaseSidebarSectionHeading.vue";
 import GameEvaluation from "@components/sidebar/GameEvaluation.vue";
 import GamePositions from "@components/sidebar/GamePositions.vue";
 import GameTreeItem from "@components/sidebar/GameTreeItem.vue";
@@ -150,26 +144,23 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  FlipVertical2,
+  Plus,
 } from "@lucide/vue";
-import { useSettings } from "@stores/useSettings";
 import { DrawShape } from "chessground/draw";
 import { Key } from "chessground/types";
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup } from "@/components/ui/field";
 import { Kbd } from "@/components/ui/kbd";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const props = defineProps<{
   game: ReturnType<typeof useGame>;
+  showNewGame?: boolean;
 }>();
 
-const settings = useSettings();
-
-const TABS = ["Game", "Positions", "Settings"];
+const TABS = ["Game", "Positions"];
 const selectedTab = ref("Game");
 
 function setBestMoveArrows(bestMoves: { score: string; from: Key; to: Key }[]) {

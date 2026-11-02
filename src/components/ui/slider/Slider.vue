@@ -5,10 +5,10 @@ import type { SliderRootEmits, SliderRootProps } from "reka-ui";
 import { SliderRange, SliderRoot, SliderThumb, SliderTrack, useForwardPropsEmits } from "reka-ui";
 import type { HTMLAttributes } from "vue";
 
-const props = defineProps<SliderRootProps & { class?: HTMLAttributes["class"] }>();
+const props = defineProps<SliderRootProps & { class?: HTMLAttributes["class"]; thumbLabel?: string }>();
 const emits = defineEmits<SliderRootEmits>();
 
-const delegatedProps = reactiveOmit(props, "class");
+const delegatedProps = reactiveOmit(props, "class", "thumbLabel");
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
@@ -43,6 +43,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     <SliderThumb
       v-for="(_, key) in modelValue"
       :key="key"
+      :aria-label="props.thumbLabel"
       data-slot="slider-thumb"
       :data-vertical="props.orientation === 'vertical' ? '' : undefined"
       class="border-ring ring-ring/50 relative block size-3 shrink-0 rounded-full border bg-white transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"

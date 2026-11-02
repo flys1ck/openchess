@@ -3,7 +3,7 @@
     <div class="flex grow flex-col items-center p-4">
       <GameChessboard class="aspect-square max-h-full max-w-full grow" :game="game" :orientation="orientation" />
     </div>
-    <GameContextSidebar :game="game" />
+    <GameContextSidebar :game="game" :show-new-game="showNewGame" />
   </div>
 </template>
 
@@ -16,6 +16,7 @@ withDefaults(
   defineProps<{
     game: ReturnType<typeof useGame>;
     orientation?: "white" | "black";
+    showNewGame?: boolean;
   }>(),
   {
     orientation: "white",

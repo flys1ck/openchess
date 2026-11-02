@@ -1,5 +1,5 @@
 <template>
-  <GameMain :game="game" />
+  <GameMain :game="game" show-new-game />
 </template>
 
 <script setup lang="ts">
