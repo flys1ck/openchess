@@ -2,7 +2,7 @@
   <aside class="flex flex-col overflow-hidden text-sm" aria-label="Chapters and lines">
     <div class="flex flex-col gap-3 border-b p-3">
       <Skeleton v-if="!study" class="h-6 w-3/4" />
-      <h1 v-else class="line-clamp-2 text-base leading-snug font-semibold" :title="study.name">{{ study.name }}</h1>
+      <h2 v-else class="line-clamp-2 text-base leading-snug font-semibold" :title="study.name">{{ study.name }}</h2>
       <div class="flex items-center gap-2">
         <Button v-if="studyImport.job" size="sm" variant="outline" disabled>
           <FileUp data-icon="inline-start" />Import PGN

@@ -30,6 +30,7 @@
               </BreadcrumbList>
             </Breadcrumb>
           </header>
+          <h1 class="sr-only" aria-live="polite">{{ breadcrumbsStore.breadcrumbs.at(-1)?.name }}</h1>
           <RouterView />
         </div>
       </Suspense>

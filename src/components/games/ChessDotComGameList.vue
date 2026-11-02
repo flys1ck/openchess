@@ -7,7 +7,7 @@
     <p v-else-if="!months.length" class="text-muted-foreground p-4 text-sm">No games on Chess.com yet.</p>
     <div class="space-y-6">
       <section v-for="month in months" :key="month.archive">
-        <h3 class="text-muted-foreground mb-2 text-sm font-medium">{{ month.label }}</h3>
+        <h2 class="text-muted-foreground mb-2 text-sm font-medium">{{ month.label }}</h2>
         <ul class="space-y-4">
           <GameCard
             v-for="game in month.games"

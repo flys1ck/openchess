@@ -1,6 +1,5 @@
 <template>
   <BaseContainer class="space-y-8">
-    <BaseSectionHeading heading="Settings" />
     <!-- Lichess Account -->
     <BaseSettingsSection heading="Lichess Account">
       <template #description> Connect your Lichess account to access your games and profile. </template>
@@ -69,7 +68,6 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
 import { navigationItems } from "@data/navigationItems";

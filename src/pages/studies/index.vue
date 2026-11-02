@@ -1,12 +1,12 @@
 <template>
   <BaseContainer>
-    <BaseSectionHeading heading="Studies">
-      <template #actions>
+    <BaseToolbar>
+      <template #end>
         <Button as-child>
           <RouterLink to="/studies/new">Create new study</RouterLink>
         </Button>
       </template>
-    </BaseSectionHeading>
+    </BaseToolbar>
     <Card v-if="isCreatingStudy" class="mb-4 gap-3 p-6">
       <p class="text-sm leading-6 font-semibold">{{ studyImport.job?.studyName }}</p>
       <StudyImportProgress class="max-w-sm" />
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
+import BaseToolbar from "@components/base/BaseToolbar.vue";
 import StudyCardSkeleton from "@components/studies/StudyCardSkeleton.vue";
 import StudyImportProgress from "@components/studies/StudyImportProgress.vue";
 import StudyList from "@components/studies/StudyList.vue";

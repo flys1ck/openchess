@@ -1,6 +1,5 @@
 <template>
   <BaseContainer>
-    <BaseSectionHeading heading="Import PGN" />
     <form @submit.prevent="onSubmit">
       <FieldGroup>
         <StudyImportFields
@@ -23,7 +22,6 @@
 
 <script setup lang="ts">
 import BaseContainer from "@components/base/BaseContainer.vue";
-import BaseSectionHeading from "@components/base/BaseSectionHeading.vue";
 import StudyImportFields from "@components/studies/StudyImportFields.vue";
 import { useStudyImportPlan } from "@composables/useStudyImportPlan";
 import { navigationItems } from "@data/navigationItems";
