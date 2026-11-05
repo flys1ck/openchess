@@ -17,7 +17,7 @@ export async function checkForAppUpdate(): Promise<void> {
     ? `Version ${update.version} is available.\n\n${update.body}`
     : `Version ${update.version} is available. Install now?`;
 
-  const shouldInstall = await confirm(message, { title: "Update OpenChess", kind: "info" });
+  const shouldInstall = await confirm(message, { title: "Update Skakia", kind: "info" });
   if (!shouldInstall) return;
 
   try {

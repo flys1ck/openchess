@@ -7,9 +7,9 @@ import { defineStore } from "pinia";
 import { computed, type Ref } from "vue";
 import { toast } from "vue-sonner";
 
-const LICHESS_CLIENT_ID = "openchess";
+const LICHESS_CLIENT_ID = "skakia";
 const LICHESS_OAUTH_URL = "https://lichess.org/oauth";
-const LICHESS_REDIRECT_URI = "com.openchess.dev://oauth/callback";
+const LICHESS_REDIRECT_URI = "com.skakia.app://oauth/callback";
 const LICHESS_OAUTH_TIMEOUT_MS = 3 * 60 * 1000;
 
 async function generatePkce(): Promise<{ verifier: string; challenge: string }> {

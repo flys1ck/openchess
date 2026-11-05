@@ -3,11 +3,11 @@
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg" as-child tooltip="OpenChess">
+          <SidebarMenuButton size="lg" as-child tooltip="Skakia">
             <RouterLink :to="navigationItems.analysis.to">
               <img :src="appLogo" alt="" class="size-8 rounded-lg" />
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-medium">OpenChess</span>
+                <span class="truncate font-medium">Skakia</span>
                 <span class="text-muted-foreground truncate text-xs">v{{ appVersion }}</span>
               </div>
             </RouterLink>

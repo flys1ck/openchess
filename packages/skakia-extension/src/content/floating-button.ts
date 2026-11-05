@@ -2,15 +2,15 @@ import { extractChessDotComLiveGameId, isChessDotComGameFinished } from "./chess
 import { extractLichessGameId, isLichessGameFinished } from "./lichess";
 import styles from "./floating-button.css?inline";
 
-const HOST_ID = "openchess-floating-button-host";
-const HIDDEN_CLASS = "openchess-floating-button-hidden";
-const OPENCHESS_SCHEME = "com.openchess.dev";
+const HOST_ID = "skakia-floating-button-host";
+const HIDDEN_CLASS = "skakia-floating-button-hidden";
+const SKAKIA_SCHEME = "com.skakia.app";
 const SYNC_INTERVAL_MS = 1000;
 
-type OpenChessGameProvider = "lichess" | "chessdotcom";
+type SkakiaGameProvider = "lichess" | "chessdotcom";
 
 type CurrentGame = {
-  provider: OpenChessGameProvider;
+  provider: SkakiaGameProvider;
   gameId: string;
   isAnalysis: boolean;
 };
@@ -55,7 +55,7 @@ export function stopFloatingButtonSync(): void {
 }
 
 /**
- * Creates or fades in the liquid blob "Analyze in OpenChess" button.
+ * Creates or fades in the liquid blob "Analyze in Skakia" button.
  */
 export function showFloatingButton(): void {
   const existingHost = document.getElementById(HOST_ID);
@@ -73,13 +73,13 @@ export function showFloatingButton(): void {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "openchess-floating-button";
-  button.setAttribute("aria-label", "Analyze in OpenChess");
-  button.addEventListener("click", openCurrentGameInOpenChess);
+  button.className = "skakia-floating-button";
+  button.setAttribute("aria-label", "Analyze in Skakia");
+  button.addEventListener("click", openCurrentGameInSkakia);
 
   const label = document.createElement("span");
-  label.className = "openchess-floating-button-label";
-  label.textContent = "Analyze in OpenChess";
+  label.className = "skakia-floating-button-label";
+  label.textContent = "Analyze in Skakia";
   label.setAttribute("aria-hidden", "true");
 
   shadow.append(style, button, label);
@@ -94,13 +94,13 @@ export function hideFloatingButton(): void {
 }
 
 /**
- * Opens the current game in the OpenChess app via the `com.openchess.dev` deep link.
+ * Opens the current game in the Skakia app via the `com.skakia.app` deep link.
  */
-function openCurrentGameInOpenChess(): void {
+function openCurrentGameInSkakia(): void {
   const game = getCurrentGame();
   if (!game) return;
 
-  const url = `${OPENCHESS_SCHEME}://games/${game.provider}?id=${encodeURIComponent(game.gameId)}`;
+  const url = `${SKAKIA_SCHEME}://games/${game.provider}?id=${encodeURIComponent(game.gameId)}`;
 
   const anchor = document.createElement("a");
   anchor.href = url;

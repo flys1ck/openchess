@@ -12,11 +12,11 @@ export function parseOAuthCallback(url: string): URLSearchParams | null {
 }
 
 /**
- * Maps an OpenChess deep link to an in-app route.
+ * Maps an Skakia deep link to an in-app route.
  *
  * @example
- *   - `com.openchess.dev://games/lichess?id=9SZSSje9` → `/games/lichess/9SZSSje9`
- *   - `com.openchess.dev://games/chessdotcom?id=171614746182` → `/games/chessdotcom/171614746182`
+ *   - `com.skakia.app://games/lichess?id=9SZSSje9` → `/games/lichess/9SZSSje9`
+ *   - `com.skakia.app://games/chessdotcom?id=171614746182` → `/games/chessdotcom/171614746182`
  */
 export function parseAppDeepLink(url: string): string | null {
   try {

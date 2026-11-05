@@ -175,7 +175,7 @@ async function main(): Promise<void> {
     };
 
     const mainCheckout = dirname(commonGitDirectory);
-    // Worktrees share Cargo's intermediate artifacts, so only the openchess crate compiles in a new worktree.
+    // Worktrees share Cargo's intermediate artifacts, so only the skakia crate compiles in a new worktree.
     // The binary still goes to the worktree's own target dir. The main checkout keeps its own build dir
     // so it never waits for the lock a worktree build holds.
     const buildDirectory = process.env.CARGO_BUILD_BUILD_DIR ?? join(mainCheckout, "src-tauri", "target", "worktrees");

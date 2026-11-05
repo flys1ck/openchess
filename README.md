@@ -1,4 +1,4 @@
-# OpenChess
+# Skakia
 
 A cross-platform desktop chess application built with Tauri and Vue 3.
 
@@ -53,7 +53,7 @@ To work on several branches at once, give each one a git worktree and start the 
 bun run dev:worktree
 ```
 
-Each worktree gets its own app identifier, Vite port and database (seeded from your main database on first run), so its instance runs next to the app in your main checkout. The script also copies the Stockfish sidecar from the main checkout, and deletes the app data folders of worktrees that no longer exist. In the main checkout it is the same as `bun tauri dev`. Worktrees share Cargo's intermediate build files in `src-tauri/target/worktrees/` of the main checkout, so after the first worktree build a new worktree only compiles the `openchess` crate. Two worktrees compiling at the same moment take turns. `cargo clean` in the main checkout removes the shared files too.
+Each worktree gets its own app identifier, Vite port and database (seeded from your main database on first run), so its instance runs next to the app in your main checkout. The script also copies the Stockfish sidecar from the main checkout, and deletes the app data folders of worktrees that no longer exist. In the main checkout it is the same as `bun tauri dev`. Worktrees share Cargo's intermediate build files in `src-tauri/target/worktrees/` of the main checkout, so after the first worktree build a new worktree only compiles the `skakia` crate. Two worktrees compiling at the same moment take turns. `cargo clean` in the main checkout removes the shared files too.
 
 ## Updating Stockfish
 
@@ -100,7 +100,7 @@ Triggered manually via GitHub workflow. Builds the app in parallel across the ta
 | `ubuntu-22.04`   | x86_64         | `.deb` / `.AppImage` |
 | `windows-latest` | x86_64         | `.exe` / `.msi`      |
 
-Creates a **draft** GitHub release named `OpenChess v<version>` with auto-generated release notes and attaches all platform artifacts. Publish the draft manually once you've reviewed it. The release also produces a `latest.json` updater manifest consumed by the in-app auto-updater endpoint configured in `tauri.conf.json`.
+Creates a **draft** GitHub release named `Skakia v<version>` with auto-generated release notes and attaches all platform artifacts. Publish the draft manually once you've reviewed it. The release also produces a `latest.json` updater manifest consumed by the in-app auto-updater endpoint configured in `tauri.conf.json`.
 
 ### Required environment variables
 
