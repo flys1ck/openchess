@@ -2,9 +2,9 @@ import { defineManifest } from "@crxjs/vite-plugin";
 
 export default defineManifest({
   manifest_version: 3,
-  name: "OpenChess",
+  name: "Skakia",
   version: "0.0.1",
-  description: "OpenChess browser extension for Lichess and Chess.com",
+  description: "Skakia browser extension for Lichess and Chess.com",
   content_scripts: [
     {
       js: ["src/content/main.ts"],

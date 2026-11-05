@@ -1,4 +1,4 @@
-# OpenChess Browser Extension
+# Skakia Browser Extension
 
 TypeScript browser extension built with [CRXJS](https://crxjs.dev/) and Vite.
 
@@ -19,7 +19,7 @@ CRXJS writes a loadable extension to `dist/` and rebuilds on file changes.
 1. Open `chrome://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select the `packages/openchess-extension/dist` folder
+4. Select the `packages/skakia-extension/dist` folder
 
 After the first load, reload the extension from the extensions page when CRXJS rebuilds.
 

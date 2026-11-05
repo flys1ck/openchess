@@ -1,6 +1,6 @@
-# OpenChess
+# Skakia
 
-OpenChess is a cross-platform desktop chess application built with Tauri 2 (Rust backend) and Vue 3 + TypeScript (frontend). It integrates the Stockfish engine, Lichess/Chess.com APIs, and SQLite for local storage.
+Skakia is a cross-platform desktop chess application built with Tauri 2 (Rust backend) and Vue 3 + TypeScript (frontend). It integrates the Stockfish engine, Lichess/Chess.com APIs, and SQLite for local storage.
 
 ## Commands
 
@@ -65,6 +65,7 @@ Kysely provides type-safe query building. Types are generated from the SQLite sc
 
 ## Development Notes
 
+- **App identifier**: Stays `com.openchess.dev` from before the rename to Skakia. It decides where the app data folder and database live, so changing it would make existing installs look empty.
 - **Stockfish binary**: Downloaded separately via `bun run scripts/downloadStockfish.ts`. Required for `tauri dev` / `tauri build`.
 - **Issues**: Tracked in GitHub Issues. Older commits and branches use an `OCS-<number>` prefix from the previous Linear setup; do not use it for new work.
 - **Branches**: `<type>/<short-description>`, e.g. `fix/promotion-overlay-flipped`. No issue number in the branch name.
@@ -86,13 +87,13 @@ Parallel PRs each get a git worktree (Claude Code puts them in `.claude/worktree
 - on first run, copies the main checkout's database into that data folder, so the branch's migrations only touch the copy. Delete the copy to seed it again;
 - copies `src-tauri/bin/` (Stockfish sidecar) from the main checkout if it is missing. `.worktreeinclude` already does this for worktrees Claude Code creates.
 
-Worktree builds share Cargo's intermediate files (`CARGO_BUILD_BUILD_DIR`, in the main checkout's `src-tauri/target/worktrees/`). A new worktree only compiles the `openchess` crate, and the binary still lands in its own `src-tauri/target`. Concurrent worktree builds wait for each other (`Blocking waiting for file lock on build directory`); that is expected. Do not add sccache for this: its cache keys include the checkout path, so it barely helps across worktrees.
+Worktree builds share Cargo's intermediate files (`CARGO_BUILD_BUILD_DIR`, in the main checkout's `src-tauri/target/worktrees/`). A new worktree only compiles the `skakia` crate, and the binary still lands in its own `src-tauri/target`. Concurrent worktree builds wait for each other (`Blocking waiting for file lock on build directory`); that is expected. Do not add sccache for this: its cache keys include the checkout path, so it barely helps across worktrees.
 
 ## Tauri MCP
 
 Verify UI in the running desktop app, not a browser tab. The Vite page alone will fail, because it needs Tauri (`plugin-sql` `invoke`). In a worktree, start your own instance with `bun run dev:worktree`; it does not collide with the user's app. In the main checkout, do not start `bun tauri dev` if the user already has the app open (single-instance; Vite is pinned to port 1420).
 
-The MCP Bridge plugin takes the first free port from **9223** up (9223–9322), so every running instance has its own. Read it from the dev log line `MCP Bridge plugin initialized for 'OpenChess' (<identifier>) on 0.0.0.0:<port>`, and check that the identifier is the one for your worktree. Drive it with the `tauri` MCP server (`@hypothesi/tauri-mcp-server`, configured in `.mcp.json` for Claude Code and `.cursor/mcp.json` for Cursor). Its tools appear as `mcp__tauri__*`.
+The MCP Bridge plugin takes the first free port from **9223** up (9223–9322), so every running instance has its own. Read it from the dev log line `MCP Bridge plugin initialized for 'Skakia' (<identifier>) on 0.0.0.0:<port>`, and check that the identifier is the one for your worktree. Drive it with the `tauri` MCP server (`@hypothesi/tauri-mcp-server`, configured in `.mcp.json` for Claude Code and `.cursor/mcp.json` for Cursor). Its tools appear as `mcp__tauri__*`.
 
 With the app running:
 
