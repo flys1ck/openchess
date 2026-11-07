@@ -66,13 +66,6 @@ declare module 'vue-router/auto-routes' {
       { gameId: ParamValue<false> },
       | never
     >,
-    '/settings/': RouteRecordInfo<
-      '/settings/',
-      '/settings',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/studies/': RouteRecordInfo<
       '/studies/',
       '/studies',
@@ -190,14 +183,6 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'gameId'
-    }
-    'src/pages/settings/index.vue': {
-      routes:
-        | '/settings/'
-      views:
-        | never
-      pathParamNames:
-        | never
     }
     'src/pages/studies/index.vue': {
       routes:

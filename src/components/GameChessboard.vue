@@ -86,17 +86,25 @@ function toLastMove() {
   });
 }
 
-onKeyStroke("ArrowLeft", toPreviousMove);
-onKeyStroke("ArrowRight", toNextMove);
-onKeyStroke("ArrowUp", (e) => {
-  e.preventDefault();
-  toFirstMove();
+const shortcuts: Record<string, (e: KeyboardEvent) => void> = {
+  ArrowLeft: toPreviousMove,
+  ArrowRight: toNextMove,
+  ArrowUp: (e) => {
+    e.preventDefault();
+    toFirstMove();
+  },
+  ArrowDown: (e) => {
+    e.preventDefault();
+    toLastMove();
+  },
+  f: props.game.toggleOrientation,
+};
+// The board stays mounted under dialogs and popovers, whose fields and sliders need these keys
+const KEY_CAPTURING_ELEMENTS = "input, textarea, select, [contenteditable], [role='dialog']";
+onKeyStroke(Object.keys(shortcuts), (e) => {
+  if (e.target instanceof Element && e.target.closest(KEY_CAPTURING_ELEMENTS)) return;
+  shortcuts[e.key]?.(e);
 });
-onKeyStroke("ArrowDown", (e) => {
-  e.preventDefault();
-  toLastMove();
-});
-onKeyStroke("f", props.game.toggleOrientation);
 useEventListener(chessboardRef, "wheel", (e: WheelEvent) => {
   const { deltaY } = e;
   if (deltaY < 0) {

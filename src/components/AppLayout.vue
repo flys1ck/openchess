@@ -47,11 +47,13 @@
         </RouterView>
       </div>
     </SidebarInset>
+    <SettingsDialog />
   </SidebarProvider>
 </template>
 
 <script setup lang="ts">
 import NavigationSidebar from "@components/NavigationSidebar.vue";
+import SettingsDialog from "@components/settings/SettingsDialog.vue";
 import { ArrowLeft } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useStudyOrigin } from "@stores/useStudyOrigin";

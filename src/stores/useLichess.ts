@@ -4,7 +4,7 @@ import { onOpenUrl } from "@tauri-apps/plugin-deep-link";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { parseOAuthCallback } from "@utilities/deepLinks";
 import { defineStore } from "pinia";
-import { computed, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { toast } from "vue-sonner";
 
 const LICHESS_CLIENT_ID = "skakia";
@@ -40,8 +40,14 @@ export async function initLichessStore() {
 
 export const useLichess = defineStore("lichess", () => {
   const isConnected = computed(() => !!token.value);
+  // Lives in the store so the settings dialog can close and reopen while the browser sign-in is pending
+  const isConnecting = ref(false);
+  let loginAbortController: AbortController | undefined;
 
   async function login() {
+    const abortController = new AbortController();
+    loginAbortController = abortController;
+    isConnecting.value = true;
     try {
       const { verifier, challenge } = await generatePkce();
       const state = crypto.randomUUID();
@@ -56,6 +62,7 @@ export const useLichess = defineStore("lichess", () => {
       });
 
       const callbackPromise = new Promise<URLSearchParams>((resolve, reject) => {
+        abortController.signal.addEventListener("abort", () => reject(abortController.signal.reason));
         const timeoutId = setTimeout(() => {
           reject(new Error("Timed out waiting for Lichess authorization"));
         }, LICHESS_OAUTH_TIMEOUT_MS);
@@ -65,10 +72,12 @@ export const useLichess = defineStore("lichess", () => {
           if (params) resolve(params);
         })
           .then((unlisten) => {
-            void callbackPromise.finally(() => {
+            const cleanUp = () => {
               clearTimeout(timeoutId);
               unlisten();
-            });
+            };
+            // finally() would return a second promise that rejects with nobody handling it
+            void callbackPromise.then(cleanUp, cleanUp);
           })
           .catch((error) => {
             clearTimeout(timeoutId);
@@ -113,11 +122,20 @@ export const useLichess = defineStore("lichess", () => {
       token.value = access_token;
       username.value = profile.data.username ?? "";
     } catch (error) {
+      if (abortController.signal.aborted) return;
       toast.error("Lichess connection failed", {
         description: error instanceof Error ? error.message : "An unexpected error occurred",
       });
       throw error;
+    } finally {
+      isConnecting.value = false;
+      loginAbortController = undefined;
     }
+  }
+
+  // The browser tab can be closed without authorizing, and Lichess never calls back then
+  function cancelLogin() {
+    loginAbortController?.abort();
   }
 
   async function logout() {
@@ -135,8 +153,10 @@ export const useLichess = defineStore("lichess", () => {
 
   return {
     isConnected,
+    isConnecting,
     username,
     login,
+    cancelLogin,
     logout,
   };
 });

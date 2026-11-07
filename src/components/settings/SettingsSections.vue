@@ -1,5 +1,5 @@
 <template>
-  <BaseContainer>
+  <div>
     <!-- Accounts -->
     <BaseSettingsSection heading="Accounts">
       <template #description> Connect your accounts to browse and analyze your games. </template>
@@ -9,10 +9,11 @@
             <Button v-if="lichess.isConnected" variant="outline" :disabled="isDisconnecting" @click="handleDisconnect">
               Disconnect
             </Button>
-            <Button v-else :disabled="isConnecting" @click="handleConnect">
-              <Spinner v-if="isConnecting" data-icon="inline-start" />
-              {{ isConnecting ? "Connecting..." : "Connect" }}
-            </Button>
+            <div v-else-if="lichess.isConnecting" class="flex items-center gap-2">
+              <Button variant="ghost" @click="lichess.cancelLogin()">Cancel</Button>
+              <Button disabled><Spinner data-icon="inline-start" />Connecting...</Button>
+            </div>
+            <Button v-else @click="handleConnect">Connect</Button>
           </AccountStatusRow>
           <AccountStatusRow v-if="chessdotcom.username" name="Chess.com" :username="chessdotcom.username">
             <Button variant="outline" @click="chessdotcom.username = ''">Disconnect</Button>
@@ -77,17 +78,14 @@
         </Suspense>
       </template>
     </BaseSettingsSection>
-  </BaseContainer>
+  </div>
 </template>
 
 <script setup lang="ts">
-import BaseContainer from "@components/base/BaseContainer.vue";
 import BaseSettingsSection from "@components/base/BaseSettingsSection.vue";
 import BaseSliderField from "@components/base/BaseSliderField.vue";
 import AccountStatusRow from "@components/settings/AccountStatusRow.vue";
 import StudyStorageChart from "@components/settings/StudyStorageChart.vue";
-import { navigationItems } from "@data/navigationItems";
-import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
 import { useSettings } from "@stores/useSettings";
@@ -101,22 +99,15 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 
-const { setBreadcrumbs } = useBreadcrumbs();
-setBreadcrumbs([navigationItems.settings]);
-
 const settings = useSettings();
 const lichess = useLichess();
-const isConnecting = ref(false);
 const isDisconnecting = ref(false);
 
 async function handleConnect() {
-  isConnecting.value = true;
   try {
     await lichess.login();
   } catch {
     // Error is already surfaced via toast in the store
-  } finally {
-    isConnecting.value = false;
   }
 }
 

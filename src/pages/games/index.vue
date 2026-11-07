@@ -29,9 +29,7 @@
             <EmptyDescription>{{ option.connectHint }}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button as-child>
-              <RouterLink :to="navigationItems.settings.to">Open settings</RouterLink>
-            </Button>
+            <Button @click="settingsDialog.isOpen = true">Open settings</Button>
           </EmptyContent>
         </Empty>
       </TabsContent>
@@ -49,6 +47,7 @@ import { RefreshCw, Unplug } from "@lucide/vue";
 import { useBreadcrumbs } from "@stores/useBreadcrumbs";
 import { useChessDotCom } from "@stores/useChessDotCom";
 import { useLichess } from "@stores/useLichess";
+import { useSettingsDialog } from "@stores/useSettingsDialog";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Button } from "@/components/ui/button";
@@ -69,6 +68,7 @@ const route = useRoute("/games/");
 const router = useRouter();
 const lichess = useLichess();
 const chessDotCom = useChessDotCom();
+const settingsDialog = useSettingsDialog();
 
 const source = computed<GameSource>({
   get() {
