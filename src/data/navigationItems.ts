@@ -1,4 +1,4 @@
-import { BookOpen, ChessKnight, Settings, Swords } from "@lucide/vue";
+import { BookOpen, ChessKnight, Swords } from "@lucide/vue";
 import { Component } from "vue";
 import { RouteNamedMap } from "vue-router/auto-routes";
 
@@ -23,10 +23,5 @@ export const navigationItems = {
     icon: Swords,
     name: "Games",
     to: "/games/",
-  },
-  settings: {
-    icon: Settings,
-    name: "Settings",
-    to: "/settings/",
   },
 } satisfies Record<string, NavigationItem>;

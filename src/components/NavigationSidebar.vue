@@ -35,14 +35,12 @@
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            as-child
-            :is-active="isItemActive(navigationItems.settings.to)"
-            :tooltip="navigationItems.settings.name"
+            :is-active="settingsDialog.isOpen"
+            tooltip="Settings"
+            @click="settingsDialog.isOpen = true"
           >
-            <RouterLink :to="navigationItems.settings.to">
-              <Component :is="navigationItems.settings.icon" />
-              <span>{{ navigationItems.settings.name }}</span>
-            </RouterLink>
+            <Settings />
+            <span>Settings</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
@@ -53,6 +51,8 @@
 <script setup lang="ts">
 import appLogo from "@assets/images/logo.png";
 import { type NavigationItem, navigationItems } from "@data/navigationItems";
+import { Settings } from "@lucide/vue";
+import { useSettingsDialog } from "@stores/useSettingsDialog";
 import { getVersion } from "@tauri-apps/api/app";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -69,6 +69,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainNavigationItems = [navigationItems.analysis, navigationItems.studies, navigationItems.games];
+
+const settingsDialog = useSettingsDialog();
 
 const route = useRoute();
 // Analysis is aliased to "/", so the path alone does not identify it; the route name does.

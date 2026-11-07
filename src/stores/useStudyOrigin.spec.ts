@@ -107,7 +107,7 @@ describe("useStudyOrigin", () => {
     studyOrigin.rememberOrigin(fakeGame);
     await router.push(LINE_PATH);
 
-    await router.push("/settings");
+    await router.push("/games/");
     await router.push(LINE_PATH);
 
     expect(studyOrigin.returnLink).toBeUndefined();
